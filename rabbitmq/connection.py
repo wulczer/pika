@@ -195,10 +195,8 @@ class Connection(asyncore.dispatcher):
             heartbeat = combine_tuning(self.parameters.heartbeat, frame.method.heartbeat)))
         self.frame_handler = self._generic_frame_handler
         self._install_channel0()
-        self.known_hosts = \
-                         self._rpc(0, spec.Connection.Open(virtual_host = self.virtual_host,
-                                                           insist = True),
-                                   [spec.Connection.OpenOk]).known_hosts
+        self._rpc(0, spec.Connection.Open(virtual_host = self.virtual_host),
+                  [spec.Connection.OpenOk])
         self.connection_open = True
         self.handle_connection_open()
 
