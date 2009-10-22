@@ -46,15 +46,15 @@ class RabbitDispatcher(asyncore.dispatcher):
         self.connection.outbound_buffer.consume(r)
 
 class AsyncoreConnection(pika.connection.Connection):
-    def reconnect_after(self, delay_sec):
-        add_oneshot_timer_rel(delay_sec, self.reconnect)
+    def delayed_call(self, delay_sec, callback):
+        add_oneshot_timer_rel(delay_sec, callback)
 
     def connect(self, host, port):
         self.dispatcher = RabbitDispatcher(self)
         self.dispatcher.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.dispatcher.connect((host, port or spec.PORT))
 
-    def shutdown_event_loop(self):
+    def disconnect_transport(self):
         self.dispatcher.close()
 
     def drain_events(self):
