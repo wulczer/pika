@@ -2,6 +2,8 @@ class LoginError(Exception): pass
 class NoFreeChannels(Exception): pass
 class DuplicateConsumerTag(Exception): pass
 class UnknownConsumerTag(Exception): pass
+class RecursiveOperationDetected(Exception): pass
+class ContentTransmissionForbidden(Exception): pass
 
 class ConnectionClosed(Exception): pass
 class ChannelClosed(Exception): pass
