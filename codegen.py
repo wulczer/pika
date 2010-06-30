@@ -68,7 +68,8 @@ DRIVER_METHODS = {
     "Basic.Get": ["Basic.GetOk", "Basic.GetEmpty"],
     "Basic.Ack": [],
     "Basic.Reject": [],
-    "Basic.Recover": [],
+    "Basic.Recover": ["Basic.RecoverOk"],
+    "Basic.RecoverAsync": [],
     "Tx.Select": ["Tx.SelectOk"],
     "Tx.Commit": ["Tx.CommitOk"],
     "Tx.Rollback": ["Tx.RollbackOk"]
@@ -105,7 +106,9 @@ def flagName(c, f):
     else:
         return constantName('flag_' + f.name)
 
-def gen(spec):
+def generate(specPath):
+    spec = AmqpSpec(specPath)
+
     def genSingleDecode(prefix, cLvalue, unresolved_domain):
         type = spec.resolveDomain(unresolved_domain)
         if type == 'shortstr':
@@ -358,11 +361,5 @@ def gen(spec):
                   (', '.join(acceptable_replies),)
             print
 
-def generate(specPath):
-    gen(AmqpSpec(specPath))
-
-def dummyGenerate(specPath):
-    pass
-    
 if __name__ == "__main__":
-    do_main(dummyGenerate, generate)
+    do_main_dict({"spec": generate})

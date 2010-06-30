@@ -40,7 +40,7 @@ class Connection(pika.specbase.Class):
     class Start(pika.specbase.Method):
         INDEX = 0x000A000A ## 10, 10; 655370
         NAME = 'Connection.Start'
-        def __init__(self, version_major = 0, version_minor = 8, server_properties = None, mechanisms = 'PLAIN', locales = 'en_US'):
+        def __init__(self, version_major = 0, version_minor = 9, server_properties = None, mechanisms = 'PLAIN', locales = 'en_US'):
             self.version_major = version_major
             self.version_minor = version_minor
             self.server_properties = server_properties
@@ -421,7 +421,7 @@ class Exchange(pika.specbase.Class):
     class Declare(pika.specbase.Method):
         INDEX = 0x0028000A ## 40, 10; 2621450
         NAME = 'Exchange.Declare'
-        def __init__(self, deprecated_ticket = 1, exchange = None, type = 'direct', passive = False, durable = False, deprecated_auto_delete = False, deprecated_internal = False, nowait = False, arguments = {}):
+        def __init__(self, deprecated_ticket = 0, exchange = None, type = 'direct', passive = False, durable = False, deprecated_auto_delete = False, deprecated_internal = False, nowait = False, arguments = {}):
             self.deprecated_ticket = deprecated_ticket
             self.exchange = exchange
             self.type = type
@@ -485,7 +485,7 @@ class Exchange(pika.specbase.Class):
     class Delete(pika.specbase.Method):
         INDEX = 0x00280014 ## 40, 20; 2621460
         NAME = 'Exchange.Delete'
-        def __init__(self, deprecated_ticket = 1, exchange = None, if_unused = False, nowait = False):
+        def __init__(self, deprecated_ticket = 0, exchange = None, if_unused = False, nowait = False):
             self.deprecated_ticket = deprecated_ticket
             self.exchange = exchange
             self.if_unused = if_unused
@@ -534,7 +534,7 @@ class Queue(pika.specbase.Class):
     class Declare(pika.specbase.Method):
         INDEX = 0x0032000A ## 50, 10; 3276810
         NAME = 'Queue.Declare'
-        def __init__(self, deprecated_ticket = 1, queue = '', passive = False, durable = False, exclusive = False, auto_delete = False, nowait = False, arguments = {}):
+        def __init__(self, deprecated_ticket = 0, queue = '', passive = False, durable = False, exclusive = False, auto_delete = False, nowait = False, arguments = {}):
             self.deprecated_ticket = deprecated_ticket
             self.queue = queue
             self.passive = passive
@@ -606,7 +606,7 @@ class Queue(pika.specbase.Class):
     class Bind(pika.specbase.Method):
         INDEX = 0x00320014 ## 50, 20; 3276820
         NAME = 'Queue.Bind'
-        def __init__(self, deprecated_ticket = 1, queue = None, exchange = None, routing_key = None, nowait = False, arguments = {}):
+        def __init__(self, deprecated_ticket = 0, queue = None, exchange = None, routing_key = '', nowait = False, arguments = {}):
             self.deprecated_ticket = deprecated_ticket
             self.queue = queue
             self.exchange = exchange
@@ -665,7 +665,7 @@ class Queue(pika.specbase.Class):
     class Purge(pika.specbase.Method):
         INDEX = 0x0032001E ## 50, 30; 3276830
         NAME = 'Queue.Purge'
-        def __init__(self, deprecated_ticket = 1, queue = None, nowait = False):
+        def __init__(self, deprecated_ticket = 0, queue = None, nowait = False):
             self.deprecated_ticket = deprecated_ticket
             self.queue = queue
             self.nowait = nowait
@@ -711,7 +711,7 @@ class Queue(pika.specbase.Class):
     class Delete(pika.specbase.Method):
         INDEX = 0x00320028 ## 50, 40; 3276840
         NAME = 'Queue.Delete'
-        def __init__(self, deprecated_ticket = 1, queue = None, if_unused = False, if_empty = False, nowait = False):
+        def __init__(self, deprecated_ticket = 0, queue = None, if_unused = False, if_empty = False, nowait = False):
             self.deprecated_ticket = deprecated_ticket
             self.queue = queue
             self.if_unused = if_unused
@@ -763,7 +763,7 @@ class Queue(pika.specbase.Class):
     class Unbind(pika.specbase.Method):
         INDEX = 0x00320032 ## 50, 50; 3276850
         NAME = 'Queue.Unbind'
-        def __init__(self, deprecated_ticket = 1, queue = None, exchange = None, routing_key = None, arguments = None):
+        def __init__(self, deprecated_ticket = 0, queue = None, exchange = None, routing_key = '', arguments = {}):
             self.deprecated_ticket = deprecated_ticket
             self.queue = queue
             self.exchange = exchange
@@ -858,7 +858,7 @@ class Basic(pika.specbase.Class):
     class Consume(pika.specbase.Method):
         INDEX = 0x003C0014 ## 60, 20; 3932180
         NAME = 'Basic.Consume'
-        def __init__(self, deprecated_ticket = 1, queue = None, consumer_tag = None, no_local = False, no_ack = False, exclusive = False, nowait = False, filter = {}):
+        def __init__(self, deprecated_ticket = 0, queue = None, consumer_tag = '', no_local = False, no_ack = False, exclusive = False, nowait = False, filter = {}):
             self.deprecated_ticket = deprecated_ticket
             self.queue = queue
             self.consumer_tag = consumer_tag
@@ -971,7 +971,7 @@ class Basic(pika.specbase.Class):
     class Publish(pika.specbase.Method):
         INDEX = 0x003C0028 ## 60, 40; 3932200
         NAME = 'Basic.Publish'
-        def __init__(self, deprecated_ticket = 1, exchange = '', routing_key = None, mandatory = False, immediate = False):
+        def __init__(self, deprecated_ticket = 0, exchange = '', routing_key = '', mandatory = False, immediate = False):
             self.deprecated_ticket = deprecated_ticket
             self.exchange = exchange
             self.routing_key = routing_key
@@ -1092,7 +1092,7 @@ class Basic(pika.specbase.Class):
     class Get(pika.specbase.Method):
         INDEX = 0x003C0046 ## 60, 70; 3932230
         NAME = 'Basic.Get'
-        def __init__(self, deprecated_ticket = 1, queue = None, no_ack = False):
+        def __init__(self, deprecated_ticket = 0, queue = None, no_ack = False):
             self.deprecated_ticket = deprecated_ticket
             self.queue = queue
             self.no_ack = no_ack
@@ -1182,7 +1182,7 @@ class Basic(pika.specbase.Class):
     class Ack(pika.specbase.Method):
         INDEX = 0x003C0050 ## 60, 80; 3932240
         NAME = 'Basic.Ack'
-        def __init__(self, delivery_tag = 0, multiple = True):
+        def __init__(self, delivery_tag = 0, multiple = False):
             self.delivery_tag = delivery_tag
             self.multiple = multiple
 
@@ -1619,31 +1619,31 @@ def has_content(methodNumber):
     return False
 
 class DriverMixin:
-    def exchange_declare(self, deprecated_ticket = 1, exchange = None, type = 'direct', passive = False, durable = False, deprecated_auto_delete = False, deprecated_internal = False, nowait = False, arguments = {}):
+    def exchange_declare(self, deprecated_ticket = 0, exchange = None, type = 'direct', passive = False, durable = False, deprecated_auto_delete = False, deprecated_internal = False, nowait = False, arguments = {}):
         return self.handler._rpc(Exchange.Declare(deprecated_ticket = deprecated_ticket, exchange = exchange, type = type, passive = passive, durable = durable, deprecated_auto_delete = deprecated_auto_delete, deprecated_internal = deprecated_internal, nowait = nowait, arguments = arguments),
                                  [Exchange.DeclareOk])
 
-    def exchange_delete(self, deprecated_ticket = 1, exchange = None, if_unused = False, nowait = False):
+    def exchange_delete(self, deprecated_ticket = 0, exchange = None, if_unused = False, nowait = False):
         return self.handler._rpc(Exchange.Delete(deprecated_ticket = deprecated_ticket, exchange = exchange, if_unused = if_unused, nowait = nowait),
                                  [Exchange.DeleteOk])
 
-    def queue_declare(self, deprecated_ticket = 1, queue = '', passive = False, durable = False, exclusive = False, auto_delete = False, nowait = False, arguments = {}):
+    def queue_declare(self, deprecated_ticket = 0, queue = '', passive = False, durable = False, exclusive = False, auto_delete = False, nowait = False, arguments = {}):
         return self.handler._rpc(Queue.Declare(deprecated_ticket = deprecated_ticket, queue = queue, passive = passive, durable = durable, exclusive = exclusive, auto_delete = auto_delete, nowait = nowait, arguments = arguments),
                                  [Queue.DeclareOk])
 
-    def queue_bind(self, deprecated_ticket = 1, queue = None, exchange = None, routing_key = None, nowait = False, arguments = {}):
+    def queue_bind(self, deprecated_ticket = 0, queue = None, exchange = None, routing_key = '', nowait = False, arguments = {}):
         return self.handler._rpc(Queue.Bind(deprecated_ticket = deprecated_ticket, queue = queue, exchange = exchange, routing_key = routing_key, nowait = nowait, arguments = arguments),
                                  [Queue.BindOk])
 
-    def queue_purge(self, deprecated_ticket = 1, queue = None, nowait = False):
+    def queue_purge(self, deprecated_ticket = 0, queue = None, nowait = False):
         return self.handler._rpc(Queue.Purge(deprecated_ticket = deprecated_ticket, queue = queue, nowait = nowait),
                                  [Queue.PurgeOk])
 
-    def queue_delete(self, deprecated_ticket = 1, queue = None, if_unused = False, if_empty = False, nowait = False):
+    def queue_delete(self, deprecated_ticket = 0, queue = None, if_unused = False, if_empty = False, nowait = False):
         return self.handler._rpc(Queue.Delete(deprecated_ticket = deprecated_ticket, queue = queue, if_unused = if_unused, if_empty = if_empty, nowait = nowait),
                                  [Queue.DeleteOk])
 
-    def queue_unbind(self, deprecated_ticket = 1, queue = None, exchange = None, routing_key = None, arguments = None):
+    def queue_unbind(self, deprecated_ticket = 0, queue = None, exchange = None, routing_key = '', arguments = {}):
         return self.handler._rpc(Queue.Unbind(deprecated_ticket = deprecated_ticket, queue = queue, exchange = exchange, routing_key = routing_key, arguments = arguments),
                                  [Queue.UnbindOk])
 
@@ -1651,11 +1651,11 @@ class DriverMixin:
         return self.handler._rpc(Basic.Qos(prefetch_size = prefetch_size, prefetch_count = prefetch_count, global_ = global_),
                                  [Basic.QosOk])
 
-    def basic_get(self, deprecated_ticket = 1, queue = None, no_ack = False):
+    def basic_get(self, deprecated_ticket = 0, queue = None, no_ack = False):
         return self.handler._rpc(Basic.Get(deprecated_ticket = deprecated_ticket, queue = queue, no_ack = no_ack),
                                  [Basic.GetOk, Basic.GetEmpty])
 
-    def basic_ack(self, delivery_tag = 0, multiple = True):
+    def basic_ack(self, delivery_tag = 0, multiple = False):
         return self.handler._rpc(Basic.Ack(delivery_tag = delivery_tag, multiple = multiple),
                                  [])
 
@@ -1663,9 +1663,13 @@ class DriverMixin:
         return self.handler._rpc(Basic.Reject(delivery_tag = delivery_tag, requeue = requeue),
                                  [])
 
+    def basic_recover_async(self, requeue = False):
+        return self.handler._rpc(Basic.RecoverAsync(requeue = requeue),
+                                 [])
+
     def basic_recover(self, requeue = False):
         return self.handler._rpc(Basic.Recover(requeue = requeue),
-                                 [])
+                                 [Basic.RecoverOk])
 
     def tx_select(self):
         return self.handler._rpc(Tx.Select(),
