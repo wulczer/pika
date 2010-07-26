@@ -199,10 +199,10 @@ class Connection(pika.specbase.Class):
     class Open(pika.specbase.Method):
         INDEX = 0x000A0028 ## 10, 40; 655400
         NAME = 'Connection.Open'
-        def __init__(self, virtual_host = '/', deprecated_capabilities = '', deprecated_insist = False):
+        def __init__(self, virtual_host = '/', capabilities = '', insist = False):
             self.virtual_host = virtual_host
-            self.deprecated_capabilities = deprecated_capabilities
-            self.deprecated_insist = deprecated_insist
+            self.capabilities = capabilities
+            self.insist = insist
 
         def decode(self, encoded, offset = 0):
             length = struct.unpack_from('B', encoded, offset)[0]
@@ -211,41 +211,41 @@ class Connection(pika.specbase.Class):
             offset = offset + length
             length = struct.unpack_from('B', encoded, offset)[0]
             offset = offset + 1
-            self.deprecated_capabilities = encoded[offset : offset + length]
+            self.capabilities = encoded[offset : offset + length]
             offset = offset + length
             bit_buffer = struct.unpack_from('B', encoded, offset)[0]
             offset = offset + 1
-            self.deprecated_insist = (bit_buffer & (1 << 0)) != 0
+            self.insist = (bit_buffer & (1 << 0)) != 0
             return self
 
         def encode(self):
             pieces = []
             pieces.append(struct.pack('B', len(self.virtual_host)))
             pieces.append(self.virtual_host)
-            pieces.append(struct.pack('B', len(self.deprecated_capabilities)))
-            pieces.append(self.deprecated_capabilities)
+            pieces.append(struct.pack('B', len(self.capabilities)))
+            pieces.append(self.capabilities)
             bit_buffer = 0;
-            if self.deprecated_insist: bit_buffer = bit_buffer | (1 << 0)
+            if self.insist: bit_buffer = bit_buffer | (1 << 0)
             pieces.append(struct.pack('B', bit_buffer))
             return pieces
 
     class OpenOk(pika.specbase.Method):
         INDEX = 0x000A0029 ## 10, 41; 655401
         NAME = 'Connection.OpenOk'
-        def __init__(self, deprecated_known_hosts = ''):
-            self.deprecated_known_hosts = deprecated_known_hosts
+        def __init__(self, known_hosts = ''):
+            self.known_hosts = known_hosts
 
         def decode(self, encoded, offset = 0):
             length = struct.unpack_from('B', encoded, offset)[0]
             offset = offset + 1
-            self.deprecated_known_hosts = encoded[offset : offset + length]
+            self.known_hosts = encoded[offset : offset + length]
             offset = offset + length
             return self
 
         def encode(self):
             pieces = []
-            pieces.append(struct.pack('B', len(self.deprecated_known_hosts)))
-            pieces.append(self.deprecated_known_hosts)
+            pieces.append(struct.pack('B', len(self.known_hosts)))
+            pieces.append(self.known_hosts)
             return pieces
 
     class Close(pika.specbase.Method):
@@ -298,39 +298,39 @@ class Channel(pika.specbase.Class):
     class Open(pika.specbase.Method):
         INDEX = 0x0014000A ## 20, 10; 1310730
         NAME = 'Channel.Open'
-        def __init__(self, deprecated_out_of_band = ''):
-            self.deprecated_out_of_band = deprecated_out_of_band
+        def __init__(self, out_of_band = ''):
+            self.out_of_band = out_of_band
 
         def decode(self, encoded, offset = 0):
             length = struct.unpack_from('B', encoded, offset)[0]
             offset = offset + 1
-            self.deprecated_out_of_band = encoded[offset : offset + length]
+            self.out_of_band = encoded[offset : offset + length]
             offset = offset + length
             return self
 
         def encode(self):
             pieces = []
-            pieces.append(struct.pack('B', len(self.deprecated_out_of_band)))
-            pieces.append(self.deprecated_out_of_band)
+            pieces.append(struct.pack('B', len(self.out_of_band)))
+            pieces.append(self.out_of_band)
             return pieces
 
     class OpenOk(pika.specbase.Method):
         INDEX = 0x0014000B ## 20, 11; 1310731
         NAME = 'Channel.OpenOk'
-        def __init__(self, deprecated_channel_id = ''):
-            self.deprecated_channel_id = deprecated_channel_id
+        def __init__(self, channel_id = ''):
+            self.channel_id = channel_id
 
         def decode(self, encoded, offset = 0):
             length = struct.unpack_from('>I', encoded, offset)[0]
             offset = offset + 4
-            self.deprecated_channel_id = encoded[offset : offset + length]
+            self.channel_id = encoded[offset : offset + length]
             offset = offset + length
             return self
 
         def encode(self):
             pieces = []
-            pieces.append(struct.pack('>I', len(self.deprecated_channel_id)))
-            pieces.append(self.deprecated_channel_id)
+            pieces.append(struct.pack('>I', len(self.channel_id)))
+            pieces.append(self.channel_id)
             return pieces
 
     class Flow(pika.specbase.Method):
@@ -414,6 +414,64 @@ class Channel(pika.specbase.Class):
             pieces = []
             return pieces
 
+class Access(pika.specbase.Class):
+    INDEX = 0x001E ## 30
+    NAME = 'Access'
+
+    class Request(pika.specbase.Method):
+        INDEX = 0x001E000A ## 30, 10; 1966090
+        NAME = 'Access.Request'
+        def __init__(self, realm = '/data', exclusive = False, passive = True, active = True, write = True, read = True):
+            self.realm = realm
+            self.exclusive = exclusive
+            self.passive = passive
+            self.active = active
+            self.write = write
+            self.read = read
+
+        def decode(self, encoded, offset = 0):
+            length = struct.unpack_from('B', encoded, offset)[0]
+            offset = offset + 1
+            self.realm = encoded[offset : offset + length]
+            offset = offset + length
+            bit_buffer = struct.unpack_from('B', encoded, offset)[0]
+            offset = offset + 1
+            self.exclusive = (bit_buffer & (1 << 0)) != 0
+            self.passive = (bit_buffer & (1 << 1)) != 0
+            self.active = (bit_buffer & (1 << 2)) != 0
+            self.write = (bit_buffer & (1 << 3)) != 0
+            self.read = (bit_buffer & (1 << 4)) != 0
+            return self
+
+        def encode(self):
+            pieces = []
+            pieces.append(struct.pack('B', len(self.realm)))
+            pieces.append(self.realm)
+            bit_buffer = 0;
+            if self.exclusive: bit_buffer = bit_buffer | (1 << 0)
+            if self.passive: bit_buffer = bit_buffer | (1 << 1)
+            if self.active: bit_buffer = bit_buffer | (1 << 2)
+            if self.write: bit_buffer = bit_buffer | (1 << 3)
+            if self.read: bit_buffer = bit_buffer | (1 << 4)
+            pieces.append(struct.pack('B', bit_buffer))
+            return pieces
+
+    class RequestOk(pika.specbase.Method):
+        INDEX = 0x001E000B ## 30, 11; 1966091
+        NAME = 'Access.RequestOk'
+        def __init__(self, ticket = 1):
+            self.ticket = ticket
+
+        def decode(self, encoded, offset = 0):
+            self.ticket = struct.unpack_from('>H', encoded, offset)[0]
+            offset = offset + 2
+            return self
+
+        def encode(self):
+            pieces = []
+            pieces.append(struct.pack('>H', self.ticket))
+            return pieces
+
 class Exchange(pika.specbase.Class):
     INDEX = 0x0028 ## 40
     NAME = 'Exchange'
@@ -421,19 +479,19 @@ class Exchange(pika.specbase.Class):
     class Declare(pika.specbase.Method):
         INDEX = 0x0028000A ## 40, 10; 2621450
         NAME = 'Exchange.Declare'
-        def __init__(self, deprecated_ticket = 0, exchange = None, type = 'direct', passive = False, durable = False, deprecated_auto_delete = False, deprecated_internal = False, nowait = False, arguments = {}):
-            self.deprecated_ticket = deprecated_ticket
+        def __init__(self, ticket = 0, exchange = None, type = 'direct', passive = False, durable = False, auto_delete = False, internal = False, nowait = False, arguments = {}):
+            self.ticket = ticket
             self.exchange = exchange
             self.type = type
             self.passive = passive
             self.durable = durable
-            self.deprecated_auto_delete = deprecated_auto_delete
-            self.deprecated_internal = deprecated_internal
+            self.auto_delete = auto_delete
+            self.internal = internal
             self.nowait = nowait
             self.arguments = arguments
 
         def decode(self, encoded, offset = 0):
-            self.deprecated_ticket = struct.unpack_from('>H', encoded, offset)[0]
+            self.ticket = struct.unpack_from('>H', encoded, offset)[0]
             offset = offset + 2
             length = struct.unpack_from('B', encoded, offset)[0]
             offset = offset + 1
@@ -447,15 +505,15 @@ class Exchange(pika.specbase.Class):
             offset = offset + 1
             self.passive = (bit_buffer & (1 << 0)) != 0
             self.durable = (bit_buffer & (1 << 1)) != 0
-            self.deprecated_auto_delete = (bit_buffer & (1 << 2)) != 0
-            self.deprecated_internal = (bit_buffer & (1 << 3)) != 0
+            self.auto_delete = (bit_buffer & (1 << 2)) != 0
+            self.internal = (bit_buffer & (1 << 3)) != 0
             self.nowait = (bit_buffer & (1 << 4)) != 0
             (self.arguments, offset) = pika.table.decode_table(encoded, offset)
             return self
 
         def encode(self):
             pieces = []
-            pieces.append(struct.pack('>H', self.deprecated_ticket))
+            pieces.append(struct.pack('>H', self.ticket))
             pieces.append(struct.pack('B', len(self.exchange)))
             pieces.append(self.exchange)
             pieces.append(struct.pack('B', len(self.type)))
@@ -463,8 +521,8 @@ class Exchange(pika.specbase.Class):
             bit_buffer = 0;
             if self.passive: bit_buffer = bit_buffer | (1 << 0)
             if self.durable: bit_buffer = bit_buffer | (1 << 1)
-            if self.deprecated_auto_delete: bit_buffer = bit_buffer | (1 << 2)
-            if self.deprecated_internal: bit_buffer = bit_buffer | (1 << 3)
+            if self.auto_delete: bit_buffer = bit_buffer | (1 << 2)
+            if self.internal: bit_buffer = bit_buffer | (1 << 3)
             if self.nowait: bit_buffer = bit_buffer | (1 << 4)
             pieces.append(struct.pack('B', bit_buffer))
             pika.table.encode_table(pieces, self.arguments)
@@ -485,14 +543,14 @@ class Exchange(pika.specbase.Class):
     class Delete(pika.specbase.Method):
         INDEX = 0x00280014 ## 40, 20; 2621460
         NAME = 'Exchange.Delete'
-        def __init__(self, deprecated_ticket = 0, exchange = None, if_unused = False, nowait = False):
-            self.deprecated_ticket = deprecated_ticket
+        def __init__(self, ticket = 0, exchange = None, if_unused = False, nowait = False):
+            self.ticket = ticket
             self.exchange = exchange
             self.if_unused = if_unused
             self.nowait = nowait
 
         def decode(self, encoded, offset = 0):
-            self.deprecated_ticket = struct.unpack_from('>H', encoded, offset)[0]
+            self.ticket = struct.unpack_from('>H', encoded, offset)[0]
             offset = offset + 2
             length = struct.unpack_from('B', encoded, offset)[0]
             offset = offset + 1
@@ -506,7 +564,7 @@ class Exchange(pika.specbase.Class):
 
         def encode(self):
             pieces = []
-            pieces.append(struct.pack('>H', self.deprecated_ticket))
+            pieces.append(struct.pack('>H', self.ticket))
             pieces.append(struct.pack('B', len(self.exchange)))
             pieces.append(self.exchange)
             bit_buffer = 0;
@@ -534,8 +592,8 @@ class Queue(pika.specbase.Class):
     class Declare(pika.specbase.Method):
         INDEX = 0x0032000A ## 50, 10; 3276810
         NAME = 'Queue.Declare'
-        def __init__(self, deprecated_ticket = 0, queue = '', passive = False, durable = False, exclusive = False, auto_delete = False, nowait = False, arguments = {}):
-            self.deprecated_ticket = deprecated_ticket
+        def __init__(self, ticket = 0, queue = '', passive = False, durable = False, exclusive = False, auto_delete = False, nowait = False, arguments = {}):
+            self.ticket = ticket
             self.queue = queue
             self.passive = passive
             self.durable = durable
@@ -545,7 +603,7 @@ class Queue(pika.specbase.Class):
             self.arguments = arguments
 
         def decode(self, encoded, offset = 0):
-            self.deprecated_ticket = struct.unpack_from('>H', encoded, offset)[0]
+            self.ticket = struct.unpack_from('>H', encoded, offset)[0]
             offset = offset + 2
             length = struct.unpack_from('B', encoded, offset)[0]
             offset = offset + 1
@@ -563,7 +621,7 @@ class Queue(pika.specbase.Class):
 
         def encode(self):
             pieces = []
-            pieces.append(struct.pack('>H', self.deprecated_ticket))
+            pieces.append(struct.pack('>H', self.ticket))
             pieces.append(struct.pack('B', len(self.queue)))
             pieces.append(self.queue)
             bit_buffer = 0;
@@ -606,8 +664,8 @@ class Queue(pika.specbase.Class):
     class Bind(pika.specbase.Method):
         INDEX = 0x00320014 ## 50, 20; 3276820
         NAME = 'Queue.Bind'
-        def __init__(self, deprecated_ticket = 0, queue = None, exchange = None, routing_key = '', nowait = False, arguments = {}):
-            self.deprecated_ticket = deprecated_ticket
+        def __init__(self, ticket = 0, queue = None, exchange = None, routing_key = '', nowait = False, arguments = {}):
+            self.ticket = ticket
             self.queue = queue
             self.exchange = exchange
             self.routing_key = routing_key
@@ -615,7 +673,7 @@ class Queue(pika.specbase.Class):
             self.arguments = arguments
 
         def decode(self, encoded, offset = 0):
-            self.deprecated_ticket = struct.unpack_from('>H', encoded, offset)[0]
+            self.ticket = struct.unpack_from('>H', encoded, offset)[0]
             offset = offset + 2
             length = struct.unpack_from('B', encoded, offset)[0]
             offset = offset + 1
@@ -637,7 +695,7 @@ class Queue(pika.specbase.Class):
 
         def encode(self):
             pieces = []
-            pieces.append(struct.pack('>H', self.deprecated_ticket))
+            pieces.append(struct.pack('>H', self.ticket))
             pieces.append(struct.pack('B', len(self.queue)))
             pieces.append(self.queue)
             pieces.append(struct.pack('B', len(self.exchange)))
@@ -665,13 +723,13 @@ class Queue(pika.specbase.Class):
     class Purge(pika.specbase.Method):
         INDEX = 0x0032001E ## 50, 30; 3276830
         NAME = 'Queue.Purge'
-        def __init__(self, deprecated_ticket = 0, queue = None, nowait = False):
-            self.deprecated_ticket = deprecated_ticket
+        def __init__(self, ticket = 0, queue = None, nowait = False):
+            self.ticket = ticket
             self.queue = queue
             self.nowait = nowait
 
         def decode(self, encoded, offset = 0):
-            self.deprecated_ticket = struct.unpack_from('>H', encoded, offset)[0]
+            self.ticket = struct.unpack_from('>H', encoded, offset)[0]
             offset = offset + 2
             length = struct.unpack_from('B', encoded, offset)[0]
             offset = offset + 1
@@ -684,7 +742,7 @@ class Queue(pika.specbase.Class):
 
         def encode(self):
             pieces = []
-            pieces.append(struct.pack('>H', self.deprecated_ticket))
+            pieces.append(struct.pack('>H', self.ticket))
             pieces.append(struct.pack('B', len(self.queue)))
             pieces.append(self.queue)
             bit_buffer = 0;
@@ -711,15 +769,15 @@ class Queue(pika.specbase.Class):
     class Delete(pika.specbase.Method):
         INDEX = 0x00320028 ## 50, 40; 3276840
         NAME = 'Queue.Delete'
-        def __init__(self, deprecated_ticket = 0, queue = None, if_unused = False, if_empty = False, nowait = False):
-            self.deprecated_ticket = deprecated_ticket
+        def __init__(self, ticket = 0, queue = None, if_unused = False, if_empty = False, nowait = False):
+            self.ticket = ticket
             self.queue = queue
             self.if_unused = if_unused
             self.if_empty = if_empty
             self.nowait = nowait
 
         def decode(self, encoded, offset = 0):
-            self.deprecated_ticket = struct.unpack_from('>H', encoded, offset)[0]
+            self.ticket = struct.unpack_from('>H', encoded, offset)[0]
             offset = offset + 2
             length = struct.unpack_from('B', encoded, offset)[0]
             offset = offset + 1
@@ -734,7 +792,7 @@ class Queue(pika.specbase.Class):
 
         def encode(self):
             pieces = []
-            pieces.append(struct.pack('>H', self.deprecated_ticket))
+            pieces.append(struct.pack('>H', self.ticket))
             pieces.append(struct.pack('B', len(self.queue)))
             pieces.append(self.queue)
             bit_buffer = 0;
@@ -763,15 +821,15 @@ class Queue(pika.specbase.Class):
     class Unbind(pika.specbase.Method):
         INDEX = 0x00320032 ## 50, 50; 3276850
         NAME = 'Queue.Unbind'
-        def __init__(self, deprecated_ticket = 0, queue = None, exchange = None, routing_key = '', arguments = {}):
-            self.deprecated_ticket = deprecated_ticket
+        def __init__(self, ticket = 0, queue = None, exchange = None, routing_key = '', arguments = {}):
+            self.ticket = ticket
             self.queue = queue
             self.exchange = exchange
             self.routing_key = routing_key
             self.arguments = arguments
 
         def decode(self, encoded, offset = 0):
-            self.deprecated_ticket = struct.unpack_from('>H', encoded, offset)[0]
+            self.ticket = struct.unpack_from('>H', encoded, offset)[0]
             offset = offset + 2
             length = struct.unpack_from('B', encoded, offset)[0]
             offset = offset + 1
@@ -790,7 +848,7 @@ class Queue(pika.specbase.Class):
 
         def encode(self):
             pieces = []
-            pieces.append(struct.pack('>H', self.deprecated_ticket))
+            pieces.append(struct.pack('>H', self.ticket))
             pieces.append(struct.pack('B', len(self.queue)))
             pieces.append(self.queue)
             pieces.append(struct.pack('B', len(self.exchange)))
@@ -858,8 +916,8 @@ class Basic(pika.specbase.Class):
     class Consume(pika.specbase.Method):
         INDEX = 0x003C0014 ## 60, 20; 3932180
         NAME = 'Basic.Consume'
-        def __init__(self, deprecated_ticket = 0, queue = None, consumer_tag = '', no_local = False, no_ack = False, exclusive = False, nowait = False, filter = {}):
-            self.deprecated_ticket = deprecated_ticket
+        def __init__(self, ticket = 0, queue = None, consumer_tag = '', no_local = False, no_ack = False, exclusive = False, nowait = False, filter = {}):
+            self.ticket = ticket
             self.queue = queue
             self.consumer_tag = consumer_tag
             self.no_local = no_local
@@ -869,7 +927,7 @@ class Basic(pika.specbase.Class):
             self.filter = filter
 
         def decode(self, encoded, offset = 0):
-            self.deprecated_ticket = struct.unpack_from('>H', encoded, offset)[0]
+            self.ticket = struct.unpack_from('>H', encoded, offset)[0]
             offset = offset + 2
             length = struct.unpack_from('B', encoded, offset)[0]
             offset = offset + 1
@@ -890,7 +948,7 @@ class Basic(pika.specbase.Class):
 
         def encode(self):
             pieces = []
-            pieces.append(struct.pack('>H', self.deprecated_ticket))
+            pieces.append(struct.pack('>H', self.ticket))
             pieces.append(struct.pack('B', len(self.queue)))
             pieces.append(self.queue)
             pieces.append(struct.pack('B', len(self.consumer_tag)))
@@ -971,15 +1029,15 @@ class Basic(pika.specbase.Class):
     class Publish(pika.specbase.Method):
         INDEX = 0x003C0028 ## 60, 40; 3932200
         NAME = 'Basic.Publish'
-        def __init__(self, deprecated_ticket = 0, exchange = '', routing_key = '', mandatory = False, immediate = False):
-            self.deprecated_ticket = deprecated_ticket
+        def __init__(self, ticket = 0, exchange = '', routing_key = '', mandatory = False, immediate = False):
+            self.ticket = ticket
             self.exchange = exchange
             self.routing_key = routing_key
             self.mandatory = mandatory
             self.immediate = immediate
 
         def decode(self, encoded, offset = 0):
-            self.deprecated_ticket = struct.unpack_from('>H', encoded, offset)[0]
+            self.ticket = struct.unpack_from('>H', encoded, offset)[0]
             offset = offset + 2
             length = struct.unpack_from('B', encoded, offset)[0]
             offset = offset + 1
@@ -997,7 +1055,7 @@ class Basic(pika.specbase.Class):
 
         def encode(self):
             pieces = []
-            pieces.append(struct.pack('>H', self.deprecated_ticket))
+            pieces.append(struct.pack('>H', self.ticket))
             pieces.append(struct.pack('B', len(self.exchange)))
             pieces.append(self.exchange)
             pieces.append(struct.pack('B', len(self.routing_key)))
@@ -1092,13 +1150,13 @@ class Basic(pika.specbase.Class):
     class Get(pika.specbase.Method):
         INDEX = 0x003C0046 ## 60, 70; 3932230
         NAME = 'Basic.Get'
-        def __init__(self, deprecated_ticket = 0, queue = None, no_ack = False):
-            self.deprecated_ticket = deprecated_ticket
+        def __init__(self, ticket = 0, queue = None, no_ack = False):
+            self.ticket = ticket
             self.queue = queue
             self.no_ack = no_ack
 
         def decode(self, encoded, offset = 0):
-            self.deprecated_ticket = struct.unpack_from('>H', encoded, offset)[0]
+            self.ticket = struct.unpack_from('>H', encoded, offset)[0]
             offset = offset + 2
             length = struct.unpack_from('B', encoded, offset)[0]
             offset = offset + 1
@@ -1111,7 +1169,7 @@ class Basic(pika.specbase.Class):
 
         def encode(self):
             pieces = []
-            pieces.append(struct.pack('>H', self.deprecated_ticket))
+            pieces.append(struct.pack('>H', self.ticket))
             pieces.append(struct.pack('B', len(self.queue)))
             pieces.append(self.queue)
             bit_buffer = 0;
@@ -1163,20 +1221,20 @@ class Basic(pika.specbase.Class):
     class GetEmpty(pika.specbase.Method):
         INDEX = 0x003C0048 ## 60, 72; 3932232
         NAME = 'Basic.GetEmpty'
-        def __init__(self, deprecated_cluster_id = ''):
-            self.deprecated_cluster_id = deprecated_cluster_id
+        def __init__(self, cluster_id = ''):
+            self.cluster_id = cluster_id
 
         def decode(self, encoded, offset = 0):
             length = struct.unpack_from('B', encoded, offset)[0]
             offset = offset + 1
-            self.deprecated_cluster_id = encoded[offset : offset + length]
+            self.cluster_id = encoded[offset : offset + length]
             offset = offset + length
             return self
 
         def encode(self):
             pieces = []
-            pieces.append(struct.pack('B', len(self.deprecated_cluster_id)))
-            pieces.append(self.deprecated_cluster_id)
+            pieces.append(struct.pack('B', len(self.cluster_id)))
+            pieces.append(self.cluster_id)
             return pieces
 
     class Ack(pika.specbase.Method):
@@ -1368,9 +1426,9 @@ class BasicProperties(pika.specbase.Properties):
     FLAG_TYPE = (1 << 5)
     FLAG_USER_ID = (1 << 4)
     FLAG_APP_ID = (1 << 3)
-    FLAG_DEPRECATED_CLUSTER_ID = (1 << 2)
+    FLAG_CLUSTER_ID = (1 << 2)
 
-    def __init__(self, content_type = None, content_encoding = None, headers = None, delivery_mode = None, priority = None, correlation_id = None, reply_to = None, expiration = None, message_id = None, timestamp = None, type = None, user_id = None, app_id = None, deprecated_cluster_id = None):
+    def __init__(self, content_type = None, content_encoding = None, headers = None, delivery_mode = None, priority = None, correlation_id = None, reply_to = None, expiration = None, message_id = None, timestamp = None, type = None, user_id = None, app_id = None, cluster_id = None):
         self.content_type = content_type
         self.content_encoding = content_encoding
         self.headers = headers
@@ -1384,7 +1442,7 @@ class BasicProperties(pika.specbase.Properties):
         self.type = type
         self.user_id = user_id
         self.app_id = app_id
-        self.deprecated_cluster_id = deprecated_cluster_id
+        self.cluster_id = cluster_id
 
     def decode(self, encoded, offset = 0):
         flags = 0
@@ -1477,13 +1535,13 @@ class BasicProperties(pika.specbase.Properties):
             offset = offset + length
         else:
             self.app_id = None
-        if (flags & BasicProperties.FLAG_DEPRECATED_CLUSTER_ID):
+        if (flags & BasicProperties.FLAG_CLUSTER_ID):
             length = struct.unpack_from('B', encoded, offset)[0]
             offset = offset + 1
-            self.deprecated_cluster_id = encoded[offset : offset + length]
+            self.cluster_id = encoded[offset : offset + length]
             offset = offset + length
         else:
-            self.deprecated_cluster_id = None
+            self.cluster_id = None
         return self
 
     def encode(self):
@@ -1537,10 +1595,10 @@ class BasicProperties(pika.specbase.Properties):
             flags = flags | BasicProperties.FLAG_APP_ID
             pieces.append(struct.pack('B', len(self.app_id)))
             pieces.append(self.app_id)
-        if self.deprecated_cluster_id is not None:
-            flags = flags | BasicProperties.FLAG_DEPRECATED_CLUSTER_ID
-            pieces.append(struct.pack('B', len(self.deprecated_cluster_id)))
-            pieces.append(self.deprecated_cluster_id)
+        if self.cluster_id is not None:
+            flags = flags | BasicProperties.FLAG_CLUSTER_ID
+            pieces.append(struct.pack('B', len(self.cluster_id)))
+            pieces.append(self.cluster_id)
         flag_pieces = []
         while True:
             remainder = flags >> 16
@@ -1568,6 +1626,8 @@ methods = {
     0x00140015: Channel.FlowOk,
     0x00140028: Channel.Close,
     0x00140029: Channel.CloseOk,
+    0x001E000A: Access.Request,
+    0x001E000B: Access.RequestOk,
     0x0028000A: Exchange.Declare,
     0x0028000B: Exchange.DeclareOk,
     0x00280014: Exchange.Delete,
@@ -1619,40 +1679,40 @@ def has_content(methodNumber):
     return False
 
 class DriverMixin:
-    def exchange_declare(self, deprecated_ticket = 0, exchange = None, type = 'direct', passive = False, durable = False, deprecated_auto_delete = False, deprecated_internal = False, nowait = False, arguments = {}):
-        return self.handler._rpc(Exchange.Declare(deprecated_ticket = deprecated_ticket, exchange = exchange, type = type, passive = passive, durable = durable, deprecated_auto_delete = deprecated_auto_delete, deprecated_internal = deprecated_internal, nowait = nowait, arguments = arguments),
+    def exchange_declare(self, ticket = 0, exchange = None, type = 'direct', passive = False, durable = False, auto_delete = False, internal = False, nowait = False, arguments = {}):
+        return self.handler._rpc(Exchange.Declare(ticket = ticket, exchange = exchange, type = type, passive = passive, durable = durable, auto_delete = auto_delete, internal = internal, nowait = nowait, arguments = arguments),
                                  [Exchange.DeclareOk])
 
-    def exchange_delete(self, deprecated_ticket = 0, exchange = None, if_unused = False, nowait = False):
-        return self.handler._rpc(Exchange.Delete(deprecated_ticket = deprecated_ticket, exchange = exchange, if_unused = if_unused, nowait = nowait),
+    def exchange_delete(self, ticket = 0, exchange = None, if_unused = False, nowait = False):
+        return self.handler._rpc(Exchange.Delete(ticket = ticket, exchange = exchange, if_unused = if_unused, nowait = nowait),
                                  [Exchange.DeleteOk])
 
-    def queue_declare(self, deprecated_ticket = 0, queue = '', passive = False, durable = False, exclusive = False, auto_delete = False, nowait = False, arguments = {}):
-        return self.handler._rpc(Queue.Declare(deprecated_ticket = deprecated_ticket, queue = queue, passive = passive, durable = durable, exclusive = exclusive, auto_delete = auto_delete, nowait = nowait, arguments = arguments),
+    def queue_declare(self, ticket = 0, queue = '', passive = False, durable = False, exclusive = False, auto_delete = False, nowait = False, arguments = {}):
+        return self.handler._rpc(Queue.Declare(ticket = ticket, queue = queue, passive = passive, durable = durable, exclusive = exclusive, auto_delete = auto_delete, nowait = nowait, arguments = arguments),
                                  [Queue.DeclareOk])
 
-    def queue_bind(self, deprecated_ticket = 0, queue = None, exchange = None, routing_key = '', nowait = False, arguments = {}):
-        return self.handler._rpc(Queue.Bind(deprecated_ticket = deprecated_ticket, queue = queue, exchange = exchange, routing_key = routing_key, nowait = nowait, arguments = arguments),
+    def queue_bind(self, ticket = 0, queue = None, exchange = None, routing_key = '', nowait = False, arguments = {}):
+        return self.handler._rpc(Queue.Bind(ticket = ticket, queue = queue, exchange = exchange, routing_key = routing_key, nowait = nowait, arguments = arguments),
                                  [Queue.BindOk])
 
-    def queue_purge(self, deprecated_ticket = 0, queue = None, nowait = False):
-        return self.handler._rpc(Queue.Purge(deprecated_ticket = deprecated_ticket, queue = queue, nowait = nowait),
+    def queue_purge(self, ticket = 0, queue = None, nowait = False):
+        return self.handler._rpc(Queue.Purge(ticket = ticket, queue = queue, nowait = nowait),
                                  [Queue.PurgeOk])
 
-    def queue_delete(self, deprecated_ticket = 0, queue = None, if_unused = False, if_empty = False, nowait = False):
-        return self.handler._rpc(Queue.Delete(deprecated_ticket = deprecated_ticket, queue = queue, if_unused = if_unused, if_empty = if_empty, nowait = nowait),
+    def queue_delete(self, ticket = 0, queue = None, if_unused = False, if_empty = False, nowait = False):
+        return self.handler._rpc(Queue.Delete(ticket = ticket, queue = queue, if_unused = if_unused, if_empty = if_empty, nowait = nowait),
                                  [Queue.DeleteOk])
 
-    def queue_unbind(self, deprecated_ticket = 0, queue = None, exchange = None, routing_key = '', arguments = {}):
-        return self.handler._rpc(Queue.Unbind(deprecated_ticket = deprecated_ticket, queue = queue, exchange = exchange, routing_key = routing_key, arguments = arguments),
+    def queue_unbind(self, ticket = 0, queue = None, exchange = None, routing_key = '', arguments = {}):
+        return self.handler._rpc(Queue.Unbind(ticket = ticket, queue = queue, exchange = exchange, routing_key = routing_key, arguments = arguments),
                                  [Queue.UnbindOk])
 
     def basic_qos(self, prefetch_size = 0, prefetch_count = 0, global_ = False):
         return self.handler._rpc(Basic.Qos(prefetch_size = prefetch_size, prefetch_count = prefetch_count, global_ = global_),
                                  [Basic.QosOk])
 
-    def basic_get(self, deprecated_ticket = 0, queue = None, no_ack = False):
-        return self.handler._rpc(Basic.Get(deprecated_ticket = deprecated_ticket, queue = queue, no_ack = no_ack),
+    def basic_get(self, ticket = 0, queue = None, no_ack = False):
+        return self.handler._rpc(Basic.Get(ticket = ticket, queue = queue, no_ack = no_ack),
                                  [Basic.GetOk, Basic.GetEmpty])
 
     def basic_ack(self, delivery_tag = 0, multiple = False):
