@@ -1,80 +1,164 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-
-	<title>tonyg/pika @ GitHub</title>
-	
-	<style type="text/css">
-		body {
-  		margin-top: 1.0em;
-  		background-color: #52a877;
-		  font-family: "Helvetica,Arial,FreeSans";
-  		color: #ffffff;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-		h1 { font-size: 3.8em; color: #ad5788; margin-bottom: 3px; }
-		h1 .small { font-size: 0.4em; }
-		h1 a { text-decoration: none }
-		h2 { font-size: 1.5em; color: #ad5788; }
-    h3 { text-align: center; color: #ad5788; }
-    a { color: #ad5788; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-		pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-	</style>
-	
-</head>
-
-<body>
-  <a href="http://github.com/tonyg/pika"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
-
-  <div id="container">
-
-    <div class="download">
-      <a href="http://github.com/tonyg/pika/zipball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
-      <a href="http://github.com/tonyg/pika/tarball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
-    </div>
-
-    <h1><a href="http://github.com/tonyg/pika">pika</a>
-      <span class="small">by <a href="http://github.com/tonyg">tonyg</a></span></h1>
-
-    <div class="description">
-      AMQP 0-9-1 client library for Python
-    </div>
-
-    <h2>Authors</h2>
-<p>Ask Solem (askh@opera.com)<br/>Marek Majkowski (majek04@gmail.com)<br/>Sigurd Høgsbro (sigurd.hogsbro@museeka.com)<br/>Tony Garnock-Jones (tonygarnockjones@gmail.com)<br/></p>
-<h2>Contact</h2>
-<p>Tony Garnock-Jones (tonygarnockjones@gmail.com)</p>
 
 
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="http://github.com/tonyg/pika/zipball/master">zip</a> or
-      <a href="http://github.com/tonyg/pika/tarball/master">tar</a> formats.
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction to Pika &mdash; Pika v0.9a documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.9a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Pika v0.9a documentation" href="#" />
+    <link rel="next" title="Connection Adapters" href="adapters.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="adapters.html" title="Connection Adapters"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">Pika v0.9a documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="introduction-to-pika">
+<h1>Introduction to Pika<a class="headerlink" href="#introduction-to-pika" title="Permalink to this headline">¶</a></h1>
+<p>Pika is a pure-Python implementation of the AMQP 0-9-1 protocol that tries to stay fairly independent of the underlying network support library.</p>
+<div class="section" id="using-this-documentation">
+<h2>Using this Documentation<a class="headerlink" href="#using-this-documentation" title="Permalink to this headline">¶</a></h2>
+<p>This documentation is a combination of both user documentation and module development documentation. Classes called out in the Using Pika section below will cover a majority of what users who are implementation pika in their applications will need.</p>
+</div>
+<div class="section" id="using-pika">
+<h2>Using Pika<a class="headerlink" href="#using-pika" title="Permalink to this headline">¶</a></h2>
+<p>Pika 0.9a is a major refactor of the Pika library implementing true asynchronous behavior at its core. It is important to understand asynchronous programming concepts to properly use Pika in your application. If you have previously used <a class="reference internal" href="channel.html#channel.Channel.basic_consume" title="channel.Channel.basic_consume"><tt class="xref py py-meth docutils literal"><span class="pre">basic_consume()</span></tt></a> in an application with Pika v0.5.2 or earlier, you have already implemented callback passing style asynchronous code with Pika.</p>
+<div class="section" id="adapters">
+<h3>Adapters<a class="headerlink" href="#adapters" title="Permalink to this headline">¶</a></h3>
+<p>Pika provides multiple adapters to connect to RabbitMQ:</p>
+<ul class="simple">
+<li><a class="reference internal" href="adapters.html#adapters.select_connection.SelectConnection" title="adapters.select_connection.SelectConnection"><tt class="xref py py-meth docutils literal"><span class="pre">SelectConnection()</span></tt></a>: A native event based connection adapter that implements select, kqueue, poll and epoll.</li>
+<li><a class="reference internal" href="adapters.html#adapters.asyncore_connection.AsyncoreConnection" title="adapters.asyncore_connection.AsyncoreConnection"><tt class="xref py py-meth docutils literal"><span class="pre">AsyncoreConnection()</span></tt></a>: Legacy adapter kept for convenience of previous Pika users. It is recommended to use the SelectConnection instead of AsyncoreConnection.</li>
+<li><a class="reference internal" href="adapters.html#adapters.tornado_connection.TornadoConnection" title="adapters.tornado_connection.TornadoConnection"><tt class="xref py py-meth docutils literal"><span class="pre">TornadoConnection()</span></tt></a>: Connection adapter for use with the Tornado IO Loop <a class="reference external" href="http://tornadoweb.org">http://tornadoweb.org</a></li>
+<li><a class="reference internal" href="adapters.html#adapters.blocking_connection.BlockingConnection" title="adapters.blocking_connection.BlockingConnection"><tt class="xref py py-meth docutils literal"><span class="pre">BlockingConnection()</span></tt></a>: Enables blocking, synchronous operation on top of library for simple uses. This is not recommended and is included for legacy reasons only.</li>
+</ul>
+<p>Choosing the right adapter for your project is important.</p>
+</div>
+<div class="section" id="channel">
+<h3>Channel<a class="headerlink" href="#channel" title="Permalink to this headline">¶</a></h3>
+<p>The core communication with Pika is coordinated via the channel.Channel class. Pika invokes this for you when you call the <tt class="xref py py-meth docutils literal"><span class="pre">channel()</span></tt> method.</p>
+</div>
+<div class="section" id="pika-core-objects">
+<h3>Pika Core Objects<a class="headerlink" href="#pika-core-objects" title="Permalink to this headline">¶</a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="adapters.html">Connection Adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="channel.html">Channel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connection.html">Connection</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h3>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction to Pika</a><ul>
+<li><a class="reference internal" href="#using-this-documentation">Using this Documentation</a></li>
+<li><a class="reference internal" href="#using-pika">Using Pika</a><ul>
+<li><a class="reference internal" href="#adapters">Adapters</a></li>
+<li><a class="reference internal" href="#channel">Channel</a></li>
+<li><a class="reference internal" href="#pika-core-objects">Pika Core Objects</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="adapters.html"
+                        title="next chapter">Connection Adapters</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
     </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/tonyg/pika</pre>
-    </p>
-
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="adapters.html" title="Connection Adapters"
+             >next</a> |</li>
+        <li><a href="#">Pika v0.9a documentation</a> &raquo;</li> 
+      </ul>
+    </div>
     <div class="footer">
-      get the source code on GitHub : <a href="http://github.com/tonyg/pika">tonyg/pika</a>
+        &copy; Copyright 2011, Tony Garnock-Jones, Gavin M. Roy and others.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
-
-  </div>
-
-  
-</body>
+  </body>
 </html>

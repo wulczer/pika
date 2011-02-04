@@ -1,0 +1,24 @@
+Connection Adapters
+===================
+
+Connection adapters provide the core communication structure for an AMQP connection.
+
+.. automodule:: adapters.select_connection
+.. autoclass:: SelectConnection
+   :members:
+   :inherited-members:
+
+.. automodule:: adapters.asyncore_connection
+.. autoclass:: AsyncoreConnection
+   :members:
+   :inherited-members:
+
+.. automodule:: adapters.tornado_connection
+.. autoclass:: TornadoConnection
+   :members:
+   :inherited-members:
+
+.. automodule:: adapters.blocking_connection
+.. autoclass:: BlockingConnection
+   :members:
+   :inherited-members:

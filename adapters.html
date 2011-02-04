@@ -1,0 +1,510 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Connection Adapters &mdash; Pika v0.9a documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.9a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Pika v0.9a documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Pika v0.9a documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="connection-adapters">
+<h1>Connection Adapters<a class="headerlink" href="#connection-adapters" title="Permalink to this headline">¶</a></h1>
+<p>Connection adapters provide the core communication structure for an AMQP connection.</p>
+<span class="target" id="module-adapters.select_connection"></span><dl class="class">
+<dt id="adapters.select_connection.SelectConnection">
+<em class="property">class </em><tt class="descclassname">adapters.select_connection.</tt><tt class="descname">SelectConnection</tt><big>(</big><em>parameters</em>, <em>on_open_callback</em>, <em>reconnection_strategy=None</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectConnection" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="adapters.select_connection.SelectConnection.add_backpressure_callback">
+<tt class="descname">add_backpressure_callback</tt><big>(</big><em>callback</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectConnection.add_backpressure_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a callback notification when we think backpressue is being applied
+due to the size of the output buffer being exceeded. We calculate this
+by figuring the average frame size and then checking to see if our
+backpressure multiplier * average frame size has been exceeded.
+You can change the backpressure multiplier by calling the
+set_backpressure_multiplier.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.select_connection.SelectConnection.add_on_close_callback">
+<tt class="descname">add_on_close_callback</tt><big>(</big><em>callback</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectConnection.add_on_close_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a callback notification when the connection has closed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.select_connection.SelectConnection.add_on_open_callback">
+<tt class="descname">add_on_open_callback</tt><big>(</big><em>callback</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectConnection.add_on_open_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a callback notification when the connection has closed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.select_connection.SelectConnection.channel">
+<tt class="descname">channel</tt><big>(</big><em>on_open_callback</em>, <em>channel_number=None</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectConnection.channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new channel with the next available or specified channel #</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.select_connection.SelectConnection.close">
+<tt class="descname">close</tt><big>(</big><em>code=200</em>, <em>text='Normal shutdown'</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectConnection.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main close function, will attempt to close the channels and if there
+are no channels left, will go straight to on_close_ready</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.select_connection.SelectConnection.connect">
+<tt class="descname">connect</tt><big>(</big><em>host</em>, <em>port</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectConnection.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to the given host and port</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.select_connection.SelectConnection.disconnect">
+<tt class="descname">disconnect</tt><big>(</big><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectConnection.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called if we are forced to disconnect for some reason from Connection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.select_connection.SelectConnection.flush_outbound">
+<tt class="descname">flush_outbound</tt><big>(</big><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectConnection.flush_outbound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the state manager who will figure out that we need to write then
+call the poller&#8217;s poll function to force it to process events.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="adapters.select_connection.SelectConnection.is_open">
+<tt class="descname">is_open</tt><a class="headerlink" href="#adapters.select_connection.SelectConnection.is_open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a boolean reporting the current connection state</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.select_connection.SelectConnection.on_data_available">
+<tt class="descname">on_data_available</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectConnection.on_data_available" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is called by our Adapter, passing in the data from the socket
+As long as we have buffer try and map out frame data</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.select_connection.SelectConnection.reconnect">
+<tt class="descname">reconnect</tt><big>(</big><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectConnection.reconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by the Reconnection Strategy classes or Adapters to disconnect
+and reconnect to the broker</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.select_connection.SelectConnection.rpc">
+<tt class="descname">rpc</tt><big>(</big><em>channel_number</em>, <em>method</em>, <em>callback=None</em>, <em>acceptable_replies=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectConnection.rpc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make an RPC call for the given callback, channel number and method.
+acceptable_replies lists out what responses we&#8217;ll process from the
+server with the specified callback.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.select_connection.SelectConnection.send_method">
+<tt class="descname">send_method</tt><big>(</big><em>channel_number</em>, <em>method</em>, <em>content=None</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectConnection.send_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs a RPC method frame and then sends it to the broker</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.select_connection.SelectConnection.set_backpressure_multiplier">
+<tt class="descname">set_backpressure_multiplier</tt><big>(</big><em>value=10</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectConnection.set_backpressure_multiplier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alter the backpressure multiplier value. We set this to 10 by default.
+This value is used to raise warnings and trigger the backpressure
+callback.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="adapters.select_connection.SelectConnection.suggested_buffer_size">
+<tt class="descname">suggested_buffer_size</tt><a class="headerlink" href="#adapters.select_connection.SelectConnection.suggested_buffer_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the suggested buffer size from the connection state/tune or the
+default if that is None</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-adapters.asyncore_connection"></span><dl class="class">
+<dt id="adapters.asyncore_connection.AsyncoreConnection">
+<em class="property">class </em><tt class="descclassname">adapters.asyncore_connection.</tt><tt class="descname">AsyncoreConnection</tt><big>(</big><em>parameters</em>, <em>on_open_callback</em>, <em>reconnection_strategy=None</em><big>)</big><a class="headerlink" href="#adapters.asyncore_connection.AsyncoreConnection" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="adapters.asyncore_connection.AsyncoreConnection.add_backpressure_callback">
+<tt class="descname">add_backpressure_callback</tt><big>(</big><em>callback</em><big>)</big><a class="headerlink" href="#adapters.asyncore_connection.AsyncoreConnection.add_backpressure_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a callback notification when we think backpressue is being applied
+due to the size of the output buffer being exceeded. We calculate this
+by figuring the average frame size and then checking to see if our
+backpressure multiplier * average frame size has been exceeded.
+You can change the backpressure multiplier by calling the
+set_backpressure_multiplier.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.asyncore_connection.AsyncoreConnection.add_on_close_callback">
+<tt class="descname">add_on_close_callback</tt><big>(</big><em>callback</em><big>)</big><a class="headerlink" href="#adapters.asyncore_connection.AsyncoreConnection.add_on_close_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a callback notification when the connection has closed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.asyncore_connection.AsyncoreConnection.add_on_open_callback">
+<tt class="descname">add_on_open_callback</tt><big>(</big><em>callback</em><big>)</big><a class="headerlink" href="#adapters.asyncore_connection.AsyncoreConnection.add_on_open_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a callback notification when the connection has closed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.asyncore_connection.AsyncoreConnection.channel">
+<tt class="descname">channel</tt><big>(</big><em>on_open_callback</em>, <em>channel_number=None</em><big>)</big><a class="headerlink" href="#adapters.asyncore_connection.AsyncoreConnection.channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new channel with the next available or specified channel #</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.asyncore_connection.AsyncoreConnection.close">
+<tt class="descname">close</tt><big>(</big><em>code=200</em>, <em>text='Normal shutdown'</em><big>)</big><a class="headerlink" href="#adapters.asyncore_connection.AsyncoreConnection.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main close function, will attempt to close the channels and if there
+are no channels left, will go straight to on_close_ready</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.asyncore_connection.AsyncoreConnection.connect">
+<tt class="descname">connect</tt><big>(</big><em>host</em>, <em>port</em><big>)</big><a class="headerlink" href="#adapters.asyncore_connection.AsyncoreConnection.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to our RabbitMQ boker using AsyncoreDispatcher, then setting
+Pika&#8217;s suggested buffer size for socket reading and writing. We pass
+the handle to self so that the AsyncoreDispatcher object can call back
+into our various state methods.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.asyncore_connection.AsyncoreConnection.disconnect">
+<tt class="descname">disconnect</tt><big>(</big><big>)</big><a class="headerlink" href="#adapters.asyncore_connection.AsyncoreConnection.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called if we are forced to disconnect for some reason from Connection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.asyncore_connection.AsyncoreConnection.flush_outbound">
+<tt class="descname">flush_outbound</tt><big>(</big><big>)</big><a class="headerlink" href="#adapters.asyncore_connection.AsyncoreConnection.flush_outbound" title="Permalink to this definition">¶</a></dt>
+<dd><p>We really can&#8217;t flush the socket in asyncore, so instead just use this
+to toggle a flag that lets it know we want to write to the socket.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="adapters.asyncore_connection.AsyncoreConnection.is_open">
+<tt class="descname">is_open</tt><a class="headerlink" href="#adapters.asyncore_connection.AsyncoreConnection.is_open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a boolean reporting the current connection state</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.asyncore_connection.AsyncoreConnection.on_data_available">
+<tt class="descname">on_data_available</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#adapters.asyncore_connection.AsyncoreConnection.on_data_available" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is called by our Adapter, passing in the data from the socket
+As long as we have buffer try and map out frame data</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.asyncore_connection.AsyncoreConnection.reconnect">
+<tt class="descname">reconnect</tt><big>(</big><big>)</big><a class="headerlink" href="#adapters.asyncore_connection.AsyncoreConnection.reconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by the Reconnection Strategy classes or Adapters to disconnect
+and reconnect to the broker</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.asyncore_connection.AsyncoreConnection.rpc">
+<tt class="descname">rpc</tt><big>(</big><em>channel_number</em>, <em>method</em>, <em>callback=None</em>, <em>acceptable_replies=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#adapters.asyncore_connection.AsyncoreConnection.rpc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make an RPC call for the given callback, channel number and method.
+acceptable_replies lists out what responses we&#8217;ll process from the
+server with the specified callback.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.asyncore_connection.AsyncoreConnection.send_method">
+<tt class="descname">send_method</tt><big>(</big><em>channel_number</em>, <em>method</em>, <em>content=None</em><big>)</big><a class="headerlink" href="#adapters.asyncore_connection.AsyncoreConnection.send_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs a RPC method frame and then sends it to the broker</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.asyncore_connection.AsyncoreConnection.set_backpressure_multiplier">
+<tt class="descname">set_backpressure_multiplier</tt><big>(</big><em>value=10</em><big>)</big><a class="headerlink" href="#adapters.asyncore_connection.AsyncoreConnection.set_backpressure_multiplier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alter the backpressure multiplier value. We set this to 10 by default.
+This value is used to raise warnings and trigger the backpressure
+callback.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="adapters.asyncore_connection.AsyncoreConnection.suggested_buffer_size">
+<tt class="descname">suggested_buffer_size</tt><a class="headerlink" href="#adapters.asyncore_connection.AsyncoreConnection.suggested_buffer_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the suggested buffer size from the connection state/tune or the
+default if that is None</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-adapters.tornado_connection"></span><dl class="class">
+<dt id="adapters.tornado_connection.TornadoConnection">
+<em class="property">class </em><tt class="descclassname">adapters.tornado_connection.</tt><tt class="descname">TornadoConnection</tt><big>(</big><em>parameters</em>, <em>on_open_callback</em>, <em>reconnection_strategy=None</em><big>)</big><a class="headerlink" href="#adapters.tornado_connection.TornadoConnection" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="adapters.tornado_connection.TornadoConnection.add_backpressure_callback">
+<tt class="descname">add_backpressure_callback</tt><big>(</big><em>callback</em><big>)</big><a class="headerlink" href="#adapters.tornado_connection.TornadoConnection.add_backpressure_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a callback notification when we think backpressue is being applied
+due to the size of the output buffer being exceeded. We calculate this
+by figuring the average frame size and then checking to see if our
+backpressure multiplier * average frame size has been exceeded.
+You can change the backpressure multiplier by calling the
+set_backpressure_multiplier.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.tornado_connection.TornadoConnection.add_on_close_callback">
+<tt class="descname">add_on_close_callback</tt><big>(</big><em>callback</em><big>)</big><a class="headerlink" href="#adapters.tornado_connection.TornadoConnection.add_on_close_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a callback notification when the connection has closed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.tornado_connection.TornadoConnection.add_on_open_callback">
+<tt class="descname">add_on_open_callback</tt><big>(</big><em>callback</em><big>)</big><a class="headerlink" href="#adapters.tornado_connection.TornadoConnection.add_on_open_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a callback notification when the connection has closed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.tornado_connection.TornadoConnection.channel">
+<tt class="descname">channel</tt><big>(</big><em>on_open_callback</em>, <em>channel_number=None</em><big>)</big><a class="headerlink" href="#adapters.tornado_connection.TornadoConnection.channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new channel with the next available or specified channel #</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.tornado_connection.TornadoConnection.close">
+<tt class="descname">close</tt><big>(</big><em>code=200</em>, <em>text='Normal shutdown'</em><big>)</big><a class="headerlink" href="#adapters.tornado_connection.TornadoConnection.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main close function, will attempt to close the channels and if there
+are no channels left, will go straight to on_close_ready</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.tornado_connection.TornadoConnection.connect">
+<tt class="descname">connect</tt><big>(</big><em>host</em>, <em>port</em><big>)</big><a class="headerlink" href="#adapters.tornado_connection.TornadoConnection.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to the given host and port</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.tornado_connection.TornadoConnection.flush_outbound">
+<tt class="descname">flush_outbound</tt><big>(</big><big>)</big><a class="headerlink" href="#adapters.tornado_connection.TornadoConnection.flush_outbound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the state manager who will figure out that we need to write.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="adapters.tornado_connection.TornadoConnection.is_open">
+<tt class="descname">is_open</tt><a class="headerlink" href="#adapters.tornado_connection.TornadoConnection.is_open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a boolean reporting the current connection state</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.tornado_connection.TornadoConnection.on_data_available">
+<tt class="descname">on_data_available</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#adapters.tornado_connection.TornadoConnection.on_data_available" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is called by our Adapter, passing in the data from the socket
+As long as we have buffer try and map out frame data</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.tornado_connection.TornadoConnection.reconnect">
+<tt class="descname">reconnect</tt><big>(</big><big>)</big><a class="headerlink" href="#adapters.tornado_connection.TornadoConnection.reconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by the Reconnection Strategy classes or Adapters to disconnect
+and reconnect to the broker</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.tornado_connection.TornadoConnection.rpc">
+<tt class="descname">rpc</tt><big>(</big><em>channel_number</em>, <em>method</em>, <em>callback=None</em>, <em>acceptable_replies=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#adapters.tornado_connection.TornadoConnection.rpc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make an RPC call for the given callback, channel number and method.
+acceptable_replies lists out what responses we&#8217;ll process from the
+server with the specified callback.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.tornado_connection.TornadoConnection.send_method">
+<tt class="descname">send_method</tt><big>(</big><em>channel_number</em>, <em>method</em>, <em>content=None</em><big>)</big><a class="headerlink" href="#adapters.tornado_connection.TornadoConnection.send_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs a RPC method frame and then sends it to the broker</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.tornado_connection.TornadoConnection.set_backpressure_multiplier">
+<tt class="descname">set_backpressure_multiplier</tt><big>(</big><em>value=10</em><big>)</big><a class="headerlink" href="#adapters.tornado_connection.TornadoConnection.set_backpressure_multiplier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alter the backpressure multiplier value. We set this to 10 by default.
+This value is used to raise warnings and trigger the backpressure
+callback.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="adapters.tornado_connection.TornadoConnection.suggested_buffer_size">
+<tt class="descname">suggested_buffer_size</tt><a class="headerlink" href="#adapters.tornado_connection.TornadoConnection.suggested_buffer_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the suggested buffer size from the connection state/tune or the
+default if that is None</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-adapters.blocking_connection"></span><dl class="class">
+<dt id="adapters.blocking_connection.BlockingConnection">
+<em class="property">class </em><tt class="descclassname">adapters.blocking_connection.</tt><tt class="descname">BlockingConnection</tt><big>(</big><em>parameters</em>, <em>reconnection_strategy=None</em><big>)</big><a class="headerlink" href="#adapters.blocking_connection.BlockingConnection" title="Permalink to this definition">¶</a></dt>
+<dd><p>The BlockingConnection adapter is meant for simple implementations where
+you want to have blocking behavior. The behavior layered on top of the
+async library. Because of the nature of AMQP there are a few callbacks
+one needs to do, even in a blocking implementation. These include receiving
+messages from Basic.Deliver, Basic.GetOk, and Basic.Return.</p>
+<p>It is also advised that you register callbacks for detecting backpressure.
+New to the RabbitMQ 2.0 and higher versions is the removal of Channel.Flow
+and instead the application of tcp backpressure when the broker is</p>
+<dl class="method">
+<dt id="adapters.blocking_connection.BlockingConnection.add_backpressure_callback">
+<tt class="descname">add_backpressure_callback</tt><big>(</big><em>callback</em><big>)</big><a class="headerlink" href="#adapters.blocking_connection.BlockingConnection.add_backpressure_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a callback notification when we think backpressue is being applied
+due to the size of the output buffer being exceeded. We calculate this
+by figuring the average frame size and then checking to see if our
+backpressure multiplier * average frame size has been exceeded.
+You can change the backpressure multiplier by calling the
+set_backpressure_multiplier.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.blocking_connection.BlockingConnection.add_on_close_callback">
+<tt class="descname">add_on_close_callback</tt><big>(</big><em>callback</em><big>)</big><a class="headerlink" href="#adapters.blocking_connection.BlockingConnection.add_on_close_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a callback notification when the connection has closed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.blocking_connection.BlockingConnection.add_on_open_callback">
+<tt class="descname">add_on_open_callback</tt><big>(</big><em>callback</em><big>)</big><a class="headerlink" href="#adapters.blocking_connection.BlockingConnection.add_on_open_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a callback notification when the connection has closed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.blocking_connection.BlockingConnection.channel">
+<tt class="descname">channel</tt><big>(</big><em>channel_number=None</em><big>)</big><a class="headerlink" href="#adapters.blocking_connection.BlockingConnection.channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new channel with the next available or specified channel #</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="adapters.blocking_connection.BlockingConnection.is_open">
+<tt class="descname">is_open</tt><a class="headerlink" href="#adapters.blocking_connection.BlockingConnection.is_open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a boolean reporting the current connection state</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.blocking_connection.BlockingConnection.on_data_available">
+<tt class="descname">on_data_available</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#adapters.blocking_connection.BlockingConnection.on_data_available" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is called by our Adapter, passing in the data from the socket
+As long as we have buffer try and map out frame data</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.blocking_connection.BlockingConnection.reconnect">
+<tt class="descname">reconnect</tt><big>(</big><big>)</big><a class="headerlink" href="#adapters.blocking_connection.BlockingConnection.reconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by the Reconnection Strategy classes or Adapters to disconnect
+and reconnect to the broker</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.blocking_connection.BlockingConnection.rpc">
+<tt class="descname">rpc</tt><big>(</big><em>channel_number</em>, <em>method</em>, <em>callback=None</em>, <em>acceptable_replies=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#adapters.blocking_connection.BlockingConnection.rpc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make an RPC call for the given callback, channel number and method.
+acceptable_replies lists out what responses we&#8217;ll process from the
+server with the specified callback.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.blocking_connection.BlockingConnection.send_method">
+<tt class="descname">send_method</tt><big>(</big><em>channel_number</em>, <em>method</em>, <em>content=None</em><big>)</big><a class="headerlink" href="#adapters.blocking_connection.BlockingConnection.send_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs a RPC method frame and then sends it to the broker</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.blocking_connection.BlockingConnection.set_backpressure_multiplier">
+<tt class="descname">set_backpressure_multiplier</tt><big>(</big><em>value=10</em><big>)</big><a class="headerlink" href="#adapters.blocking_connection.BlockingConnection.set_backpressure_multiplier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alter the backpressure multiplier value. We set this to 10 by default.
+This value is used to raise warnings and trigger the backpressure
+callback.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="adapters.blocking_connection.BlockingConnection.suggested_buffer_size">
+<tt class="descname">suggested_buffer_size</tt><a class="headerlink" href="#adapters.blocking_connection.BlockingConnection.suggested_buffer_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the suggested buffer size from the connection state/tune or the
+default if that is None</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/adapters.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Pika v0.9a documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Tony Garnock-Jones, Gavin M. Roy and others.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

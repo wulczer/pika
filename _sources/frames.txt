@@ -1,0 +1,8 @@
+Frames
+======
+
+Applications using Pika will primarily interface with it via a channel object.
+
+.. automodule:: frames
+   :members:
+   :inherited-members:
