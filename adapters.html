@@ -22,7 +22,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Pika v0.9a documentation" href="index.html" /> 
+    <link rel="top" title="Pika v0.9a documentation" href="index.html" />
+    <link rel="next" title="Channel" href="channel.html" />
+    <link rel="prev" title="Introduction to Pika" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -34,6 +36,12 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="channel.html" title="Channel"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Introduction to Pika"
+             accesskey="P">previous</a> |</li>
         <li><a href="index.html">Pika v0.9a documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -45,8 +53,16 @@
             
   <div class="section" id="connection-adapters">
 <h1>Connection Adapters<a class="headerlink" href="#connection-adapters" title="Permalink to this headline">¶</a></h1>
-<p>Connection adapters provide the core communication structure for an AMQP connection.</p>
-<span class="target" id="module-adapters.select_connection"></span><dl class="class">
+<p id="connection-adapters-header">Pika provides multiple adapters to connect to RabbitMQ:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#adapters.select_connection.SelectConnection" title="adapters.select_connection.SelectConnection"><tt class="xref py py-meth docutils literal"><span class="pre">SelectConnection()</span></tt></a>: A native event based connection adapter that implements select, kqueue, poll and epoll.</li>
+<li><a class="reference internal" href="#adapters.asyncore_connection.AsyncoreConnection" title="adapters.asyncore_connection.AsyncoreConnection"><tt class="xref py py-meth docutils literal"><span class="pre">AsyncoreConnection()</span></tt></a>: Legacy adapter kept for convenience of previous Pika users. It is recommended to use the SelectConnection instead of AsyncoreConnection.</li>
+<li><a class="reference internal" href="#adapters.tornado_connection.TornadoConnection" title="adapters.tornado_connection.TornadoConnection"><tt class="xref py py-meth docutils literal"><span class="pre">TornadoConnection()</span></tt></a>: Connection adapter for use with the Tornado IO Loop <a class="reference external" href="http://tornadoweb.org">http://tornadoweb.org</a></li>
+<li><a class="reference internal" href="#adapters.blocking_connection.BlockingConnection" title="adapters.blocking_connection.BlockingConnection"><tt class="xref py py-meth docutils literal"><span class="pre">BlockingConnection()</span></tt></a>: Enables blocking, synchronous operation on top of library for simple uses. This is not recommended and is included for legacy reasons only.</li>
+</ul>
+<div class="section" id="module-adapters.select_connection">
+<span id="available-adapters"></span><h2>Available Adapters<a class="headerlink" href="#module-adapters.select_connection" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
 <dt id="adapters.select_connection.SelectConnection">
 <em class="property">class </em><tt class="descclassname">adapters.select_connection.</tt><tt class="descname">SelectConnection</tt><big>(</big><em>parameters</em>, <em>on_open_callback</em>, <em>reconnection_strategy=None</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectConnection" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
@@ -461,6 +477,7 @@ default if that is None</p>
 </dd></dl>
 
 </div>
+</div>
 
 
           </div>
@@ -468,6 +485,20 @@ default if that is None</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Connection Adapters</a><ul>
+<li><a class="reference internal" href="#module-adapters.select_connection">Available Adapters</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Introduction to Pika</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="channel.html"
+                        title="next chapter">Channel</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/adapters.txt"
@@ -499,6 +530,12 @@ default if that is None</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="channel.html" title="Channel"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Introduction to Pika"
+             >previous</a> |</li>
         <li><a href="index.html">Pika v0.9a documentation</a> &raquo;</li> 
       </ul>
     </div>

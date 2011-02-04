@@ -1,9 +1,6 @@
-Connection
+Exceptions
 ==========
 
-The core communication with Pika is coordinated via the Connection class.
-
-.. automodule:: connection
-.. autoclass:: Connection
+.. automodule:: exceptions
    :members:
    :inherited-members:

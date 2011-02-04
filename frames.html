@@ -22,7 +22,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Pika v0.9a documentation" href="index.html" /> 
+    <link rel="top" title="Pika v0.9a documentation" href="index.html" />
+    <link rel="next" title="Heartbeat" href="heartbeat.html" />
+    <link rel="prev" title="Connection" href="exceptions.html" /> 
   </head>
   <body>
     <div class="related">
@@ -34,6 +36,12 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="heartbeat.html" title="Heartbeat"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="exceptions.html" title="Connection"
+             accesskey="P">previous</a> |</li>
         <li><a href="index.html">Pika v0.9a documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -46,7 +54,32 @@
   <div class="section" id="frames">
 <h1>Frames<a class="headerlink" href="#frames" title="Permalink to this headline">¶</a></h1>
 <p>Applications using Pika will primarily interface with it via a channel object.</p>
-<span class="target" id="module-frames"></span></div>
+<span class="target" id="module-frames"></span><dl class="class">
+<dt id="frames.Frame">
+<em class="property">class </em><tt class="descclassname">frames.</tt><tt class="descname">Frame</tt><big>(</big><em>frame_type</em>, <em>channel_number</em><big>)</big><a class="headerlink" href="#frames.Frame" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="frames.Method">
+<em class="property">class </em><tt class="descclassname">frames.</tt><tt class="descname">Method</tt><big>(</big><em>channel_number</em>, <em>method</em><big>)</big><a class="headerlink" href="#frames.Method" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="frames.Header">
+<em class="property">class </em><tt class="descclassname">frames.</tt><tt class="descname">Header</tt><big>(</big><em>channel_number</em>, <em>body_size</em>, <em>props</em><big>)</big><a class="headerlink" href="#frames.Header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="frames.Body">
+<em class="property">class </em><tt class="descclassname">frames.</tt><tt class="descname">Body</tt><big>(</big><em>channel_number</em>, <em>fragment</em><big>)</big><a class="headerlink" href="#frames.Body" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="frames.ProtocolHeader">
+<em class="property">class </em><tt class="descclassname">frames.</tt><tt class="descname">ProtocolHeader</tt><big>(</big><em>major=None</em>, <em>minor=None</em>, <em>revision=None</em><big>)</big><a class="headerlink" href="#frames.ProtocolHeader" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
 
 
           </div>
@@ -54,6 +87,12 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="exceptions.html"
+                        title="previous chapter">Connection</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="heartbeat.html"
+                        title="next chapter">Heartbeat</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/frames.txt"
@@ -85,6 +124,12 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="heartbeat.html" title="Heartbeat"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="exceptions.html" title="Connection"
+             >previous</a> |</li>
         <li><a href="index.html">Pika v0.9a documentation</a> &raquo;</li> 
       </ul>
     </div>

@@ -1,8 +1,6 @@
 Connection
 ==========
-
 The core communication with Pika is coordinated via the Connection class.
-
 .. automodule:: connection
 .. autoclass:: Connection
    :members:

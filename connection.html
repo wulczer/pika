@@ -49,145 +49,22 @@
             
   <div class="section" id="connection">
 <h1>Connection<a class="headerlink" href="#connection" title="Permalink to this headline">¶</a></h1>
-<p>The core communication with Pika is coordinated via the Connection class.</p>
-<span class="target" id="module-connection"></span><dl class="class">
-<dt id="connection.Connection">
-<em class="property">class </em><tt class="descclassname">connection.</tt><tt class="descname">Connection</tt><big>(</big><em>parameters</em>, <em>on_open_callback</em>, <em>reconnection_strategy=None</em><big>)</big><a class="headerlink" href="#connection.Connection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Pika Connection Class</p>
-<p>This is the core class that implements communication with RabbitMQ. This
-class should not be invoked directly but rather through the use of an
-adapter such as SelectConnection or BlockingConnection.</p>
-<dl class="method">
-<dt id="connection.Connection.add_backpressure_callback">
-<tt class="descname">add_backpressure_callback</tt><big>(</big><em>callback</em><big>)</big><a class="headerlink" href="#connection.Connection.add_backpressure_callback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a callback notification when we think backpressue is being applied
-due to the size of the output buffer being exceeded. We calculate this
-by figuring the average frame size and then checking to see if our
-backpressure multiplier * average frame size has been exceeded.
-You can change the backpressure multiplier by calling the
-set_backpressure_multiplier.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="connection.Connection.add_on_close_callback">
-<tt class="descname">add_on_close_callback</tt><big>(</big><em>callback</em><big>)</big><a class="headerlink" href="#connection.Connection.add_on_close_callback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a callback notification when the connection has closed</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="connection.Connection.add_on_open_callback">
-<tt class="descname">add_on_open_callback</tt><big>(</big><em>callback</em><big>)</big><a class="headerlink" href="#connection.Connection.add_on_open_callback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a callback notification when the connection has closed</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="connection.Connection.add_timeout">
-<tt class="descname">add_timeout</tt><big>(</big><em>delay_sec</em>, <em>callback</em><big>)</big><a class="headerlink" href="#connection.Connection.add_timeout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adapters should override to call the callback after the
-specified number of seconds have elapsed, using a timer, or a
-thread, or similar.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="connection.Connection.channel">
-<tt class="descname">channel</tt><big>(</big><em>on_open_callback</em>, <em>channel_number=None</em><big>)</big><a class="headerlink" href="#connection.Connection.channel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a new channel with the next available or specified channel #</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="connection.Connection.close">
-<tt class="descname">close</tt><big>(</big><em>code=200</em>, <em>text='Normal shutdown'</em><big>)</big><a class="headerlink" href="#connection.Connection.close" title="Permalink to this definition">¶</a></dt>
-<dd><p>Main close function, will attempt to close the channels and if there
-are no channels left, will go straight to on_close_ready</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="connection.Connection.connect">
-<tt class="descname">connect</tt><big>(</big><em>host</em>, <em>port</em><big>)</big><a class="headerlink" href="#connection.Connection.connect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Subclasses should override to set up the outbound
-socket.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="connection.Connection.disconnect">
-<tt class="descname">disconnect</tt><big>(</big><big>)</big><a class="headerlink" href="#connection.Connection.disconnect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Subclasses should override this to cause the underlying
-transport (socket) to close.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="connection.Connection.erase_credentials">
-<tt class="descname">erase_credentials</tt><big>(</big><big>)</big><a class="headerlink" href="#connection.Connection.erase_credentials" title="Permalink to this definition">¶</a></dt>
-<dd><p>Override if in some context you need the object to forget
-its login credentials after successfully opening a connection.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="connection.Connection.flush_outbound">
-<tt class="descname">flush_outbound</tt><big>(</big><big>)</big><a class="headerlink" href="#connection.Connection.flush_outbound" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adapters should override to flush the contents of
-outbound_buffer out along the socket.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="connection.Connection.is_open">
-<tt class="descname">is_open</tt><a class="headerlink" href="#connection.Connection.is_open" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a boolean reporting the current connection state</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="connection.Connection.on_data_available">
-<tt class="descname">on_data_available</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#connection.Connection.on_data_available" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is called by our Adapter, passing in the data from the socket
-As long as we have buffer try and map out frame data</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="connection.Connection.reconnect">
-<tt class="descname">reconnect</tt><big>(</big><big>)</big><a class="headerlink" href="#connection.Connection.reconnect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called by the Reconnection Strategy classes or Adapters to disconnect
-and reconnect to the broker</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="connection.Connection.remove_timeout">
-<tt class="descname">remove_timeout</tt><big>(</big><em>callback</em><big>)</big><a class="headerlink" href="#connection.Connection.remove_timeout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adapters should override to call the callback after the
-specified number of seconds have elapsed, using a timer, or a
-thread, or similar.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="connection.Connection.rpc">
-<tt class="descname">rpc</tt><big>(</big><em>channel_number</em>, <em>method</em>, <em>callback=None</em>, <em>acceptable_replies=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#connection.Connection.rpc" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make an RPC call for the given callback, channel number and method.
-acceptable_replies lists out what responses we&#8217;ll process from the
-server with the specified callback.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="connection.Connection.send_method">
-<tt class="descname">send_method</tt><big>(</big><em>channel_number</em>, <em>method</em>, <em>content=None</em><big>)</big><a class="headerlink" href="#connection.Connection.send_method" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructs a RPC method frame and then sends it to the broker</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="connection.Connection.set_backpressure_multiplier">
-<tt class="descname">set_backpressure_multiplier</tt><big>(</big><em>value=10</em><big>)</big><a class="headerlink" href="#connection.Connection.set_backpressure_multiplier" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alter the backpressure multiplier value. We set this to 10 by default.
-This value is used to raise warnings and trigger the backpressure
-callback.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="connection.Connection.suggested_buffer_size">
-<tt class="descname">suggested_buffer_size</tt><a class="headerlink" href="#connection.Connection.suggested_buffer_size" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the suggested buffer size from the connection state/tune or the
-default if that is None</p>
-</dd></dl>
-
-</dd></dl>
-
+<p>The core communication with Pika is coordinated via the Connection class.
+.. automodule:: connection
+.. autoclass:: Connection</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">members:</th><td class="field-body"></td>
+</tr>
+<tr class="field"><th class="field-name" colspan="2">inherited-members:</th></tr>
+<tr><td>&nbsp;</td><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
 </div>
 
 

@@ -1,9 +1,6 @@
-Connection
-==========
-
-The core communication with Pika is coordinated via the Connection class.
-
-.. automodule:: connection
-.. autoclass:: Connection
+Callback
+========
+.. automodule:: callback
+.. autoclass:: CallbackManager
    :members:
    :inherited-members:

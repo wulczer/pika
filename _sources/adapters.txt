@@ -1,7 +1,16 @@
 Connection Adapters
 ===================
+.. _connection_adapters_header:
 
-Connection adapters provide the core communication structure for an AMQP connection.
+Pika provides multiple adapters to connect to RabbitMQ:
+
+- :py:meth:`~adapters.select_connection.SelectConnection`: A native event based connection adapter that implements select, kqueue, poll and epoll.
+- :py:meth:`~adapters.asyncore_connection.AsyncoreConnection`: Legacy adapter kept for convenience of previous Pika users. It is recommended to use the SelectConnection instead of AsyncoreConnection.
+- :py:meth:`~adapters.tornado_connection.TornadoConnection`: Connection adapter for use with the Tornado IO Loop http://tornadoweb.org
+- :py:meth:`~adapters.blocking_connection.BlockingConnection`: Enables blocking, synchronous operation on top of library for simple uses. This is not recommended and is included for legacy reasons only.
+
+Available Adapters
+------------------
 
 .. automodule:: adapters.select_connection
 .. autoclass:: SelectConnection

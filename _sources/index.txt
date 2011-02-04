@@ -17,7 +17,7 @@ Using Pika
 Pika 0.9a is a major refactor of the Pika library implementing true asynchronous behavior at its core. It is important to understand asynchronous programming concepts to properly use Pika in your application. If you have previously used :py:meth:`~channel.Channel.basic_consume` in an application with Pika v0.5.2 or earlier, you have already implemented callback passing style asynchronous code with Pika.
 
 Adapters
-________
+^^^^^^^^
 
 Pika provides multiple adapters to connect to RabbitMQ:
 
@@ -29,25 +29,32 @@ Pika provides multiple adapters to connect to RabbitMQ:
 Choosing the right adapter for your project is important.
 
 Channel
-_______
-
-The core communication with Pika is coordinated via the channel.Channel class. Pika invokes this for you when you call the :py:meth:`~pika.connection.Connection.channel` method.
-
+^^^^^^^
+The core communication with Pika is coordinated via the channel.Channel class. Pika invokes this for you when you call the :py:meth:`~connection.Connection.channel` method.
 
 Pika Core Objects
-_________________
-
+^^^^^^^^^^^^^^^^^
 .. toctree::
 
-
    adapters
+   callback
    channel
    connection
+   credentials
+   exceptions
+   frames
+   heartbeat
 
 
+Pika Authors
+^^^^^^^^^^^^
+- `Ask Solem Hoel <http://github.com/ask>`_
+- `Gavin M. Roy <http://github.com/gmr>`_
+- `Marek Majkowski <http://github.com/majek>`_
+- `Tony Garnock-Jones <http://github.com/tonyg>`_
 
 Indices and tables
-__________________
+^^^^^^^^^^^^^^^^^^
 
 * :ref:`genindex`
 * :ref:`modindex`
