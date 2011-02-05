@@ -64,7 +64,7 @@
 <li><a class="reference internal" href="#blockingconnection"><em>BlockingConnection</em></a>: Enables blocking, synchronous operation on top of library for simple uses.</li>
 </ul>
 <div class="section" id="tcp-backpressure">
-<h2>TCP Backpressure<a class="headerlink" href="#tcp-backpressure" title="Permalink to this headline">¶</a></h2>
+<span id="intro-to-backpressure"></span><h2>TCP Backpressure<a class="headerlink" href="#tcp-backpressure" title="Permalink to this headline">¶</a></h2>
 <p>As of RabbitMQ 2.0.0, client side Channel.Flow has been removed. Instead, the RabbitMQ broker uses TCP Backpressure to slow your client if it is
 delivering messages too fast. Pika attempts to help you handle this situation by providing a mechanism by which you may be notified if Pika has noticed
 too many frames have yet to be delivered. By registering a function with the <em>add_backpressure_callback</em> function of any connection adapter, your function
@@ -72,10 +72,10 @@ will be called when Pika sees that a backlog of 10 times the average frame size 
 calling the set_backpressure_multiplier method passing any integer value.</p>
 </div>
 <div class="section" id="io-and-event-looping">
-<h2>IO and Event Looping<a class="headerlink" href="#io-and-event-looping" title="Permalink to this headline">¶</a></h2>
-<p>Due to the need to check for and send content on a consistent basis, Pika now implements or extends IOLoops in each of its asynchronous connection adapters. These IOLoops
-are blocking methods which loop and listen for events. Each asynchronous adapters follows the same standard for invoking the IOLoop. If you are using an external IOLoop
-such as Tornado&#8217;s IOLoop, you may invoke that as you normally would and then add the adapter to it.</p>
+<span id="intro-to-ioloop"></span><h2>IO and Event Looping<a class="headerlink" href="#io-and-event-looping" title="Permalink to this headline">¶</a></h2>
+<p>Due to the need to check for and send content on a consistent basis, Pika now implements or extends IOLoops in each of its asynchronous connection adapters. These IOLoops are blocking methods which loop and listen for events. Each asynchronous adapters follows the same standard for invoking the IOLoop. The IOLoop is
+created when the connection adapter is created. To start it simply call the connection.ioloop.start() method.</p>
+<p>If you are using an external IOLoop such as Tornado&#8217;s IOLoop, you may invoke that as you normally would and then add the adapter to it.</p>
 <p>Example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># Create our connection object</span>
 <span class="n">connection</span> <span class="o">=</span> <span class="n">SelectConnection</span><span class="p">()</span>
@@ -92,7 +92,7 @@ such as Tornado&#8217;s IOLoop, you may invoke that as you normally would and th
 </div>
 </div>
 <div class="section" id="continuation-passing-style">
-<h2>Continuation-Passing Style<a class="headerlink" href="#continuation-passing-style" title="Permalink to this headline">¶</a></h2>
+<span id="intro-to-cps"></span><h2>Continuation-Passing Style<a class="headerlink" href="#continuation-passing-style" title="Permalink to this headline">¶</a></h2>
 <p>Interfacing with Pika asynchronously is done by passing in callback methods you would like to have invoked when a certain event has completed. For example, if you are going to declare a queue, you pass in a method that will be called when the RabbitMQ server returns a &#8220;Queue.DeclareOk&#8221; response.</p>
 <p>In our example below we use the following four easy steps:</p>
 <ol class="arabic simple">
@@ -101,7 +101,7 @@ such as Tornado&#8217;s IOLoop, you may invoke that as you normally would and th
 <li>When the channel is created, the <em>on_channel_open</em> method is called. In that method we declare a queue.</li>
 <li>When the queue is declared successfully, <em>on_queue_declared</em> is called. In that method we call channel.basic_consume telling it to call the handle_delivery for each message RabbitMQ delivers to us.</li>
 </ol>
-<p>Example:</p>
+<p id="cps-example">Example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pika.adapters</span> <span class="kn">import</span> <span class="n">SelectConnection</span>
 
 <span class="c"># Create a global channel variable to hold our channel object in</span>
@@ -149,8 +149,7 @@ such as Tornado&#8217;s IOLoop, you may invoke that as you normally would and th
 <span id="id1"></span><h3>SelectConnection<a class="headerlink" href="#selectconnection" title="Permalink to this headline">¶</a></h3>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p class="last">SelectConnection is the recommended method for using Pika under most
-circumstances. It supports multiple event notification methods including select, epoll, kqueue and poll.</p>
+<p class="last">SelectConnection is the recommended method for using Pika under most circumstances. It supports multiple event notification methods including select, epoll, kqueue and poll.</p>
 </div>
 <p>By default SelectConnection will attempt to use the most appropriate event
 notification method for your system. In order to override the default behavior
@@ -163,6 +162,7 @@ SelectConnection object instance. Valid values are: kqueue, poll, epoll, select<
 <span class="n">connection</span> <span class="o">=</span> <span class="n">select_connection</span><span class="o">.</span><span class="n">SelectConnection</span><span class="p">()</span>
 </pre></div>
 </div>
+<p>See the <a class="reference internal" href="#cps-example"><em>Continuation-Passing Style example</em></a> for an example of using SelectConnection.</p>
 <span class="target" id="module-adapters.select_connection"></span><dl class="class">
 <dt id="adapters.select_connection.SelectConnection">
 <em class="property">class </em><tt class="descclassname">adapters.select_connection.</tt><tt class="descname">SelectConnection</tt><big>(</big><em>parameters</em>, <em>on_open_callback</em>, <em>reconnection_strategy=None</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectConnection" title="Permalink to this definition">¶</a></dt>
@@ -190,7 +190,7 @@ due to the size of the output buffer being exceeded.</p>
 <tt class="descname">channel</tt><big>(</big><em>on_open_callback</em>, <em>channel_number=None</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectConnection.channel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new channel with the next available channel number or pass in
 a channel number to use. Must be non-zero if you would like to specify
-but it is recommended that you let Pika manage that for you.</p>
+but it is recommended that you let Pika manage the channel numbers.</p>
 </dd></dl>
 
 <dl class="method">
@@ -223,8 +223,7 @@ callback.</p>
 <span id="id2"></span><h3>AsyncoreConnection<a class="headerlink" href="#asyncoreconnection" title="Permalink to this headline">¶</a></h3>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p class="last">SelectConnection is the recommended method for using Pika under most
-circumstances.</p>
+<p class="last">Use SelectConnection, the method signatures are the same.</p>
 </div>
 <p>The AsyncoreConnection class is provided for legacy support and quicker porting from applications that used Pika version 0.5.2 and prior.</p>
 <span class="target" id="module-adapters.asyncore_connection"></span><dl class="class">
@@ -254,7 +253,7 @@ due to the size of the output buffer being exceeded.</p>
 <tt class="descname">channel</tt><big>(</big><em>on_open_callback</em>, <em>channel_number=None</em><big>)</big><a class="headerlink" href="#adapters.asyncore_connection.AsyncoreConnection.channel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new channel with the next available channel number or pass in
 a channel number to use. Must be non-zero if you would like to specify
-but it is recommended that you let Pika manage that for you.</p>
+but it is recommended that you let Pika manage the channel numbers.</p>
 </dd></dl>
 
 <dl class="method">
@@ -344,7 +343,7 @@ due to the size of the output buffer being exceeded.</p>
 <tt class="descname">channel</tt><big>(</big><em>on_open_callback</em>, <em>channel_number=None</em><big>)</big><a class="headerlink" href="#adapters.tornado_connection.TornadoConnection.channel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new channel with the next available channel number or pass in
 a channel number to use. Must be non-zero if you would like to specify
-but it is recommended that you let Pika manage that for you.</p>
+but it is recommended that you let Pika manage the channel numbers.</p>
 </dd></dl>
 
 <dl class="method">
@@ -375,8 +374,8 @@ callback.</p>
 </div>
 <div class="section" id="blockingconnection">
 <span id="id4"></span><h3>BlockingConnection<a class="headerlink" href="#blockingconnection" title="Permalink to this headline">¶</a></h3>
-<div class="admonition attention">
-<p class="first admonition-title">Attention</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
 <p class="last">BlockingConnection is provided for legacy and learning purposes only and it is not recommended that you use it for a production application.</p>
 </div>
 <p>The BlockingConnection creates a layer on top of Pika&#8217;s asynchronous core providng methods that will block until their expected response has returned.

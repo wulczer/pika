@@ -7,6 +7,8 @@ Pika provides multiple adapters to connect to RabbitMQ allowing for different wa
 - :ref:`TornadoConnection`: Connection adapter for use with the Tornado IO Loop.
 - :ref:`BlockingConnection`: Enables blocking, synchronous operation on top of library for simple uses.
 
+.. _intro_to_backpressure:
+
 TCP Backpressure
 ----------------
 
@@ -16,12 +18,15 @@ too many frames have yet to be delivered. By registering a function with the *ad
 will be called when Pika sees that a backlog of 10 times the average frame size you have been sending has been exceeded. You may tweak this value by
 calling the set_backpressure_multiplier method passing any integer value.
 
+.. _intro_to_ioloop:
+
 IO and Event Looping
 --------------------
 
-Due to the need to check for and send content on a consistent basis, Pika now implements or extends IOLoops in each of its asynchronous connection adapters. These IOLoops
-are blocking methods which loop and listen for events. Each asynchronous adapters follows the same standard for invoking the IOLoop. If you are using an external IOLoop
-such as Tornado's IOLoop, you may invoke that as you normally would and then add the adapter to it.
+Due to the need to check for and send content on a consistent basis, Pika now implements or extends IOLoops in each of its asynchronous connection adapters. These IOLoops are blocking methods which loop and listen for events. Each asynchronous adapters follows the same standard for invoking the IOLoop. The IOLoop is
+created when the connection adapter is created. To start it simply call the connection.ioloop.start() method.
+
+If you are using an external IOLoop such as Tornado's IOLoop, you may invoke that as you normally would and then add the adapter to it.
 
 Example::
 
@@ -38,6 +43,8 @@ Example::
         connection.ioloop.start()
 
 
+.. _intro_to_cps:
+
 Continuation-Passing Style
 --------------------------
 
@@ -49,6 +56,8 @@ In our example below we use the following four easy steps:
 #. When we are connected, the *on_connected* method is called. In that method we create a channel.
 #. When the channel is created, the *on_channel_open* method is called. In that method we declare a queue.
 #. When the queue is declared successfully, *on_queue_declared* is called. In that method we call channel.basic_consume telling it to call the handle_delivery for each message RabbitMQ delivers to us.
+
+.. _cps_example:
 
 Example::
 
@@ -100,8 +109,7 @@ SelectConnection
 ^^^^^^^^^^^^^^^^
 
 .. TIP::
-    SelectConnection is the recommended method for using Pika under most
-    circumstances. It supports multiple event notification methods including select, epoll, kqueue and poll.
+    SelectConnection is the recommended method for using Pika under most circumstances. It supports multiple event notification methods including select, epoll, kqueue and poll.
 
 By default SelectConnection will attempt to use the most appropriate event
 notification method for your system. In order to override the default behavior
@@ -115,6 +123,8 @@ Poller Type Override Example::
   select_connection.POLLER_TYPE = 'epoll'
   connection = select_connection.SelectConnection()
 
+See the :ref:`Continuation-Passing Style example <cps_example>` for an example of using SelectConnection.
+
 .. automodule:: adapters.select_connection
 .. autoclass:: SelectConnection
    :member-order: bysource
@@ -125,8 +135,7 @@ Poller Type Override Example::
 AsyncoreConnection
 ^^^^^^^^^^^^^^^^^^
 .. TIP::
-    SelectConnection is the recommended method for using Pika under most
-    circumstances.
+    Use SelectConnection, the method signatures are the same.
 
 The AsyncoreConnection class is provided for legacy support and quicker porting from applications that used Pika version 0.5.2 and prior.
 
@@ -187,7 +196,7 @@ Example::
 
 BlockingConnection
 ^^^^^^^^^^^^^^^^^^
-.. Attention::
+.. Warning::
    BlockingConnection is provided for legacy and learning purposes only and it is not recommended that you use it for a production application.
 
 The BlockingConnection creates a layer on top of Pika's asynchronous core providng methods that will block until their expected response has returned.
