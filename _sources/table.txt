@@ -1,5 +1,7 @@
 Table
 =====
+.. WARNING::
+    Pika Development Documentation, not for direct implementation in client applications.
 
 .. automodule:: table
    :members:

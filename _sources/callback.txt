@@ -1,5 +1,8 @@
 Callback
 ========
+.. WARNING::
+    Pika Development Documentation, not for direct implementation in client applications.
+
 .. automodule:: callback
 .. autoclass:: CallbackManager
    :members:

@@ -1,5 +1,7 @@
 Heartbeat
 =========
+.. WARNING::
+    Pika Development Documentation, not for direct implementation in client applications.
 
 .. automodule:: heartbeat
 .. autoclass:: HeartbeatChecker

@@ -1,5 +1,8 @@
 Object
 ======
+.. WARNING::
+    Pika Development Documentation, not for direct implementation in client applications.
+
 The class in this module, object.Object_ extends Python's object class creating
 a base class that other classes, who would like an easy to implement representation
 of the class state, may extend.

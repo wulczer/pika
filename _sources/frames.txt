@@ -1,5 +1,7 @@
 Frames
 ======
+.. WARNING::
+    Pika Development Documentation, not for direct implementation in client applications.
 
 Applications using Pika will primarily interface with it via a channel object.
 
