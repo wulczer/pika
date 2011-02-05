@@ -10,7 +10,7 @@ Pika is a pure-Python implementation of the AMQP 0-9-1 protocol that tries to st
 
 This documentation is a combination of both user documentation and module development documentation. Modules and classes called out in the Using Pika section below will cover a majority of what users who are implementation pika in their applications will need. The Pika Core Objects section below lists all of the modules that are internal to Pika.
 
-If you have not developed with Pika or RabbitMQ before, the examples page (tbd) is a good resource to get started with.
+If you have not developed with Pika or RabbitMQ before, the examples page (tbd) is a good resource to get started.
 
 Using Pika
 ----------

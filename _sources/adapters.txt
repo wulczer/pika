@@ -25,12 +25,16 @@ such as Tornado's IOLoop, you may invoke that as you normally would and then add
 
 Example::
 
-    parameters = pika.ConnectionParameters(host)
-    connection = SelectConnection(parameters, on_connected)
+    # Create our connection object
+    connection = SelectConnection()
+
     try:
+        # Loop so we can communicate with RabbitMQ
         connection.ioloop.start()
     except KeyboardInterrupt:
+        # Gracefully close the connection
         connection.close()
+        # Loop until we're fully closed, will stop on its own
         connection.ioloop.start()
 
 
