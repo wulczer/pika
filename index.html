@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Introduction to Pika &mdash; Pika v0.9a documentation</title>
+    <title>Introduction to Pika &mdash; Pika 0.9a documentation</title>
+    
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Pika v0.9a documentation" href="#" />
+    <link rel="top" title="Pika 0.9a documentation" href="#" />
     <link rel="next" title="Connection Adapters" href="adapters.html" /> 
   </head>
   <body>
@@ -38,7 +41,7 @@
         <li class="right" >
           <a href="adapters.html" title="Connection Adapters"
              accesskey="N">next</a> |</li>
-        <li><a href="#">Pika v0.9a documentation</a> &raquo;</li> 
+        <li><a href="#">Pika 0.9a documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -50,34 +53,41 @@
   <div class="section" id="introduction-to-pika">
 <h1>Introduction to Pika<a class="headerlink" href="#introduction-to-pika" title="Permalink to this headline">¶</a></h1>
 <p>Pika is a pure-Python implementation of the AMQP 0-9-1 protocol that tries to stay fairly independent of the underlying network support library.</p>
-<div class="section" id="using-this-documentation">
-<h2>Using this Documentation<a class="headerlink" href="#using-this-documentation" title="Permalink to this headline">¶</a></h2>
-<p>This documentation is a combination of both user documentation and module development documentation. Classes called out in the Using Pika section below will cover a majority of what users who are implementation pika in their applications will need.</p>
-</div>
+<p>This documentation is a combination of both user documentation and module development documentation. Modules and classes called out in the Using Pika section below will cover a majority of what users who are implementation pika in their applications will need. The Pika Core Objects section below lists all of the modules that are internal to Pika.</p>
+<p>If you have not developed with Pika or RabbitMQ before, the examples page (tbd) is a good resource to get started with.</p>
 <div class="section" id="using-pika">
 <h2>Using Pika<a class="headerlink" href="#using-pika" title="Permalink to this headline">¶</a></h2>
 <p>Pika 0.9a is a major refactor of the Pika library implementing true asynchronous behavior at its core. It is important to understand asynchronous programming concepts to properly use Pika in your application. If you have previously used <a class="reference internal" href="channel.html#channel.Channel.basic_consume" title="channel.Channel.basic_consume"><tt class="xref py py-meth docutils literal"><span class="pre">basic_consume()</span></tt></a> in an application with Pika v0.5.2 or earlier, you have already implemented callback passing style asynchronous code with Pika.</p>
-<div class="section" id="adapters">
-<h3>Adapters<a class="headerlink" href="#adapters" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="module-adapters.base_connection">
+<span id="adapters"></span><h3>Adapters<a class="headerlink" href="#module-adapters.base_connection" title="Permalink to this headline">¶</a></h3>
 <p>Pika provides multiple adapters to connect to RabbitMQ:</p>
 <ul class="simple">
-<li><a class="reference internal" href="adapters.html#adapters.select_connection.SelectConnection" title="adapters.select_connection.SelectConnection"><tt class="xref py py-meth docutils literal"><span class="pre">SelectConnection()</span></tt></a>: A native event based connection adapter that implements select, kqueue, poll and epoll.</li>
-<li><a class="reference internal" href="adapters.html#adapters.asyncore_connection.AsyncoreConnection" title="adapters.asyncore_connection.AsyncoreConnection"><tt class="xref py py-meth docutils literal"><span class="pre">AsyncoreConnection()</span></tt></a>: Legacy adapter kept for convenience of previous Pika users. It is recommended to use the SelectConnection instead of AsyncoreConnection.</li>
-<li><a class="reference internal" href="adapters.html#adapters.tornado_connection.TornadoConnection" title="adapters.tornado_connection.TornadoConnection"><tt class="xref py py-meth docutils literal"><span class="pre">TornadoConnection()</span></tt></a>: Connection adapter for use with the Tornado IO Loop <a class="reference external" href="http://tornadoweb.org">http://tornadoweb.org</a></li>
-<li><a class="reference internal" href="adapters.html#adapters.blocking_connection.BlockingConnection" title="adapters.blocking_connection.BlockingConnection"><tt class="xref py py-meth docutils literal"><span class="pre">BlockingConnection()</span></tt></a>: Enables blocking, synchronous operation on top of library for simple uses. This is not recommended and is included for legacy reasons only.</li>
+<li><a class="reference internal" href="adapters.html#adapters.select_connection.SelectConnection" title="adapters.select_connection.SelectConnection"><tt class="xref py py-meth docutils literal"><span class="pre">SelectConnection()</span></tt></a>: A native event based connection
+adapter that implements select, kqueue, poll and epoll.</li>
+<li><a class="reference internal" href="adapters.html#adapters.asyncore_connection.AsyncoreConnection" title="adapters.asyncore_connection.AsyncoreConnection"><tt class="xref py py-meth docutils literal"><span class="pre">AsyncoreConnection()</span></tt></a>: Legacy adapter kept for
+convenience of previous Pika users. It is recommended to use the
+SelectConnection instead of AsyncoreConnection.</li>
+<li><a class="reference internal" href="adapters.html#adapters.tornado_connection.TornadoConnection" title="adapters.tornado_connection.TornadoConnection"><tt class="xref py py-meth docutils literal"><span class="pre">TornadoConnection()</span></tt></a>: Connection adapter for use
+with the Tornado IO Loop <a class="reference external" href="http://tornadoweb.org">http://tornadoweb.org</a></li>
+<li><a class="reference internal" href="adapters.html#adapters.blocking_connection.BlockingConnection" title="adapters.blocking_connection.BlockingConnection"><tt class="xref py py-meth docutils literal"><span class="pre">BlockingConnection()</span></tt></a>: Enables blocking,
+synchronous operation on top of library for simple uses. This is not
+recommended and is included for legacy reasons only.</li>
 </ul>
-<p>Choosing the right adapter for your project is important.</p>
+<p>For a basic overview off all the adapters and changes related to connecting to RabbitMQ, see the <a class="reference internal" href="adapters.html"><em>Connection Adapters</em></a> page.</p>
 </div>
 <div class="section" id="channel">
 <h3>Channel<a class="headerlink" href="#channel" title="Permalink to this headline">¶</a></h3>
-<p>The core communication with Pika is coordinated via the channel.Channel class. Pika invokes this for you when you call the <tt class="xref py py-meth docutils literal"><span class="pre">channel()</span></tt> method.</p>
+<p>The core communication with Pika is coordinated via the channel.Channel class. Pika invokes this for you when you call the <a class="reference internal" href="connection.html#connection.Connection.channel" title="connection.Connection.channel"><tt class="xref py py-meth docutils literal"><span class="pre">channel()</span></tt></a> method.</p>
 </div>
 <div class="section" id="pika-core-objects">
 <h3>Pika Core Objects<a class="headerlink" href="#pika-core-objects" title="Permalink to this headline">¶</a></h3>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="adapters.html">Connection Adapters</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="adapters.html#module-adapters.select_connection">Available Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters.html#tcp-backpressure">TCP Backpressure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters.html#io-and-event-looping">IO and Event Looping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters.html#continuation-passing-style">Continuation-Passing Style</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters.html#available-adapters">Available Adapters</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="callback.html">Callback</a></li>
@@ -87,6 +97,12 @@
 <li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="frames.html">Frames</a></li>
 <li class="toctree-l1"><a class="reference internal" href="heartbeat.html">Heartbeat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="log.html">Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="object.html">Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reconnection_strategies.html">Reconnection Strategies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simplebuffer.html">SimpleBuffer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spec.html">Spec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="table.html">Table</a></li>
 </ul>
 </div>
 </div>
@@ -119,9 +135,8 @@
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Introduction to Pika</a><ul>
-<li><a class="reference internal" href="#using-this-documentation">Using this Documentation</a></li>
 <li><a class="reference internal" href="#using-pika">Using Pika</a><ul>
-<li><a class="reference internal" href="#adapters">Adapters</a></li>
+<li><a class="reference internal" href="#module-adapters.base_connection">Adapters</a></li>
 <li><a class="reference internal" href="#channel">Channel</a></li>
 <li><a class="reference internal" href="#pika-core-objects">Pika Core Objects</a><ul>
 </ul>
@@ -171,12 +186,12 @@
         <li class="right" >
           <a href="adapters.html" title="Connection Adapters"
              >next</a> |</li>
-        <li><a href="#">Pika v0.9a documentation</a> &raquo;</li> 
+        <li><a href="#">Pika 0.9a documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, Tony Garnock-Jones, Gavin M. Roy and others.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1pre.
     </div>
   </body>
 </html>

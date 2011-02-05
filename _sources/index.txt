@@ -8,9 +8,9 @@ Introduction to Pika
 
 Pika is a pure-Python implementation of the AMQP 0-9-1 protocol that tries to stay fairly independent of the underlying network support library.
 
-Using this Documentation
-------------------------
-This documentation is a combination of both user documentation and module development documentation. Classes called out in the Using Pika section below will cover a majority of what users who are implementation pika in their applications will need.
+This documentation is a combination of both user documentation and module development documentation. Modules and classes called out in the Using Pika section below will cover a majority of what users who are implementation pika in their applications will need. The Pika Core Objects section below lists all of the modules that are internal to Pika.
+
+If you have not developed with Pika or RabbitMQ before, the examples page (tbd) is a good resource to get started with.
 
 Using Pika
 ----------
@@ -18,15 +18,10 @@ Pika 0.9a is a major refactor of the Pika library implementing true asynchronous
 
 Adapters
 ^^^^^^^^
+.. automodule:: adapters.base_connection
+   :members:
 
-Pika provides multiple adapters to connect to RabbitMQ:
-
-- :py:meth:`~adapters.select_connection.SelectConnection`: A native event based connection adapter that implements select, kqueue, poll and epoll.
-- :py:meth:`~adapters.asyncore_connection.AsyncoreConnection`: Legacy adapter kept for convenience of previous Pika users. It is recommended to use the SelectConnection instead of AsyncoreConnection.
-- :py:meth:`~adapters.tornado_connection.TornadoConnection`: Connection adapter for use with the Tornado IO Loop http://tornadoweb.org
-- :py:meth:`~adapters.blocking_connection.BlockingConnection`: Enables blocking, synchronous operation on top of library for simple uses. This is not recommended and is included for legacy reasons only.
-
-Choosing the right adapter for your project is important.
+For a basic overview off all the adapters and changes related to connecting to RabbitMQ, see the :doc:`/adapters` page.
 
 Channel
 ^^^^^^^
@@ -35,6 +30,7 @@ The core communication with Pika is coordinated via the channel.Channel class. P
 Pika Core Objects
 ^^^^^^^^^^^^^^^^^
 .. toctree::
+   :maxdepth: 2
 
    adapters
    callback
@@ -44,7 +40,12 @@ Pika Core Objects
    exceptions
    frames
    heartbeat
-
+   log
+   object
+   reconnection_strategies
+   simplebuffer
+   spec
+   table
 
 Pika Authors
 ^^^^^^^^^^^^

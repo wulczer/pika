@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Channel &mdash; Pika v0.9a documentation</title>
+    <title>Channel &mdash; Pika 0.9a documentation</title>
+    
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
@@ -22,9 +25,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Pika v0.9a documentation" href="index.html" />
+    <link rel="top" title="Pika 0.9a documentation" href="index.html" />
     <link rel="next" title="Connection" href="connection.html" />
-    <link rel="prev" title="Connection Adapters" href="adapters.html" /> 
+    <link rel="prev" title="Callback" href="callback.html" /> 
   </head>
   <body>
     <div class="related">
@@ -40,9 +43,9 @@
           <a href="connection.html" title="Connection"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="adapters.html" title="Connection Adapters"
+          <a href="callback.html" title="Callback"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Pika v0.9a documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9a documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -86,8 +89,7 @@ signature one creates for a basic_consume callback.</p>
 <dt id="channel.Channel.basic_ack">
 <tt class="descname">basic_ack</tt><big>(</big><em>delivery_tag=0</em>, <em>multiple=False</em><big>)</big><a class="headerlink" href="#channel.Channel.basic_ack" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the basic.ack AMQP command. For context and usage:</p>
-<blockquote>
-<div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html">http://www.rabbitmq.com/amqp-0-9-1-quickref.html</a></div></blockquote>
+<p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html">http://www.rabbitmq.com/amqp-0-9-1-quickref.html</a></p>
 </dd></dl>
 
 <dl class="method">
@@ -157,16 +159,14 @@ completed.</p>
 <dt id="channel.Channel.basic_recover_async">
 <tt class="descname">basic_recover_async</tt><big>(</big><em>requeue=False</em><big>)</big><a class="headerlink" href="#channel.Channel.basic_recover_async" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the basic.recover-async AMQP command. For context and usage:</p>
-<blockquote>
-<div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html">http://www.rabbitmq.com/amqp-0-9-1-quickref.html</a></div></blockquote>
+<p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html">http://www.rabbitmq.com/amqp-0-9-1-quickref.html</a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="channel.Channel.basic_reject">
 <tt class="descname">basic_reject</tt><big>(</big><em>delivery_tag=None</em>, <em>requeue=True</em><big>)</big><a class="headerlink" href="#channel.Channel.basic_reject" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the basic.reject AMQP command. For context and usage:</p>
-<blockquote>
-<div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html">http://www.rabbitmq.com/amqp-0-9-1-quickref.html</a></div></blockquote>
+<p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html">http://www.rabbitmq.com/amqp-0-9-1-quickref.html</a></p>
 </dd></dl>
 
 <dl class="method">
@@ -217,7 +217,7 @@ expect a bool in response indicating channel flow state</p>
 <dl class="method">
 <dt id="channel.Channel.queue_bind">
 <tt class="descname">queue_bind</tt><big>(</big><em>callback=None</em>, <em>ticket=0</em>, <em>queue=''</em>, <em>exchange=None</em>, <em>routing_key=''</em>, <em>nowait=False</em>, <em>arguments={}</em><big>)</big><a class="headerlink" href="#channel.Channel.queue_bind" title="Permalink to this definition">¶</a></dt>
-<dd><p>Implements the Queue.Bind AMQP command. For context and usage:</p>
+<dd><p>Implements the <tt class="xref py py-meth docutils literal"><span class="pre">Bind()</span></tt> AMQP command. For context and usage:</p>
 <blockquote>
 <div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html">http://www.rabbitmq.com/amqp-0-9-1-quickref.html</a></div></blockquote>
 <p>This is a synchronous method that will not allow other commands to be
@@ -229,7 +229,7 @@ completed.</p>
 <dl class="method">
 <dt id="channel.Channel.queue_declare">
 <tt class="descname">queue_declare</tt><big>(</big><em>callback=None</em>, <em>ticket=0</em>, <em>queue=''</em>, <em>passive=False</em>, <em>durable=False</em>, <em>exclusive=False</em>, <em>auto_delete=False</em>, <em>nowait=False</em>, <em>arguments={}</em><big>)</big><a class="headerlink" href="#channel.Channel.queue_declare" title="Permalink to this definition">¶</a></dt>
-<dd><p>Implements the Queue.Declare AMQP command. For context and usage:</p>
+<dd><p>Implements the <tt class="xref py py-meth docutils literal"><span class="pre">Declare()</span></tt> AMQP command. For context and usage:</p>
 <blockquote>
 <div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html">http://www.rabbitmq.com/amqp-0-9-1-quickref.html</a></div></blockquote>
 <p>This is a synchronous method that will not allow other commands to be
@@ -241,7 +241,7 @@ completed.</p>
 <dl class="method">
 <dt id="channel.Channel.queue_delete">
 <tt class="descname">queue_delete</tt><big>(</big><em>callback=None</em>, <em>ticket=0</em>, <em>queue=''</em>, <em>if_unused=False</em>, <em>if_empty=False</em>, <em>nowait=False</em><big>)</big><a class="headerlink" href="#channel.Channel.queue_delete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Implements the Queue.Delete AMQP command. For context and usage:</p>
+<dd><p>Implements the <tt class="xref py py-meth docutils literal"><span class="pre">Delete()</span></tt> AMQP command. For context and usage:</p>
 <blockquote>
 <div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html">http://www.rabbitmq.com/amqp-0-9-1-quickref.html</a></div></blockquote>
 <p>This is a synchronous method that will not allow other commands to be
@@ -253,7 +253,7 @@ completed.</p>
 <dl class="method">
 <dt id="channel.Channel.queue_purge">
 <tt class="descname">queue_purge</tt><big>(</big><em>callback=None</em>, <em>ticket=0</em>, <em>queue=''</em>, <em>nowait=False</em><big>)</big><a class="headerlink" href="#channel.Channel.queue_purge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Implements the Queue.Purge AMQP command. For context and usage:</p>
+<dd><p>Implements the <tt class="xref py py-meth docutils literal"><span class="pre">Purge()</span></tt> AMQP command. For context and usage:</p>
 <blockquote>
 <div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html">http://www.rabbitmq.com/amqp-0-9-1-quickref.html</a></div></blockquote>
 <p>This is a synchronous method that will not allow other commands to be
@@ -265,7 +265,7 @@ completed.</p>
 <dl class="method">
 <dt id="channel.Channel.queue_unbind">
 <tt class="descname">queue_unbind</tt><big>(</big><em>callback=None</em>, <em>ticket=0</em>, <em>queue=''</em>, <em>exchange=None</em>, <em>routing_key=''</em>, <em>arguments={}</em><big>)</big><a class="headerlink" href="#channel.Channel.queue_unbind" title="Permalink to this definition">¶</a></dt>
-<dd><p>Implements the Queue.Unbind AMQP command. For context and usage:</p>
+<dd><p>Implements the <tt class="xref py py-meth docutils literal"><span class="pre">Unbind()</span></tt> AMQP command. For context and usage:</p>
 <blockquote>
 <div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html">http://www.rabbitmq.com/amqp-0-9-1-quickref.html</a></div></blockquote>
 <p>This is a synchronous method that will not allow other commands to be
@@ -356,8 +356,8 @@ our channel number</p>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="adapters.html"
-                        title="previous chapter">Connection Adapters</a></p>
+  <p class="topless"><a href="callback.html"
+                        title="previous chapter">Callback</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="connection.html"
                         title="next chapter">Connection</a></p>
@@ -396,14 +396,14 @@ our channel number</p>
           <a href="connection.html" title="Connection"
              >next</a> |</li>
         <li class="right" >
-          <a href="adapters.html" title="Connection Adapters"
+          <a href="callback.html" title="Callback"
              >previous</a> |</li>
-        <li><a href="index.html">Pika v0.9a documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9a documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, Tony Garnock-Jones, Gavin M. Roy and others.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1pre.
     </div>
   </body>
 </html>
