@@ -10,7 +10,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Index &mdash; Pika 0.9.2a documentation</title>
+    <title>Index &mdash; Pika 0.9.3 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -18,7 +18,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.9.2a',
+        VERSION:     '0.9.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Pika 0.9.2a documentation" href="index.html" /> 
+    <link rel="top" title="Pika 0.9.3 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">Pika 0.9.2a documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9.3 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -653,12 +653,12 @@
   <dt><a href="spec.html#spec.Basic.RecoverOk">Basic.RecoverOk (class in spec)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="spec.html#spec.Basic.Reject">Basic.Reject (class in spec)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="spec.html#spec.Basic.Return">Basic.Return (class in spec)</a>
   </dt>
@@ -698,10 +698,14 @@
 
       </dl></dd>
       
-  <dt><a href="communicating.html#channel.Channel.basic_get">basic_get() (channel.Channel method)</a>
+  <dt><a href="communicating.html#blocking_connection.BlockingChannel.basic_get">basic_get() (blocking_connection.BlockingChannel method)</a>
   </dt>
 
       <dd><dl>
+        
+  <dt><a href="communicating.html#channel.Channel.basic_get">(channel.Channel method)</a>
+  </dt>
+
         
   <dt><a href="spec.html#spec.DriverMixin.basic_get">(spec.DriverMixin method)</a>
   </dt>
@@ -791,10 +795,6 @@
 
       
   <dt><a href="frames.html#frames.Body">Body (class in frames)</a>
-  </dt>
-
-      
-  <dt><a href="simplebuffer.html#simplebuffer.SimpleBuffer.buf">buf (simplebuffer.SimpleBuffer attribute)</a>
   </dt>
 
       
@@ -921,12 +921,12 @@
   <dt><a href="spec.html#spec.Confirm.Select">Confirm.Select (class in spec)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="spec.html#spec.Confirm.SelectOk">Confirm.SelectOk (class in spec)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="spec.html#spec.Connection">Connection (class in spec)</a>
   </dt>
@@ -984,10 +984,6 @@
   </dt>
 
       
-  <dt><a href="simplebuffer.html#simplebuffer.SimpleBuffer.consume">consume() (simplebuffer.SimpleBuffer method)</a>
-  </dt>
-
-      
   <dt><a href="communicating.html#blocking_connection.BlockingChannel.consumer_tags">consumer_tags (blocking_connection.BlockingChannel attribute)</a>
   </dt>
 
@@ -1011,10 +1007,6 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
-      
-  <dt><a href="log.html#debug">debug() (built-in function)</a>
-  </dt>
-
       
   <dt><a href="spec.html#spec.Access.Request.decode">decode() (spec.Access.Request method)</a>
   </dt>
@@ -1766,11 +1758,11 @@
 
       </dl></dd>
       
-  <dt><a href="simplebuffer.html#simplebuffer.SimpleBuffer.flush">flush() (simplebuffer.SimpleBuffer method)</a>
+  <dt><a href="connection.html#connection.ConnectionState.FOOTER_SIZE">FOOTER_SIZE (connection.ConnectionState attribute)</a>
   </dt>
 
       
-  <dt><a href="connection.html#connection.ConnectionState.FOOTER_SIZE">FOOTER_SIZE (connection.ConnectionState attribute)</a>
+  <dt><a href="log.html#log.FormatOutput">FormatOutput (class in log)</a>
   </dt>
 
       
@@ -2713,8 +2705,16 @@
   <dt><a href="exceptions.html#exceptions.SyntaxError.lineno">lineno (exceptions.SyntaxError attribute)</a>
   </dt>
 
+      
+  <dt><a href="log.html#module-log">log (module)</a>
+  </dt>
+
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="log.html#log.method_call">log.method_call() (built-in function)</a>
+  </dt>
+
       
   <dt><a href="exceptions.html#exceptions.LookupError">LookupError</a>
   </dt>
@@ -2747,8 +2747,6 @@
   <dt><a href="exceptions.html#exceptions.MemoryError">MemoryError</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="frames.html#frames.Method">Method (class in frames)</a>
   </dt>
@@ -2759,6 +2757,12 @@
   </dt>
 
       </dl></dd>
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="log.html#log.method_call">method_call() (in module log)</a>
+  </dt>
+
       
   <dt><a href="exceptions.html#exceptions.SyntaxError.msg">msg (exceptions.SyntaxError attribute)</a>
   </dt>
@@ -3393,20 +3397,20 @@
   <dt><a href="spec.html#spec.Tx.Commit.NAME">NAME (spec.Tx.Commit attribute)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="spec.html#spec.Tx.CommitOk.NAME">(spec.Tx.CommitOk attribute)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="spec.html#spec.Tx.CommitOk.name">name (spec.Tx.CommitOk attribute)</a>
   </dt>
 
       
-  <dt><a href="spec.html#spec.Tx.CommitOk.NAME">NAME (spec.Tx.CommitOk attribute)</a>
+  <dt><a href="spec.html#spec.Tx.Rollback.NAME">NAME (spec.Tx.Rollback attribute)</a>
   </dt>
 
-      <dd><dl>
-        
-  <dt><a href="spec.html#spec.Tx.Rollback.NAME">(spec.Tx.Rollback attribute)</a>
-  </dt>
-
-      </dl></dd>
       
   <dt><a href="spec.html#spec.Tx.Rollback.name">name (spec.Tx.Rollback attribute)</a>
   </dt>
@@ -3477,12 +3481,6 @@
   <dt><a href="exceptions.html#exceptions.SyntaxError.offset">offset (exceptions.SyntaxError attribute)</a>
   </dt>
 
-      <dd><dl>
-        
-  <dt><a href="simplebuffer.html#simplebuffer.SimpleBuffer.offset">(simplebuffer.SimpleBuffer attribute)</a>
-  </dt>
-
-      </dl></dd>
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
@@ -3708,14 +3706,6 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="simplebuffer.html#simplebuffer.SimpleBuffer.read">read() (simplebuffer.SimpleBuffer method)</a>
-  </dt>
-
-      
-  <dt><a href="simplebuffer.html#simplebuffer.SimpleBuffer.read_and_consume">read_and_consume() (simplebuffer.SimpleBuffer method)</a>
-  </dt>
-
-      
   <dt><a href="exceptions.html#exceptions.UnicodeDecodeError.reason">reason (exceptions.UnicodeDecodeError attribute)</a>
   </dt>
 
@@ -3737,12 +3727,12 @@
   <dt><a href="exceptions.html#exceptions.ReferenceError">ReferenceError</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="callback.html#callback.CallbackManager.remove">remove() (callback.CallbackManager method)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="adapters.html#adapters.select_connection.EPollPoller.remove_timeout">remove_timeout() (adapters.select_connection.EPollPoller method)</a>
   </dt>
@@ -3804,10 +3794,6 @@
   </dt>
 
       
-  <dt><a href="simplebuffer.html#simplebuffer.SimpleBuffer.send_to_socket">send_to_socket() (simplebuffer.SimpleBuffer method)</a>
-  </dt>
-
-      
   <dt><a href="connecting.html#adapters.asyncore_connection.AsyncoreConnection.set_backpressure_multiplier">set_backpressure_multiplier() (adapters.asyncore_connection.AsyncoreConnection method)</a>
   </dt>
 
@@ -3826,19 +3812,11 @@
 
       </dl></dd>
       
+  <dt><a href="log.html#log.setup">setup() (in module log)</a>
+  </dt>
+
+      
   <dt><a href="heartbeat.html#heartbeat.HeartbeatChecker.setup_timer">setup_timer() (heartbeat.HeartbeatChecker method)</a>
-  </dt>
-
-      
-  <dt><a href="simplebuffer.html#simplebuffer.SimpleBuffer">SimpleBuffer (class in simplebuffer)</a>
-  </dt>
-
-      
-  <dt><a href="simplebuffer.html#module-simplebuffer">simplebuffer (module)</a>
-  </dt>
-
-      
-  <dt><a href="simplebuffer.html#simplebuffer.SimpleBuffer.size">size (simplebuffer.SimpleBuffer attribute)</a>
   </dt>
 
       
@@ -3849,8 +3827,6 @@
   <dt><a href="exceptions.html#exceptions.StandardError">StandardError</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="exceptions.html#exceptions.UnicodeDecodeError.start">start (exceptions.UnicodeDecodeError attribute)</a>
   </dt>
@@ -3865,6 +3841,8 @@
   </dt>
 
       </dl></dd>
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="adapters.html#adapters.select_connection.EPollPoller.start">start() (adapters.select_connection.EPollPoller method)</a>
   </dt>
@@ -4372,12 +4350,6 @@
   </dt>
 
   </dl></td>
-  <td style="width: 33%" valign="top"><dl>
-      
-  <dt><a href="simplebuffer.html#simplebuffer.SimpleBuffer.write">write() (simplebuffer.SimpleBuffer method)</a>
-  </dt>
-
-  </dl></td>
 </tr></table>
 
 <h2 id="Z">Z</h2>
@@ -4426,7 +4398,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">Pika 0.9.2a documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9.3 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

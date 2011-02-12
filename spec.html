@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>spec &mdash; Pika 0.9.2a documentation</title>
+    <title>spec &mdash; Pika 0.9.3 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.9.2a',
+        VERSION:     '0.9.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Pika 0.9.2a documentation" href="index.html" />
+    <link rel="top" title="Pika 0.9.3 documentation" href="index.html" />
     <link rel="next" title="table" href="table.html" />
     <link rel="prev" title="simplebuffer" href="simplebuffer.html" /> 
   </head>
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="simplebuffer.html" title="simplebuffer"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Pika 0.9.2a documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9.3 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -2172,14 +2172,14 @@
 <em class="property">class </em><tt class="descclassname">spec.</tt><tt class="descname">DriverMixin</tt><a class="headerlink" href="#spec.DriverMixin" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="spec.DriverMixin.basic_ack">
-<tt class="descname">basic_ack</tt><big>(</big><em>delivery_tag=0</em>, <em>multiple=False</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.basic_ack" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">basic_ack</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.basic_ack" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the basic.ack AMQP command. For context and usage:</p>
 <p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.ack">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.ack</a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="spec.DriverMixin.basic_get">
-<tt class="descname">basic_get</tt><big>(</big><em>callback=None</em>, <em>ticket=0</em>, <em>queue=''</em>, <em>no_ack=False</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.basic_get" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">basic_get</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.basic_get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the Basic.Get AMQP command. For context and usage:</p>
 <blockquote>
 <div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.get">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.get</a></div></blockquote>
@@ -2191,7 +2191,7 @@ completed.</p>
 
 <dl class="method">
 <dt id="spec.DriverMixin.basic_qos">
-<tt class="descname">basic_qos</tt><big>(</big><em>callback=None</em>, <em>prefetch_size=0</em>, <em>prefetch_count=0</em>, <em>global_=False</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.basic_qos" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">basic_qos</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.basic_qos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the Basic.Qos AMQP command. For context and usage:</p>
 <blockquote>
 <div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.qos">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.qos</a></div></blockquote>
@@ -2203,7 +2203,7 @@ completed.</p>
 
 <dl class="method">
 <dt id="spec.DriverMixin.basic_recover">
-<tt class="descname">basic_recover</tt><big>(</big><em>callback=None</em>, <em>requeue=False</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.basic_recover" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">basic_recover</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.basic_recover" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the Basic.Recover AMQP command. For context and usage:</p>
 <blockquote>
 <div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.recover">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.recover</a></div></blockquote>
@@ -2215,21 +2215,21 @@ completed.</p>
 
 <dl class="method">
 <dt id="spec.DriverMixin.basic_recover_async">
-<tt class="descname">basic_recover_async</tt><big>(</big><em>requeue=False</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.basic_recover_async" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">basic_recover_async</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.basic_recover_async" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the basic.recover-async AMQP command. For context and usage:</p>
 <p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.recover_async">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.recover_async</a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="spec.DriverMixin.basic_reject">
-<tt class="descname">basic_reject</tt><big>(</big><em>delivery_tag=None</em>, <em>requeue=True</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.basic_reject" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">basic_reject</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.basic_reject" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the basic.reject AMQP command. For context and usage:</p>
 <p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.reject">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.reject</a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="spec.DriverMixin.exchange_declare">
-<tt class="descname">exchange_declare</tt><big>(</big><em>callback=None</em>, <em>ticket=0</em>, <em>exchange=None</em>, <em>type='direct'</em>, <em>passive=False</em>, <em>durable=False</em>, <em>auto_delete=False</em>, <em>internal=False</em>, <em>nowait=False</em>, <em>arguments={}</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.exchange_declare" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">exchange_declare</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.exchange_declare" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the Exchange.Declare AMQP command. For context and usage:</p>
 <blockquote>
 <div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#exchange.declare">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#exchange.declare</a></div></blockquote>
@@ -2241,7 +2241,7 @@ completed.</p>
 
 <dl class="method">
 <dt id="spec.DriverMixin.exchange_delete">
-<tt class="descname">exchange_delete</tt><big>(</big><em>callback=None</em>, <em>ticket=0</em>, <em>exchange=None</em>, <em>if_unused=False</em>, <em>nowait=False</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.exchange_delete" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">exchange_delete</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.exchange_delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the Exchange.Delete AMQP command. For context and usage:</p>
 <blockquote>
 <div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#exchange.delete">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#exchange.delete</a></div></blockquote>
@@ -2253,7 +2253,7 @@ completed.</p>
 
 <dl class="method">
 <dt id="spec.DriverMixin.queue_bind">
-<tt class="descname">queue_bind</tt><big>(</big><em>callback=None</em>, <em>ticket=0</em>, <em>queue=''</em>, <em>exchange=None</em>, <em>routing_key=''</em>, <em>nowait=False</em>, <em>arguments={}</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.queue_bind" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">queue_bind</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.queue_bind" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the <a class="reference internal" href="#spec.Queue.Bind" title="spec.Queue.Bind"><tt class="xref py py-meth docutils literal"><span class="pre">Bind()</span></tt></a> AMQP command. For context and usage:</p>
 <blockquote>
 <div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#queue.bind">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#queue.bind</a></div></blockquote>
@@ -2265,7 +2265,7 @@ completed.</p>
 
 <dl class="method">
 <dt id="spec.DriverMixin.queue_declare">
-<tt class="descname">queue_declare</tt><big>(</big><em>callback=None</em>, <em>ticket=0</em>, <em>queue=''</em>, <em>passive=False</em>, <em>durable=False</em>, <em>exclusive=False</em>, <em>auto_delete=False</em>, <em>nowait=False</em>, <em>arguments={}</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.queue_declare" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">queue_declare</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.queue_declare" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the <a class="reference internal" href="#spec.Queue.Declare" title="spec.Queue.Declare"><tt class="xref py py-meth docutils literal"><span class="pre">Declare()</span></tt></a> AMQP command. For context and usage:</p>
 <blockquote>
 <div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#queue.declare">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#queue.declare</a></div></blockquote>
@@ -2277,7 +2277,7 @@ completed.</p>
 
 <dl class="method">
 <dt id="spec.DriverMixin.queue_delete">
-<tt class="descname">queue_delete</tt><big>(</big><em>callback=None</em>, <em>ticket=0</em>, <em>queue=''</em>, <em>if_unused=False</em>, <em>if_empty=False</em>, <em>nowait=False</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.queue_delete" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">queue_delete</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.queue_delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the <a class="reference internal" href="#spec.Queue.Delete" title="spec.Queue.Delete"><tt class="xref py py-meth docutils literal"><span class="pre">Delete()</span></tt></a> AMQP command. For context and usage:</p>
 <blockquote>
 <div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#queue.delete">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#queue.delete</a></div></blockquote>
@@ -2289,7 +2289,7 @@ completed.</p>
 
 <dl class="method">
 <dt id="spec.DriverMixin.queue_purge">
-<tt class="descname">queue_purge</tt><big>(</big><em>callback=None</em>, <em>ticket=0</em>, <em>queue=''</em>, <em>nowait=False</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.queue_purge" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">queue_purge</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.queue_purge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the <a class="reference internal" href="#spec.Queue.Purge" title="spec.Queue.Purge"><tt class="xref py py-meth docutils literal"><span class="pre">Purge()</span></tt></a> AMQP command. For context and usage:</p>
 <blockquote>
 <div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#queue.purge">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#queue.purge</a></div></blockquote>
@@ -2301,7 +2301,7 @@ completed.</p>
 
 <dl class="method">
 <dt id="spec.DriverMixin.queue_unbind">
-<tt class="descname">queue_unbind</tt><big>(</big><em>callback=None</em>, <em>ticket=0</em>, <em>queue=''</em>, <em>exchange=None</em>, <em>routing_key=''</em>, <em>arguments={}</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.queue_unbind" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">queue_unbind</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.queue_unbind" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the <a class="reference internal" href="#spec.Queue.Unbind" title="spec.Queue.Unbind"><tt class="xref py py-meth docutils literal"><span class="pre">Unbind()</span></tt></a> AMQP command. For context and usage:</p>
 <blockquote>
 <div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#queue.unbind">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#queue.unbind</a></div></blockquote>
@@ -2313,7 +2313,7 @@ completed.</p>
 
 <dl class="method">
 <dt id="spec.DriverMixin.tx_commit">
-<tt class="descname">tx_commit</tt><big>(</big><em>callback=None</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.tx_commit" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">tx_commit</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.tx_commit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the Tx.Commit AMQP command. For context and usage:</p>
 <blockquote>
 <div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#tx.commit">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#tx.commit</a></div></blockquote>
@@ -2325,7 +2325,7 @@ completed.</p>
 
 <dl class="method">
 <dt id="spec.DriverMixin.tx_rollback">
-<tt class="descname">tx_rollback</tt><big>(</big><em>callback=None</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.tx_rollback" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">tx_rollback</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.tx_rollback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the Tx.Rollback AMQP command. For context and usage:</p>
 <blockquote>
 <div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#tx.rollback">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#tx.rollback</a></div></blockquote>
@@ -2337,7 +2337,7 @@ completed.</p>
 
 <dl class="method">
 <dt id="spec.DriverMixin.tx_select">
-<tt class="descname">tx_select</tt><big>(</big><em>callback=None</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.tx_select" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">tx_select</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#spec.DriverMixin.tx_select" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the Tx.Select AMQP command. For context and usage:</p>
 <blockquote>
 <div><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#tx.select">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#tx.select</a></div></blockquote>
@@ -3665,7 +3665,7 @@ completed.</p>
         <li class="right" >
           <a href="simplebuffer.html" title="simplebuffer"
              >previous</a> |</li>
-        <li><a href="index.html">Pika 0.9.2a documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9.3 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

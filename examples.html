@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Examples &mdash; Pika 0.9.2a documentation</title>
+    <title>Examples &mdash; Pika 0.9.3 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.9.2a',
+        VERSION:     '0.9.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Pika 0.9.2a documentation" href="index.html" />
+    <link rel="top" title="Pika 0.9.3 documentation" href="index.html" />
     <link rel="next" title="Frequently Asked Questions" href="faq.html" />
     <link rel="prev" title="Communicating with RabbitMQ" href="communicating.html" /> 
   </head>
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="communicating.html" title="Communicating with RabbitMQ"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Pika 0.9.2a documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9.3 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -56,56 +56,53 @@
             
   <div class="section" id="examples">
 <h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
-<p>The following basic examples are available in the <a class="reference external" href="https://github.com/tonyg/pika/tree/master/examples">examples directory on github</a>:</p>
+<p>The following basic examples are available in the <a class="reference external" href="https://github.com/tonyg/pika/tree/master/examples">examples directory on github</a>. For additional examples including the use of Tornado, see the <a class="reference external" href="https://github.com/tonyg/pika/tree/master/examples">examples directory on github</a>.</p>
 <div class="section" id="asynchronous-examples">
 <h2>Asynchronous Examples<a class="headerlink" href="#asynchronous-examples" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="demo-get">
 <h3>demo_get<a class="headerlink" href="#demo-get" title="Permalink to this headline">¶</a></h3>
-<p>This example demonstrates how to use <a class="reference internal" href="communicating.html#channel.Channel.basic_get" title="channel.Channel.basic_get"><tt class="xref py py-meth docutils literal"><span class="pre">channel.Channel.basic_get()</span></tt></a> and acknowledge the message using :py:meth`channel.Channel.basic_ack`:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+<p>This example demonstrates how to use <a class="reference internal" href="communicating.html#channel.Channel.basic_get" title="channel.Channel.basic_get"><tt class="xref py py-meth docutils literal"><span class="pre">Channel.basic_get()</span></tt></a> and acknowledge the message using <a class="reference internal" href="communicating.html#channel.Channel.basic_ack" title="channel.Channel.basic_ack"><tt class="xref py py-meth docutils literal"><span class="pre">Channel.basic_ack()</span></tt></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">pika</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">pika.adapters</span> <span class="kn">import</span> <span class="n">SelectConnection</span>
-
-<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">pika</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
 <span class="n">connection</span> <span class="o">=</span> <span class="bp">None</span>
 <span class="n">channel</span> <span class="o">=</span> <span class="bp">None</span>
 
+<span class="c"># Import all adapters for easier experimentation</span>
+<span class="kn">from</span> <span class="nn">pika.adapters</span> <span class="kn">import</span> <span class="o">*</span>
+
 
 <span class="k">def</span> <span class="nf">on_connected</span><span class="p">(</span><span class="n">connection</span><span class="p">):</span>
-    <span class="k">global</span> <span class="n">channel</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;demo_get: Connected to RabbitMQ&quot;</span><span class="p">)</span>
+    <span class="n">pika</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;demo_send: Connected to RabbitMQ&quot;</span><span class="p">)</span>
     <span class="n">connection</span><span class="o">.</span><span class="n">channel</span><span class="p">(</span><span class="n">on_channel_open</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">on_channel_open</span><span class="p">(</span><span class="n">channel_</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">channel</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;demo_get: Received our Channel&quot;</span><span class="p">)</span>
     <span class="n">channel</span> <span class="o">=</span> <span class="n">channel_</span>
+    <span class="n">pika</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;demo_send: Received our Channel&quot;</span><span class="p">)</span>
     <span class="n">channel</span><span class="o">.</span><span class="n">queue_declare</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="n">durable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
                           <span class="n">exclusive</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">auto_delete</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
                           <span class="n">callback</span><span class="o">=</span><span class="n">on_queue_declared</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">on_queue_declared</span><span class="p">(</span><span class="n">frame</span><span class="p">):</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;demo_get: Queue Declared&quot;</span><span class="p">)</span>
-    <span class="n">connection</span><span class="o">.</span><span class="n">add_timeout</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">basic_get</span><span class="p">)</span>
+    <span class="n">pika</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;demo_send: Queue Declared&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s">&quot;Hello World #</span><span class="si">%i</span><span class="s">: </span><span class="si">%.8f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="n">pika</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Sending: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">message</span><span class="p">)</span>
+        <span class="n">channel</span><span class="o">.</span><span class="n">basic_publish</span><span class="p">(</span><span class="n">exchange</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+                              <span class="n">routing_key</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">,</span>
+                              <span class="n">body</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>
+                              <span class="n">properties</span><span class="o">=</span><span class="n">pika</span><span class="o">.</span><span class="n">BasicProperties</span><span class="p">(</span>
+                              <span class="n">content_type</span><span class="o">=</span><span class="s">&quot;text/plain&quot;</span><span class="p">,</span>
+                              <span class="n">delivery_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
 
-
-<span class="k">def</span> <span class="nf">basic_get</span><span class="p">():</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Invoking Basic.Get&quot;</span><span class="p">)</span>
-    <span class="n">channel</span><span class="o">.</span><span class="n">basic_get</span><span class="p">(</span><span class="n">callback</span><span class="o">=</span><span class="n">handle_delivery</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">)</span>
-    <span class="n">connection</span><span class="o">.</span><span class="n">add_timeout</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">basic_get</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">handle_delivery</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;demo_get.handle_delivery&quot;</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;method=</span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">method</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;header=</span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">header</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;  body=</span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">body</span><span class="p">)</span>
-    <span class="n">channel</span><span class="o">.</span><span class="n">basic_ack</span><span class="p">(</span><span class="n">delivery_tag</span><span class="o">=</span><span class="n">method</span><span class="o">.</span><span class="n">delivery_tag</span><span class="p">)</span>
+    <span class="c"># Close our connection</span>
+    <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">host</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="s">&#39;127.0.0.1&#39;</span>
@@ -121,14 +118,14 @@
 </div>
 <div class="section" id="demo-receive">
 <h3>demo_receive<a class="headerlink" href="#demo-receive" title="Permalink to this headline">¶</a></h3>
-<p>This example shows how to use <a class="reference internal" href="communicating.html#channel.Channel.basic_consume" title="channel.Channel.basic_consume"><tt class="xref py py-meth docutils literal"><span class="pre">channel.Channel.basic_consume()</span></tt></a> to receive messages from RabbitMQ and then acknowledge them using :py:meth`channel.Channel.basic_ack`:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<p>This example shows how to use <a class="reference internal" href="communicating.html#channel.Channel.basic_consume" title="channel.Channel.basic_consume"><tt class="xref py py-meth docutils literal"><span class="pre">Channel.basic_consume()</span></tt></a> to receive messages from RabbitMQ and then acknowledge them using <a class="reference internal" href="communicating.html#channel.Channel.basic_ack" title="channel.Channel.basic_ack"><tt class="xref py py-meth docutils literal"><span class="pre">Channel.basic_ack()</span></tt></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">pika</span>
 
-<span class="kn">from</span> <span class="nn">pika.adapters</span> <span class="kn">import</span> <span class="n">SelectConnection</span>
+<span class="c"># Import all adapters for easier experimentation</span>
+<span class="kn">from</span> <span class="nn">pika.adapters</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">pika</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">pika</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
 <span class="n">connection</span> <span class="o">=</span> <span class="bp">None</span>
 <span class="n">channel</span> <span class="o">=</span> <span class="bp">None</span>
@@ -136,30 +133,30 @@
 
 <span class="k">def</span> <span class="nf">on_connected</span><span class="p">(</span><span class="n">connection</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">channel</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;demo_receive: Connected to RabbitMQ&quot;</span><span class="p">)</span>
+    <span class="n">pika</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;demo_receive: Connected to RabbitMQ&quot;</span><span class="p">)</span>
     <span class="n">connection</span><span class="o">.</span><span class="n">channel</span><span class="p">(</span><span class="n">on_channel_open</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">on_channel_open</span><span class="p">(</span><span class="n">channel_</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">channel</span>
     <span class="n">channel</span> <span class="o">=</span> <span class="n">channel_</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;demo_receive: Received our Channel&quot;</span><span class="p">)</span>
+    <span class="n">pika</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;demo_receive: Received our Channel&quot;</span><span class="p">)</span>
     <span class="n">channel</span><span class="o">.</span><span class="n">queue_declare</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="n">durable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
                           <span class="n">exclusive</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">auto_delete</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
                           <span class="n">callback</span><span class="o">=</span><span class="n">on_queue_declared</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">on_queue_declared</span><span class="p">(</span><span class="n">frame</span><span class="p">):</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;demo_receive: Queue Declared&quot;</span><span class="p">)</span>
+    <span class="n">pika</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;demo_receive: Queue Declared&quot;</span><span class="p">)</span>
     <span class="n">channel</span><span class="o">.</span><span class="n">basic_consume</span><span class="p">(</span><span class="n">handle_delivery</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="s">&#39;test&#39;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">handle_delivery</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;demo_receive.handle_delivery&quot;</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;  method: </span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">method</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;  header: </span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">header</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;    body: </span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">body</span><span class="p">)</span>
-    <span class="n">channel</span><span class="o">.</span><span class="n">basic_ack</span><span class="p">(</span><span class="n">delivery_tag</span><span class="o">=</span><span class="n">method</span><span class="o">.</span><span class="n">delivery_tag</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handle_delivery</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">method_frame</span><span class="p">,</span> <span class="n">header_frame</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
+    <span class="n">pika</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Basic.Deliver </span><span class="si">%s</span><span class="s"> delivery-tag </span><span class="si">%i</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span>
+                  <span class="n">header_frame</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span>
+                  <span class="n">method_frame</span><span class="o">.</span><span class="n">delivery_tag</span><span class="p">,</span>
+                  <span class="n">body</span><span class="p">)</span>
+    <span class="n">channel</span><span class="o">.</span><span class="n">basic_ack</span><span class="p">(</span><span class="n">delivery_tag</span><span class="o">=</span><span class="n">method_frame</span><span class="o">.</span><span class="n">delivery_tag</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">host</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="s">&#39;127.0.0.1&#39;</span>
@@ -175,18 +172,18 @@
 </div>
 <div class="section" id="demo-send">
 <h3>demo_send<a class="headerlink" href="#demo-send" title="Permalink to this headline">¶</a></h3>
-<p>This example shows how to use <tt class="xref py py-meth docutils literal"><span class="pre">channel.Channel.basic_deliver()</span></tt> to send a message to RabbitMQ:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<p>This example shows how to use <a class="reference internal" href="communicating.html#channel.Channel.basic_publish" title="channel.Channel.basic_publish"><tt class="xref py py-meth docutils literal"><span class="pre">Channel.basic_publish()</span></tt></a> to send a message to RabbitMQ:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">pika</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">pika.adapters</span> <span class="kn">import</span> <span class="n">SelectConnection</span>
-
-<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">pika</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
 <span class="n">connection</span> <span class="o">=</span> <span class="bp">None</span>
 <span class="n">channel</span> <span class="o">=</span> <span class="bp">None</span>
+
+<span class="c"># Import all adapters for easier experimentation</span>
+<span class="kn">from</span> <span class="nn">pika.adapters</span> <span class="kn">import</span> <span class="o">*</span>
 
 
 <span class="k">def</span> <span class="nf">on_connected</span><span class="p">(</span><span class="n">connection</span><span class="p">):</span>
@@ -212,8 +209,8 @@
                               <span class="n">routing_key</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">,</span>
                               <span class="n">body</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>
                               <span class="n">properties</span><span class="o">=</span><span class="n">pika</span><span class="o">.</span><span class="n">BasicProperties</span><span class="p">(</span>
-                              <span class="n">content_type</span><span class="o">=</span><span class="s">&quot;text/plain&quot;</span><span class="p">,</span>
-                              <span class="n">delivery_mode</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>  <span class="c"># persist</span>
+                                  <span class="n">content_type</span><span class="o">=</span><span class="s">&quot;text/plain&quot;</span><span class="p">,</span>
+                                  <span class="n">delivery_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
 
     <span class="c"># Close our connection</span>
     <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -233,17 +230,16 @@
 </div>
 <div class="section" id="blocking-examples">
 <h2>Blocking Examples<a class="headerlink" href="#blocking-examples" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id1">
-<h3>demo_get<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<p>This example demonstrates how to use <a class="reference internal" href="communicating.html#channel.Channel.basic_get" title="channel.Channel.basic_get"><tt class="xref py py-meth docutils literal"><span class="pre">channel.Channel.basic_get()</span></tt></a> and acknowledge the message using :py:meth`channel.Channel.basic_ack` while using the <a class="reference internal" href="connecting.html#adapters-blocking-connection-blockingconnection"><em>BlockingConnection</em></a>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<div class="section" id="id2">
+<h3>demo_get<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>This example demonstrates how to use <a class="reference internal" href="communicating.html#blocking_connection.BlockingChannel.basic_get" title="blocking_connection.BlockingChannel.basic_get"><tt class="xref py py-meth docutils literal"><span class="pre">BlockingChannel.basic_get()</span></tt></a> and acknowledge the message using <a class="reference internal" href="communicating.html#blocking_connection.BlockingChannel.basic_ack" title="blocking_connection.BlockingChannel.basic_ack"><tt class="xref py py-meth docutils literal"><span class="pre">BlockingChannel.basic_ack()</span></tt></a> while using the <a class="reference internal" href="connecting.html#adapters-blocking-connection-blockingconnection"><em>BlockingConnection</em></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">pika</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">from</span> <span class="nn">pika.adapters</span> <span class="kn">import</span> <span class="n">BlockingConnection</span>
 
-<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">pika</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="c"># Connect to RabbitMQ</span>
@@ -266,13 +262,14 @@
 
         <span class="c"># It can be empty if the queue is empty so don&#39;t do anything</span>
         <span class="k">if</span> <span class="n">method_frame</span><span class="o">.</span><span class="n">NAME</span> <span class="o">==</span> <span class="s">&#39;Basic.GetEmpty&#39;</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Empty Basic.Get Response (Basic.GetEmpty)&quot;</span><span class="p">)</span>
+            <span class="n">pika</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Empty Basic.Get Response (Basic.GetEmpty)&quot;</span><span class="p">)</span>
 
         <span class="c"># We have data</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Method: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">method_frame</span><span class="p">)</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Header: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">header_frame</span><span class="p">)</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;  Body: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">body</span><span class="p">)</span>
+            <span class="n">pika</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Basic.GetOk </span><span class="si">%s</span><span class="s"> delivery-tag </span><span class="si">%i</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span>
+                          <span class="n">header_frame</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span>
+                          <span class="n">method_frame</span><span class="o">.</span><span class="n">delivery_tag</span><span class="p">,</span>
+                          <span class="n">body</span><span class="p">)</span>
 
             <span class="c"># Acknowledge the receipt of the data</span>
             <span class="n">channel</span><span class="o">.</span><span class="n">basic_ack</span><span class="p">(</span><span class="n">delivery_tag</span><span class="o">=</span><span class="n">method_frame</span><span class="o">.</span><span class="n">delivery_tag</span><span class="p">)</span>
@@ -283,25 +280,24 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="id2">
-<h3>demo_receive<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
-<p>This example shows how to use <a class="reference internal" href="communicating.html#channel.Channel.basic_consume" title="channel.Channel.basic_consume"><tt class="xref py py-meth docutils literal"><span class="pre">channel.Channel.basic_consume()</span></tt></a> to receive messages from RabbitMQ and then acknowledge them using :py:meth`channel.Channel.basic_ack` while using the <a class="reference internal" href="connecting.html#adapters-blocking-connection-blockingconnection"><em>BlockingConnection</em></a>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">pika</span>
+<div class="section" id="id3">
+<h3>demo_receive<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>This example shows how to use <a class="reference internal" href="communicating.html#blocking_connection.BlockingChannel.basic_consume" title="blocking_connection.BlockingChannel.basic_consume"><tt class="xref py py-meth docutils literal"><span class="pre">BlockingChannel.basic_consume()</span></tt></a> to receive messages from RabbitMQ and then acknowledge them using <a class="reference internal" href="communicating.html#blocking_connection.BlockingChannel.basic_ack" title="blocking_connection.BlockingChannel.basic_ack"><tt class="xref py py-meth docutils literal"><span class="pre">BlockingChannel.basic_ack()</span></tt></a> while using the <a class="reference internal" href="connecting.html#adapters-blocking-connection-blockingconnection"><em>BlockingConnection</em></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pika</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="kn">from</span> <span class="nn">pika.adapters</span> <span class="kn">import</span> <span class="n">BlockingConnection</span>
 
-<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">pika</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">handle_delivery</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">handle_delivery</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">method_frame</span><span class="p">,</span> <span class="n">header_frame</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
     <span class="c"># Receive the data in 3 frames from RabbitMQ</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;demo_receive.handle_delivery&quot;</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;  method: </span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">method</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;  header: </span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">header</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;    body: </span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">body</span><span class="p">)</span>
-    <span class="n">channel</span><span class="o">.</span><span class="n">basic_ack</span><span class="p">(</span><span class="n">delivery_tag</span><span class="o">=</span><span class="n">method</span><span class="o">.</span><span class="n">delivery_tag</span><span class="p">)</span>
+    <span class="n">pika</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Basic.Deliver </span><span class="si">%s</span><span class="s"> delivery-tag </span><span class="si">%i</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span>
+                  <span class="n">header_frame</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span>
+                  <span class="n">method_frame</span><span class="o">.</span><span class="n">delivery_tag</span><span class="p">,</span>
+                  <span class="n">body</span><span class="p">)</span>
+    <span class="n">channel</span><span class="o">.</span><span class="n">basic_ack</span><span class="p">(</span><span class="n">delivery_tag</span><span class="o">=</span><span class="n">method_frame</span><span class="o">.</span><span class="n">delivery_tag</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="c"># Connect to RabbitMQ</span>
@@ -321,18 +317,16 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="id3">
-<h3>demo_send<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<p>This example shows how to use <tt class="xref py py-meth docutils literal"><span class="pre">channel.Channel.basic_deliver()</span></tt> to send a message to RabbitMQ while using the <a class="reference internal" href="connecting.html#adapters-blocking-connection-blockingconnection"><em>BlockingConnection</em></a>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">pika</span>
+<div class="section" id="id4">
+<h3>demo_send<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>This example shows how to use <a class="reference internal" href="communicating.html#blocking_connection.BlockingChannel.basic_publish" title="blocking_connection.BlockingChannel.basic_publish"><tt class="xref py py-meth docutils literal"><span class="pre">BlockingChannel.basic_publish()</span></tt></a> to send a message to RabbitMQ while using the <a class="reference internal" href="connecting.html#adapters-blocking-connection-blockingconnection"><em>BlockingConnection</em></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pika</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">from</span> <span class="nn">pika.adapters</span> <span class="kn">import</span> <span class="n">BlockingConnection</span>
 
-<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
-
+<span class="n">pika</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="c"># Connect to RabbitMQ</span>
@@ -358,16 +352,14 @@
                               <span class="n">body</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>
                               <span class="n">properties</span><span class="o">=</span><span class="n">pika</span><span class="o">.</span><span class="n">BasicProperties</span><span class="p">(</span>
                               <span class="n">content_type</span><span class="o">=</span><span class="s">&quot;text/plain&quot;</span><span class="p">,</span>
-                              <span class="n">delivery_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>  <span class="c"># persistent</span>
+                              <span class="n">delivery_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
         <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="n">count</span> <span class="o">%</span> <span class="mi">1000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%i</span><span class="s"> Messages Sent: </span><span class="si">%.8f</span><span class="s"> per second&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">count</span><span class="p">,</span>
-                                                                <span class="n">count</span> <span class="o">/</span> \
-                                                                <span class="n">duration</span><span class="p">))</span>
+            <span class="n">pika</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%i</span><span class="s"> Messages Sent: </span><span class="si">%.8f</span><span class="s"> per second&quot;</span><span class="p">,</span>
+                          <span class="n">count</span><span class="p">,</span> <span class="n">count</span> <span class="o">/</span> <span class="n">duration</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>For other examples including the use of Tornado, see the <a class="reference external" href="https://github.com/tonyg/pika/tree/master/examples">examples directory on github</a>.</p>
 </div>
 </div>
 </div>
@@ -388,9 +380,9 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#blocking-examples">Blocking Examples</a><ul>
-<li><a class="reference internal" href="#id1">demo_get</a></li>
-<li><a class="reference internal" href="#id2">demo_receive</a></li>
-<li><a class="reference internal" href="#id3">demo_send</a></li>
+<li><a class="reference internal" href="#id2">demo_get</a></li>
+<li><a class="reference internal" href="#id3">demo_receive</a></li>
+<li><a class="reference internal" href="#id4">demo_send</a></li>
 </ul>
 </li>
 </ul>
@@ -440,7 +432,7 @@
         <li class="right" >
           <a href="communicating.html" title="Communicating with RabbitMQ"
              >previous</a> |</li>
-        <li><a href="index.html">Pika 0.9.2a documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9.3 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
