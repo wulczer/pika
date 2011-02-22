@@ -33,7 +33,7 @@ You may also download the source for this version as a zip or tar.gz with the fo
 
  - http://pypi.python.org/packages/source/p/pika/pika-0.9.4.tar.gz
 
-   MD5 File Signature: 5903fc29239e6ee403fec3a7c16fd65c
+   MD5 File Signature: a00b44080c438e3233c05073a145e3dc
 
 To install from source, run "python setup.py install" in the root source directory.
 
