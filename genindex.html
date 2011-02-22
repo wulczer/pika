@@ -10,7 +10,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Index &mdash; Pika 0.9.3 documentation</title>
+    <title>Index &mdash; Pika 0.9.4 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -18,7 +18,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.9.3',
+        VERSION:     '0.9.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Pika 0.9.3 documentation" href="index.html" /> 
+    <link rel="top" title="Pika 0.9.4 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">Pika 0.9.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9.4 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -101,10 +101,8 @@
   <dt><a href="channel.html#channel.ChannelTransport._has_content">_has_content() (channel.ChannelTransport method)</a>
   </dt>
 
-      
-  <dt><a href="connection.html#connection.ConnectionState._inbound">_inbound() (connection.ConnectionState method)</a>
-  </dt>
-
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="frames.html#frames.Body._marshal">_marshal() (frames.Body method)</a>
   </dt>
@@ -131,18 +129,12 @@
   <dt><a href="channel.html#channel.ChannelTransport._on_event_ok">_on_event_ok() (channel.ChannelTransport method)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="channel.html#channel.ChannelTransport._on_open">_on_open() (channel.ChannelTransport method)</a>
   </dt>
 
       
   <dt><a href="channel.html#channel.ChannelTransport._on_synchronous_complete">_on_synchronous_complete() (channel.ChannelTransport method)</a>
-  </dt>
-
-      
-  <dt><a href="connection.html#connection.ConnectionState._return_to_idle">_return_to_idle() (connection.ConnectionState method)</a>
   </dt>
 
       
@@ -399,18 +391,6 @@
   </dt>
 
       </dl></dd>
-      
-  <dt><a href="connection.html#connection.ConnectionState._waiting_for_body">_waiting_for_body() (connection.ConnectionState method)</a>
-  </dt>
-
-      
-  <dt><a href="connection.html#connection.ConnectionState._waiting_for_header">_waiting_for_header() (connection.ConnectionState method)</a>
-  </dt>
-
-      
-  <dt><a href="connection.html#connection.ConnectionState._waiting_for_protocol_header">_waiting_for_protocol_header() (connection.ConnectionState method)</a>
-  </dt>
-
   </dl></td>
 </tr></table>
 
@@ -430,7 +410,7 @@
   </dt>
 
       
-  <dt><a href="adapters.html#module-adapters.asyncore_connection">adapters.asyncore_connection (module)</a>, <a href="connecting.html#module-adapters.asyncore_connection">[1]</a>
+  <dt><a href="connecting.html#module-adapters.asyncore_connection">adapters.asyncore_connection (module)</a>, <a href="adapters.html#module-adapters.asyncore_connection">[1]</a>
   </dt>
 
       
@@ -438,15 +418,15 @@
   </dt>
 
       
-  <dt><a href="adapters.html#module-adapters.blocking_connection">adapters.blocking_connection (module)</a>, <a href="connecting.html#module-adapters.blocking_connection">[1]</a>
+  <dt><a href="connecting.html#module-adapters.blocking_connection">adapters.blocking_connection (module)</a>, <a href="adapters.html#module-adapters.blocking_connection">[1]</a>
   </dt>
 
       
-  <dt><a href="adapters.html#module-adapters.select_connection">adapters.select_connection (module)</a>, <a href="connecting.html#module-adapters.select_connection">[1]</a>
+  <dt><a href="connecting.html#module-adapters.select_connection">adapters.select_connection (module)</a>, <a href="adapters.html#module-adapters.select_connection">[1]</a>
   </dt>
 
       
-  <dt><a href="adapters.html#module-adapters.tornado_connection">adapters.tornado_connection (module)</a>, <a href="connecting.html#module-adapters.tornado_connection">[1]</a>
+  <dt><a href="connecting.html#module-adapters.tornado_connection">adapters.tornado_connection (module)</a>, <a href="adapters.html#module-adapters.tornado_connection">[1]</a>
   </dt>
 
       
@@ -1580,6 +1560,10 @@
 
       </dl></dd>
       
+  <dt><a href="connection.html#connection.ConnectionState.END_SIZE">END_SIZE (connection.ConnectionState attribute)</a>
+  </dt>
+
+      
   <dt><a href="exceptions.html#exceptions.EnvironmentError">EnvironmentError</a>
   </dt>
 
@@ -1757,10 +1741,6 @@
   </dt>
 
       </dl></dd>
-      
-  <dt><a href="connection.html#connection.ConnectionState.FOOTER_SIZE">FOOTER_SIZE (connection.ConnectionState attribute)</a>
-  </dt>
-
       
   <dt><a href="log.html#log.FormatOutput">FormatOutput (class in log)</a>
   </dt>
@@ -2923,16 +2903,14 @@
   <dt><a href="spec.html#spec.Basic.GetEmpty.NAME">NAME (spec.Basic.GetEmpty attribute)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="spec.html#spec.Basic.GetOk.NAME">(spec.Basic.GetOk attribute)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="spec.html#spec.Basic.GetOk.name">name (spec.Basic.GetOk attribute)</a>
-  </dt>
-
-      
-  <dt><a href="spec.html#spec.Basic.GetOk.NAME">NAME (spec.Basic.GetOk attribute)</a>
-  </dt>
-
-      
-  <dt><a href="spec.html#spec.Basic.Nack.name">name (spec.Basic.Nack attribute)</a>
   </dt>
 
       
@@ -2940,9 +2918,15 @@
   </dt>
 
       
-  <dt><a href="spec.html#spec.Basic.Publish.name">name (spec.Basic.Publish attribute)</a>
+  <dt><a href="spec.html#spec.Basic.Nack.name">name (spec.Basic.Nack attribute)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="spec.html#spec.Basic.Publish.name">(spec.Basic.Publish attribute)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="spec.html#spec.Basic.Publish.NAME">NAME (spec.Basic.Publish attribute)</a>
   </dt>
@@ -2955,14 +2939,16 @@
   <dt><a href="spec.html#spec.Basic.Qos.NAME">NAME (spec.Basic.Qos attribute)</a>
   </dt>
 
-      <dd><dl>
-        
-  <dt><a href="spec.html#spec.Basic.QosOk.NAME">(spec.Basic.QosOk attribute)</a>
-  </dt>
-
-      </dl></dd>
       
   <dt><a href="spec.html#spec.Basic.QosOk.name">name (spec.Basic.QosOk attribute)</a>
+  </dt>
+
+      
+  <dt><a href="spec.html#spec.Basic.QosOk.NAME">NAME (spec.Basic.QosOk attribute)</a>
+  </dt>
+
+      
+  <dt><a href="spec.html#spec.Basic.Recover.name">name (spec.Basic.Recover attribute)</a>
   </dt>
 
       
@@ -2970,15 +2956,9 @@
   </dt>
 
       
-  <dt><a href="spec.html#spec.Basic.Recover.name">name (spec.Basic.Recover attribute)</a>
+  <dt><a href="spec.html#spec.Basic.RecoverAsync.name">name (spec.Basic.RecoverAsync attribute)</a>
   </dt>
 
-      <dd><dl>
-        
-  <dt><a href="spec.html#spec.Basic.RecoverAsync.name">(spec.Basic.RecoverAsync attribute)</a>
-  </dt>
-
-      </dl></dd>
       
   <dt><a href="spec.html#spec.Basic.RecoverAsync.NAME">NAME (spec.Basic.RecoverAsync attribute)</a>
   </dt>
@@ -3007,18 +2987,22 @@
   <dt><a href="spec.html#spec.Basic.Return.NAME">NAME (spec.Basic.Return attribute)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="spec.html#spec.BasicProperties.NAME">(spec.BasicProperties attribute)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="spec.html#spec.BasicProperties.name">name (spec.BasicProperties attribute)</a>
   </dt>
 
-      
-  <dt><a href="spec.html#spec.BasicProperties.NAME">NAME (spec.BasicProperties attribute)</a>
+      <dd><dl>
+        
+  <dt><a href="spec.html#spec.Channel.name">(spec.Channel attribute)</a>
   </dt>
 
-      
-  <dt><a href="spec.html#spec.Channel.name">name (spec.Channel attribute)</a>
-  </dt>
-
+      </dl></dd>
       
   <dt><a href="spec.html#spec.Channel.NAME">NAME (spec.Channel attribute)</a>
   </dt>
@@ -3133,20 +3117,20 @@
   <dt><a href="spec.html#spec.Connection.CloseOk.name">name (spec.Connection.CloseOk attribute)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="spec.html#spec.Connection.Open.name">(spec.Connection.Open attribute)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="spec.html#spec.Connection.Open.NAME">NAME (spec.Connection.Open attribute)</a>
   </dt>
 
       
-  <dt><a href="spec.html#spec.Connection.Open.name">name (spec.Connection.Open attribute)</a>
+  <dt><a href="spec.html#spec.Connection.OpenOk.name">name (spec.Connection.OpenOk attribute)</a>
   </dt>
 
-      <dd><dl>
-        
-  <dt><a href="spec.html#spec.Connection.OpenOk.name">(spec.Connection.OpenOk attribute)</a>
-  </dt>
-
-      </dl></dd>
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
@@ -3169,20 +3153,20 @@
   <dt><a href="spec.html#spec.Connection.SecureOk.NAME">NAME (spec.Connection.SecureOk attribute)</a>
   </dt>
 
-      <dd><dl>
-        
-  <dt><a href="spec.html#spec.Connection.Start.NAME">(spec.Connection.Start attribute)</a>
-  </dt>
-
-      </dl></dd>
       
   <dt><a href="spec.html#spec.Connection.Start.name">name (spec.Connection.Start attribute)</a>
   </dt>
 
       
-  <dt><a href="spec.html#spec.Connection.StartOk.NAME">NAME (spec.Connection.StartOk attribute)</a>
+  <dt><a href="spec.html#spec.Connection.Start.NAME">NAME (spec.Connection.Start attribute)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="spec.html#spec.Connection.StartOk.NAME">(spec.Connection.StartOk attribute)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="spec.html#spec.Connection.StartOk.name">name (spec.Connection.StartOk attribute)</a>
   </dt>
@@ -3205,22 +3189,18 @@
   <dt><a href="spec.html#spec.Connection.TuneOk.NAME">NAME (spec.Connection.TuneOk attribute)</a>
   </dt>
 
-      <dd><dl>
-        
-  <dt><a href="spec.html#spec.Exchange.NAME">(spec.Exchange attribute)</a>
-  </dt>
-
-      </dl></dd>
       
   <dt><a href="spec.html#spec.Exchange.name">name (spec.Exchange attribute)</a>
   </dt>
 
-      <dd><dl>
-        
-  <dt><a href="spec.html#spec.Exchange.Bind.name">(spec.Exchange.Bind attribute)</a>
+      
+  <dt><a href="spec.html#spec.Exchange.NAME">NAME (spec.Exchange attribute)</a>
   </dt>
 
-      </dl></dd>
+      
+  <dt><a href="spec.html#spec.Exchange.Bind.name">name (spec.Exchange.Bind attribute)</a>
+  </dt>
+
       
   <dt><a href="spec.html#spec.Exchange.Bind.NAME">NAME (spec.Exchange.Bind attribute)</a>
   </dt>
@@ -3259,46 +3239,44 @@
   <dt><a href="spec.html#spec.Exchange.Delete.name">name (spec.Exchange.Delete attribute)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="spec.html#spec.Exchange.DeleteOk.name">(spec.Exchange.DeleteOk attribute)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="spec.html#spec.Exchange.DeleteOk.NAME">NAME (spec.Exchange.DeleteOk attribute)</a>
   </dt>
 
-      
-  <dt><a href="spec.html#spec.Exchange.DeleteOk.name">name (spec.Exchange.DeleteOk attribute)</a>
-  </dt>
-
       <dd><dl>
         
-  <dt><a href="spec.html#spec.Exchange.Unbind.name">(spec.Exchange.Unbind attribute)</a>
+  <dt><a href="spec.html#spec.Exchange.Unbind.NAME">(spec.Exchange.Unbind attribute)</a>
   </dt>
 
       </dl></dd>
       
-  <dt><a href="spec.html#spec.Exchange.Unbind.NAME">NAME (spec.Exchange.Unbind attribute)</a>
+  <dt><a href="spec.html#spec.Exchange.Unbind.name">name (spec.Exchange.Unbind attribute)</a>
   </dt>
 
       <dd><dl>
         
-  <dt><a href="spec.html#spec.Exchange.UnbindOk.NAME">(spec.Exchange.UnbindOk attribute)</a>
+  <dt><a href="spec.html#spec.Exchange.UnbindOk.name">(spec.Exchange.UnbindOk attribute)</a>
   </dt>
 
       </dl></dd>
       
-  <dt><a href="spec.html#spec.Exchange.UnbindOk.name">name (spec.Exchange.UnbindOk attribute)</a>
+  <dt><a href="spec.html#spec.Exchange.UnbindOk.NAME">NAME (spec.Exchange.UnbindOk attribute)</a>
   </dt>
 
       <dd><dl>
         
-  <dt><a href="spec.html#spec.Queue.name">(spec.Queue attribute)</a>
+  <dt><a href="spec.html#spec.Queue.NAME">(spec.Queue attribute)</a>
   </dt>
 
       </dl></dd>
       
-  <dt><a href="spec.html#spec.Queue.NAME">NAME (spec.Queue attribute)</a>
-  </dt>
-
-      
-  <dt><a href="spec.html#spec.Queue.Bind.name">name (spec.Queue.Bind attribute)</a>
+  <dt><a href="spec.html#spec.Queue.name">name (spec.Queue attribute)</a>
   </dt>
 
       
@@ -3306,9 +3284,15 @@
   </dt>
 
       
-  <dt><a href="spec.html#spec.Queue.BindOk.name">name (spec.Queue.BindOk attribute)</a>
+  <dt><a href="spec.html#spec.Queue.Bind.name">name (spec.Queue.Bind attribute)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="spec.html#spec.Queue.BindOk.name">(spec.Queue.BindOk attribute)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="spec.html#spec.Queue.BindOk.NAME">NAME (spec.Queue.BindOk attribute)</a>
   </dt>
@@ -3381,18 +3365,22 @@
   <dt><a href="spec.html#spec.Queue.UnbindOk.NAME">NAME (spec.Queue.UnbindOk attribute)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="spec.html#spec.Tx.NAME">(spec.Tx attribute)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="spec.html#spec.Tx.name">name (spec.Tx attribute)</a>
   </dt>
 
-      
-  <dt><a href="spec.html#spec.Tx.NAME">NAME (spec.Tx attribute)</a>
+      <dd><dl>
+        
+  <dt><a href="spec.html#spec.Tx.Commit.name">(spec.Tx.Commit attribute)</a>
   </dt>
 
-      
-  <dt><a href="spec.html#spec.Tx.Commit.name">name (spec.Tx.Commit attribute)</a>
-  </dt>
-
+      </dl></dd>
       
   <dt><a href="spec.html#spec.Tx.Commit.NAME">NAME (spec.Tx.Commit attribute)</a>
   </dt>
@@ -4398,12 +4386,12 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">Pika 0.9.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9.4 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, Tony Garnock-Jones, Gavin M. Roy and others.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1pre.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1pre/ce4bb37a1409.
     </div>
   </body>
 </html>

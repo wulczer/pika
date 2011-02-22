@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Communicating with RabbitMQ &mdash; Pika 0.9.3 documentation</title>
+    <title>Communicating with RabbitMQ &mdash; Pika 0.9.4 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.9.3',
+        VERSION:     '0.9.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Pika 0.9.3 documentation" href="index.html" />
+    <link rel="top" title="Pika 0.9.4 documentation" href="index.html" />
     <link rel="next" title="Examples" href="examples.html" />
     <link rel="prev" title="Connecting to RabbitMQ" href="connecting.html" /> 
   </head>
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="connecting.html" title="Connecting to RabbitMQ"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Pika 0.9.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9.4 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -250,10 +250,9 @@ signature one creates for a basic_consume callback.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="channel.Channel.basic_ack">
-<tt class="descname">basic_ack</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.Channel.basic_ack" title="Permalink to this definition">¶</a></dt>
-<dd><p>Implements the basic.ack AMQP command. For context and usage:</p>
-<p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.ack">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.ack</a></p>
+<dt id="channel.Channel.close">
+<tt class="descname">close</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.Channel.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Will invoke a clean shutdown of the channel with the AMQP Broker</p>
 </dd></dl>
 
 <dl class="method">
@@ -277,6 +276,20 @@ more information on basic_consume, see:</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="channel.Channel.basic_publish">
+<tt class="descname">basic_publish</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.Channel.basic_publish" title="Permalink to this definition">¶</a></dt>
+<dd><p>Publish to the channel with the given exchange, routing key and body.
+For more information on basic_publish and what the parameters do, see:</p>
+<p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.publish">http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.publish</a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="channel.Channel.consumer_tags">
+<tt class="descname">consumer_tags</tt><a class="headerlink" href="#channel.Channel.consumer_tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property method that returns a list of currently active consumers</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="channel.Channel.basic_get">
 <tt class="descname">basic_get</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.Channel.basic_get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a single message from the AMQP broker. The callback method
@@ -290,11 +303,20 @@ parameters, see:</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="channel.Channel.basic_publish">
-<tt class="descname">basic_publish</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.Channel.basic_publish" title="Permalink to this definition">¶</a></dt>
-<dd><p>Publish to the channel with the given exchange, routing key and body.
-For more information on basic_publish and what the parameters do, see:</p>
-<p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.publish">http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.publish</a></p>
+<dt id="channel.Channel.flow">
+<tt class="descname">flow</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.Channel.flow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn Channel flow control off and on. Pass a callback to be notified
+of the response from the server. active is a bool. Callback should
+expect a bool in response indicating channel flow state. For more
+information, please reference:</p>
+<p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-reference.html#channel.flow">http://www.rabbitmq.com/amqp-0-9-1-reference.html#channel.flow</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="channel.Channel.basic_ack">
+<tt class="descname">basic_ack</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.Channel.basic_ack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements the basic.ack AMQP command. For context and usage:</p>
+<p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.ack">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.ack</a></p>
 </dd></dl>
 
 <dl class="method">
@@ -336,18 +358,6 @@ completed.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="channel.Channel.close">
-<tt class="descname">close</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.Channel.close" title="Permalink to this definition">¶</a></dt>
-<dd><p>Will invoke a clean shutdown of the channel with the AMQP Broker</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="channel.Channel.consumer_tags">
-<tt class="descname">consumer_tags</tt><a class="headerlink" href="#channel.Channel.consumer_tags" title="Permalink to this definition">¶</a></dt>
-<dd><p>Property method that returns a list of currently active consumers</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="channel.Channel.exchange_declare">
 <tt class="descname">exchange_declare</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.Channel.exchange_declare" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the Exchange.Declare AMQP command. For context and usage:</p>
@@ -369,16 +379,6 @@ completed.</p>
 send to the AMQP broker until it has completed. It is recommended to
 pass in a parameter to callback to be notified when this command has
 completed.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="channel.Channel.flow">
-<tt class="descname">flow</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.Channel.flow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Turn Channel flow control off and on. Pass a callback to be notified
-of the response from the server. active is a bool. Callback should
-expect a bool in response indicating channel flow state. For more
-information, please reference:</p>
-<p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-reference.html#channel.flow">http://www.rabbitmq.com/amqp-0-9-1-reference.html#channel.flow</a></p>
 </dd></dl>
 
 <dl class="method">
@@ -487,6 +487,44 @@ completed.</p>
 <dt id="blocking_connection.BlockingChannel">
 <em class="property">class </em><tt class="descclassname">blocking_connection.</tt><tt class="descname">BlockingChannel</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#blocking_connection.BlockingChannel" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
+<dt id="blocking_connection.BlockingChannel.basic_publish">
+<tt class="descname">basic_publish</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#blocking_connection.BlockingChannel.basic_publish" title="Permalink to this definition">¶</a></dt>
+<dd><p>Publish to the channel with the given exchange, routing key and body.</p>
+<p>If flow control is enabled and you publish a message while another is
+sending, a ContentTransmissionForbidden exception ill be generated</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="blocking_connection.BlockingChannel.basic_consume">
+<tt class="descname">basic_consume</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#blocking_connection.BlockingChannel.basic_consume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends the AMQP command Basic.Consume to the broker and binds messages
+for the consumer_tag to the consumer callback. If you do not pass in
+a consumer_tag, one will be automatically generated for you. For
+more information on basic_consume, see:</p>
+<p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.consume">http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.consume</a></p>
+<p>NOTE: This blocks further execution until you call the
+BlockingChannel.stop_consuming() method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="blocking_connection.BlockingChannel.stop_consuming">
+<tt class="descname">stop_consuming</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#blocking_connection.BlockingChannel.stop_consuming" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends off the Basic.Cancel to let RabbitMQ know to stop consuming and
+sets our internal state to exit out of the basic_consume.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="blocking_connection.BlockingChannel.basic_get">
+<tt class="descname">basic_get</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#blocking_connection.BlockingChannel.basic_get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a single message from the AMQP broker. The response will include
+either a single method frame of Basic.GetEmpty or three frames:
+the method frame (Basic.GetOk), header frame and
+the body, like the reponse from Basic.Consume.  For more information
+on basic_get and its parameters, see:</p>
+<p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.get">http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.get</a></p>
+</dd></dl>
+
+<dl class="method">
 <dt id="blocking_connection.BlockingChannel.add_callback">
 <tt class="descname">add_callback</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#blocking_connection.BlockingChannel.add_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pass in a callback handler and a list replies from the
@@ -526,37 +564,6 @@ consumer_tag is optionally passed to basic_consume as a parameter and
 it is always returned by the Basic.ConsumeOk frame. For more
 information see:</p>
 <p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.cancel">http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.cancel</a></p>
-</dd></dl>
-
-<dl class="method">
-<dt id="blocking_connection.BlockingChannel.basic_consume">
-<tt class="descname">basic_consume</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#blocking_connection.BlockingChannel.basic_consume" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sends the AMQP command Basic.Consume to the broker and binds messages
-for the consumer_tag to the consumer callback. If you do not pass in
-a consumer_tag, one will be automatically generated for you. For
-more information on basic_consume, see:</p>
-<p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.consume">http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.consume</a></p>
-<p>NOTE: This blocks further execution until you call the
-BlockingChannel.stop_consuming() method.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="blocking_connection.BlockingChannel.basic_get">
-<tt class="descname">basic_get</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#blocking_connection.BlockingChannel.basic_get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a single message from the AMQP broker. The response will include
-either a single method frame of Basic.GetEmpty or three frames:
-the method frame (Basic.GetOk), header frame and
-the body, like the reponse from Basic.Consume.  For more information
-on basic_get and its parameters, see:</p>
-<p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.get">http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.get</a></p>
-</dd></dl>
-
-<dl class="method">
-<dt id="blocking_connection.BlockingChannel.basic_publish">
-<tt class="descname">basic_publish</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#blocking_connection.BlockingChannel.basic_publish" title="Permalink to this definition">¶</a></dt>
-<dd><p>Publish to the channel with the given exchange, routing key and body.</p>
-<p>If flow control is enabled and you publish a message while another is
-sending, a ContentTransmissionForbidden exception ill be generated</p>
 </dd></dl>
 
 <dl class="method">
@@ -704,13 +711,6 @@ completed.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="blocking_connection.BlockingChannel.stop_consuming">
-<tt class="descname">stop_consuming</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#blocking_connection.BlockingChannel.stop_consuming" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sends off the Basic.Cancel to let RabbitMQ know to stop consuming and
-sets our internal state to exit out of the basic_consume.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="blocking_connection.BlockingChannel.tx_commit">
 <tt class="descname">tx_commit</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#blocking_connection.BlockingChannel.tx_commit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the Tx.Commit AMQP command. For context and usage:</p>
@@ -814,12 +814,12 @@ completed.</p>
         <li class="right" >
           <a href="connecting.html" title="Connecting to RabbitMQ"
              >previous</a> |</li>
-        <li><a href="index.html">Pika 0.9.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9.4 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, Tony Garnock-Jones, Gavin M. Roy and others.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1pre.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1pre/ce4bb37a1409.
     </div>
   </body>
 </html>

@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>adapters &mdash; Pika 0.9.3 documentation</title>
+    <title>adapters &mdash; Pika 0.9.4 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.9.3',
+        VERSION:     '0.9.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Pika 0.9.3 documentation" href="index.html" />
+    <link rel="top" title="Pika 0.9.4 documentation" href="index.html" />
     <link rel="next" title="callback" href="callback.html" />
     <link rel="prev" title="Frequently Asked Questions" href="faq.html" /> 
   </head>
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="faq.html" title="Frequently Asked Questions"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Pika 0.9.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9.4 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -88,9 +88,13 @@ recommended and is included for legacy reasons only.</li>
 
 <dl class="method">
 <dt>
-<tt class="descclassname">BaseConnection.</tt><tt class="descname">_adapter_disconnect</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Called if we are forced to disconnect for some reason from Connection</p>
-</dd></dl>
+<tt class="descclassname">BaseConnection.</tt><tt class="descname">add_timeout</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descclassname">BaseConnection.</tt><tt class="descname">remove_timeout</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt>
@@ -101,6 +105,12 @@ recommended and is included for legacy reasons only.</li>
 <dt>
 <tt class="descclassname">BaseConnection.</tt><tt class="descname">_flush_outbound</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
 <dd><p>Call the state manager who will figure out that we need to write.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descclassname">BaseConnection.</tt><tt class="descname">_adapter_disconnect</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Called if we are forced to disconnect for some reason from Connection</p>
 </dd></dl>
 
 <dl class="method">
@@ -118,7 +128,7 @@ and will handle different socket errors differently.</p>
 
 <dl class="method">
 <dt>
-<tt class="descclassname">BaseConnection.</tt><tt class="descname">_handle_events</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<tt class="descclassname">BaseConnection.</tt><tt class="descname">_handle_events</tt><big>(</big><em>fd</em>, <em>events</em>, <em>error=None</em><big>)</big></dt>
 <dd><p>Our IO/Event loop have called us with events, so process them</p>
 </dd></dl>
 
@@ -142,16 +152,6 @@ Pika&#8217;s suggested buffer size of data (be nice to Windows)</p>
 we want to use to have our io/event handler tell us when we can
 read/write, etc</p>
 </dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descclassname">BaseConnection.</tt><tt class="descname">add_timeout</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descclassname">BaseConnection.</tt><tt class="descname">remove_timeout</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
@@ -191,16 +191,22 @@ blocking state by calling the pollers start method. Poller should keep
 looping until IOLoop.instance().stop() is called or there is a socket
 error.</p>
 <p>Also provides a convenient pass-through for add_timeout and set_events</p>
+<dl class="classmethod">
+<dt id="adapters.select_connection.IOLoop.instance">
+<em class="property">classmethod </em><tt class="descname">instance</tt><big>(</big><em>class_</em><big>)</big><a class="headerlink" href="#adapters.select_connection.IOLoop.instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a handle to the already created object or creates a new object</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="adapters.select_connection.IOLoop.add_timeout">
 <tt class="descname">add_timeout</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.IOLoop.add_timeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pass through a deadline and handler to the active poller</p>
 </dd></dl>
 
-<dl class="classmethod">
-<dt id="adapters.select_connection.IOLoop.instance">
-<em class="property">classmethod </em><tt class="descname">instance</tt><big>(</big><em>class_</em><big>)</big><a class="headerlink" href="#adapters.select_connection.IOLoop.instance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a handle to the already created object or creates a new object</p>
+<dl class="method">
+<dt id="adapters.select_connection.IOLoop.remove_timeout">
+<tt class="descname">remove_timeout</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.IOLoop.remove_timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a timeout if it&#8217;s still in the timeout stack of our poller</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -209,9 +215,15 @@ error.</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="adapters.select_connection.IOLoop.remove_timeout">
-<tt class="descname">remove_timeout</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.IOLoop.remove_timeout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove a timeout if it&#8217;s still in the timeout stack of our poller</p>
+<dt id="adapters.select_connection.IOLoop.start_poller">
+<tt class="descname">start_poller</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.IOLoop.start_poller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the Poller, once started will take over for IOLoop.start()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.select_connection.IOLoop.update_handler">
+<tt class="descname">update_handler</tt><big>(</big><em>fileno</em>, <em>events</em><big>)</big><a class="headerlink" href="#adapters.select_connection.IOLoop.update_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pass in the events we want to process</p>
 </dd></dl>
 
 <dl class="method">
@@ -221,21 +233,9 @@ error.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="adapters.select_connection.IOLoop.start_poller">
-<tt class="descname">start_poller</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.IOLoop.start_poller" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start the Poller, once started will take over for IOLoop.start()</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="adapters.select_connection.IOLoop.stop">
 <tt class="descname">stop</tt><big>(</big><big>)</big><a class="headerlink" href="#adapters.select_connection.IOLoop.stop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stop the poller&#8217;s event loop</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="adapters.select_connection.IOLoop.update_handler">
-<tt class="descname">update_handler</tt><big>(</big><em>fileno</em>, <em>events</em><big>)</big><a class="headerlink" href="#adapters.select_connection.IOLoop.update_handler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Pass in the events we want to process</p>
 </dd></dl>
 
 </dd></dl>
@@ -255,20 +255,15 @@ to override the update_handler and start methods for additional types.</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="adapters.select_connection.SelectPoller.add_timeout">
-<tt class="descname">add_timeout</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectPoller.add_timeout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a timeout to the stack by deadline</p>
+<dt id="adapters.select_connection.SelectPoller.update_handler">
+<tt class="descname">update_handler</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectPoller.update_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set our events to our current events</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="adapters.select_connection.SelectPoller.poll">
-<tt class="descname">poll</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectPoller.poll" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="adapters.select_connection.SelectPoller.process_timeouts">
-<tt class="descname">process_timeouts</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectPoller.process_timeouts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Process our self._timeouts event stack</p>
+<dt id="adapters.select_connection.SelectPoller.add_timeout">
+<tt class="descname">add_timeout</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectPoller.add_timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a timeout to the stack by deadline</p>
 </dd></dl>
 
 <dl class="method">
@@ -278,16 +273,21 @@ to override the update_handler and start methods for additional types.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="adapters.select_connection.SelectPoller.process_timeouts">
+<tt class="descname">process_timeouts</tt><big>(</big><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectPoller.process_timeouts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process our self._timeouts event stack</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="adapters.select_connection.SelectPoller.start">
 <tt class="descname">start</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectPoller.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start the main poller loop. It will loop here until self.closed</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="adapters.select_connection.SelectPoller.update_handler">
-<tt class="descname">update_handler</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectPoller.update_handler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set our events to our current events</p>
-</dd></dl>
+<dt id="adapters.select_connection.SelectPoller.poll">
+<tt class="descname">poll</tt><big>(</big><big>)</big><a class="headerlink" href="#adapters.select_connection.SelectPoller.poll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -297,7 +297,23 @@ to override the update_handler and start methods for additional types.</p>
 <dl class="class">
 <dt id="adapters.select_connection.KQueuePoller">
 <em class="property">class </em><tt class="descclassname">adapters.select_connection.</tt><tt class="descname">KQueuePoller</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.KQueuePoller" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="attribute">
+<dd><dl class="method">
+<dt id="adapters.select_connection.KQueuePoller.update_handler">
+<tt class="descname">update_handler</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.KQueuePoller.update_handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="adapters.select_connection.KQueuePoller.start">
+<tt class="descname">start</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.KQueuePoller.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the main poller loop. It will loop here until self.closed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.select_connection.KQueuePoller.poll">
+<tt class="descname">poll</tt><big>(</big><big>)</big><a class="headerlink" href="#adapters.select_connection.KQueuePoller.poll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
 <dt id="adapters.select_connection.KQueuePoller.TIMEOUT">
 <tt class="descname">TIMEOUT</tt><em class="property"> = 0.5</em><a class="headerlink" href="#adapters.select_connection.KQueuePoller.TIMEOUT" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -309,13 +325,8 @@ to override the update_handler and start methods for additional types.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="adapters.select_connection.KQueuePoller.poll">
-<tt class="descname">poll</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.KQueuePoller.poll" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="adapters.select_connection.KQueuePoller.process_timeouts">
-<tt class="descname">process_timeouts</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.KQueuePoller.process_timeouts" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">process_timeouts</tt><big>(</big><big>)</big><a class="headerlink" href="#adapters.select_connection.KQueuePoller.process_timeouts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process our self._timeouts event stack</p>
 </dd></dl>
 
@@ -325,17 +336,6 @@ to override the update_handler and start methods for additional types.</p>
 <dd><p>Remove a timeout from the stack</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="adapters.select_connection.KQueuePoller.start">
-<tt class="descname">start</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.KQueuePoller.start" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start the main poller loop. It will loop here until self.closed</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="adapters.select_connection.KQueuePoller.update_handler">
-<tt class="descname">update_handler</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.KQueuePoller.update_handler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 </div>
@@ -344,7 +344,23 @@ to override the update_handler and start methods for additional types.</p>
 <dl class="class">
 <dt id="adapters.select_connection.PollPoller">
 <em class="property">class </em><tt class="descclassname">adapters.select_connection.</tt><tt class="descname">PollPoller</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.PollPoller" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="attribute">
+<dd><dl class="method">
+<dt id="adapters.select_connection.PollPoller.update_handler">
+<tt class="descname">update_handler</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.PollPoller.update_handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="adapters.select_connection.PollPoller.start">
+<tt class="descname">start</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.PollPoller.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the main poller loop. It will loop here until self.closed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="adapters.select_connection.PollPoller.poll">
+<tt class="descname">poll</tt><big>(</big><big>)</big><a class="headerlink" href="#adapters.select_connection.PollPoller.poll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
 <dt id="adapters.select_connection.PollPoller.TIMEOUT">
 <tt class="descname">TIMEOUT</tt><em class="property"> = 0.5</em><a class="headerlink" href="#adapters.select_connection.PollPoller.TIMEOUT" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -356,13 +372,8 @@ to override the update_handler and start methods for additional types.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="adapters.select_connection.PollPoller.poll">
-<tt class="descname">poll</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.PollPoller.poll" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="adapters.select_connection.PollPoller.process_timeouts">
-<tt class="descname">process_timeouts</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.PollPoller.process_timeouts" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">process_timeouts</tt><big>(</big><big>)</big><a class="headerlink" href="#adapters.select_connection.PollPoller.process_timeouts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process our self._timeouts event stack</p>
 </dd></dl>
 
@@ -371,17 +382,6 @@ to override the update_handler and start methods for additional types.</p>
 <tt class="descname">remove_timeout</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.PollPoller.remove_timeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove a timeout from the stack</p>
 </dd></dl>
-
-<dl class="method">
-<dt id="adapters.select_connection.PollPoller.start">
-<tt class="descname">start</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.PollPoller.start" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start the main poller loop. It will loop here until self.closed</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="adapters.select_connection.PollPoller.update_handler">
-<tt class="descname">update_handler</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.PollPoller.update_handler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
@@ -405,12 +405,12 @@ to override the update_handler and start methods for additional types.</p>
 
 <dl class="method">
 <dt id="adapters.select_connection.EPollPoller.poll">
-<tt class="descname">poll</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.EPollPoller.poll" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">poll</tt><big>(</big><big>)</big><a class="headerlink" href="#adapters.select_connection.EPollPoller.poll" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="adapters.select_connection.EPollPoller.process_timeouts">
-<tt class="descname">process_timeouts</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.select_connection.EPollPoller.process_timeouts" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">process_timeouts</tt><big>(</big><big>)</big><a class="headerlink" href="#adapters.select_connection.EPollPoller.process_timeouts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process our self._timeouts event stack</p>
 </dd></dl>
 
@@ -474,26 +474,14 @@ function.</p>
 in the socket to allow for faster throughput.</p>
 <dl class="method">
 <dt>
-<tt class="descclassname">AsyncoreDispatcher.</tt><tt class="descname">_process_timeouts</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Process our self._timeouts event stack</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descclassname">AsyncoreDispatcher.</tt><tt class="descname">add_timeout</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Add a timeout to the stack by deadline</p>
+<tt class="descclassname">AsyncoreDispatcher.</tt><tt class="descname">handle_connect</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>asyncore required method. Is called on connection.</p>
 </dd></dl>
 
 <dl class="method">
 <dt>
 <tt class="descclassname">AsyncoreDispatcher.</tt><tt class="descname">handle_close</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
 <dd><p>asyncore required method. Is called on close.</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descclassname">AsyncoreDispatcher.</tt><tt class="descname">handle_connect</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>asyncore required method. Is called on connection.</p>
 </dd></dl>
 
 <dl class="method">
@@ -508,6 +496,15 @@ in the socket to allow for faster throughput.</p>
 <dd><p>asyncore required function, is called when we can write to the socket</p>
 </dd></dl>
 
+<dl class="method">
+<dt>
+<tt class="descclassname">AsyncoreDispatcher.</tt><tt class="descname">writable</tt><big>(</big><big>)</big></dt>
+<dd><p>asyncore required function, used to toggle the write bit on the
+select poller. For some reason, if we return false while connecting
+asyncore hangs, so we check for that explicitly and tell it that
+it can write while it&#8217;s connecting.</p>
+</dd></dl>
+
 <dl class="classmethod">
 <dt>
 <em class="property">classmethod </em><tt class="descclassname">AsyncoreDispatcher.</tt><tt class="descname">instance</tt><big>(</big><em>class_</em><big>)</big></dt>
@@ -516,8 +513,20 @@ in the socket to allow for faster throughput.</p>
 
 <dl class="method">
 <dt>
+<tt class="descclassname">AsyncoreDispatcher.</tt><tt class="descname">add_timeout</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Add a timeout to the stack by deadline</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
 <tt class="descclassname">AsyncoreDispatcher.</tt><tt class="descname">remove_timeout</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
 <dd><p>Remove a timeout from the stack</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descclassname">AsyncoreDispatcher.</tt><tt class="descname">_process_timeouts</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Process our self._timeouts event stack</p>
 </dd></dl>
 
 <dl class="method">
@@ -532,15 +541,6 @@ connected.</p>
 <tt class="descclassname">AsyncoreDispatcher.</tt><tt class="descname">stop</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
 <dd><p>Pika Adapter IOLoop stop function. When called, it will close an open
 connection, exiting us out of the IOLoop running in start.</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descclassname">AsyncoreDispatcher.</tt><tt class="descname">writable</tt><big>(</big><big>)</big></dt>
-<dd><p>asyncore required function, used to toggle the write bit on the
-select poller. For some reason, if we return false while connecting
-asyncore hangs, so we check for that explicitly and tell it that
-it can write while it&#8217;s connecting.</p>
 </dd></dl>
 
 </dd></dl>
@@ -588,23 +588,6 @@ messages from Basic.Deliver, Basic.GetOk, and Basic.Return.</p>
 
 <dl class="method">
 <dt>
-<tt class="descclassname">BlockingConnection.</tt><tt class="descname">_flush_outbound</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descclassname">BlockingConnection.</tt><tt class="descname">_handle_disconnect</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Called internally when we know our socket is disconnected already</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descclassname">BlockingConnection.</tt><tt class="descname">channel</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Create a new channel with the next available or specified channel #</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
 <tt class="descclassname">BlockingConnection.</tt><tt class="descname">close</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
 <dd></dd></dl>
 
@@ -615,8 +598,25 @@ messages from Basic.Deliver, Basic.GetOk, and Basic.Return.</p>
 
 <dl class="method">
 <dt>
+<tt class="descclassname">BlockingConnection.</tt><tt class="descname">_handle_disconnect</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Called internally when we know our socket is disconnected already</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descclassname">BlockingConnection.</tt><tt class="descname">_flush_outbound</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
 <tt class="descclassname">BlockingConnection.</tt><tt class="descname">process_data_events</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descclassname">BlockingConnection.</tt><tt class="descname">channel</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Create a new channel with the next available or specified channel #</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -628,17 +628,7 @@ messages from Basic.Deliver, Basic.GetOk, and Basic.Return.</p>
 <em class="property">class </em><tt class="descclassname">adapters.blocking_connection.</tt><tt class="descname">BlockingChannel</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
 <dd><dl class="method">
 <dt>
-<tt class="descclassname">BlockingChannel.</tt><tt class="descname">_on_basic_deliver</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descclassname">BlockingChannel.</tt><tt class="descname">_on_basic_get</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descclassname">BlockingChannel.</tt><tt class="descname">_on_basic_get_empty</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<tt class="descclassname">BlockingChannel.</tt><tt class="descname">_open</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -648,8 +638,11 @@ messages from Basic.Deliver, Basic.GetOk, and Basic.Return.</p>
 
 <dl class="method">
 <dt>
-<tt class="descclassname">BlockingChannel.</tt><tt class="descname">_open</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd></dd></dl>
+<tt class="descclassname">BlockingChannel.</tt><tt class="descname">basic_publish</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Publish to the channel with the given exchange, routing key and body.</p>
+<p>If flow control is enabled and you publish a message while another is
+sending, a ContentTransmissionForbidden exception ill be generated</p>
+</dd></dl>
 
 <dl class="method">
 <dt>
@@ -665,6 +658,18 @@ BlockingChannel.stop_consuming() method.</p>
 
 <dl class="method">
 <dt>
+<tt class="descclassname">BlockingChannel.</tt><tt class="descname">_on_basic_deliver</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descclassname">BlockingChannel.</tt><tt class="descname">stop_consuming</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Sends off the Basic.Cancel to let RabbitMQ know to stop consuming and
+sets our internal state to exit out of the basic_consume.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
 <tt class="descclassname">BlockingChannel.</tt><tt class="descname">basic_get</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
 <dd><p>Get a single message from the AMQP broker. The response will include
 either a single method frame of Basic.GetEmpty or three frames:
@@ -676,18 +681,13 @@ on basic_get and its parameters, see:</p>
 
 <dl class="method">
 <dt>
-<tt class="descclassname">BlockingChannel.</tt><tt class="descname">basic_publish</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Publish to the channel with the given exchange, routing key and body.</p>
-<p>If flow control is enabled and you publish a message while another is
-sending, a ContentTransmissionForbidden exception ill be generated</p>
-</dd></dl>
+<tt class="descclassname">BlockingChannel.</tt><tt class="descname">_on_basic_get</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt>
-<tt class="descclassname">BlockingChannel.</tt><tt class="descname">stop_consuming</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Sends off the Basic.Cancel to let RabbitMQ know to stop consuming and
-sets our internal state to exit out of the basic_consume.</p>
-</dd></dl>
+<tt class="descclassname">BlockingChannel.</tt><tt class="descname">_on_basic_get_empty</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -697,19 +697,14 @@ sets our internal state to exit out of the basic_consume.</p>
 <dl class="class">
 <dt>
 <em class="property">class </em><tt class="descclassname">adapters.blocking_connection.</tt><tt class="descname">BlockingChannelTransport</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><dl class="method">
+<dd><dl class="attribute">
 <dt>
-<tt class="descclassname">BlockingChannelTransport.</tt><tt class="descname">_on_rpc_complete</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<tt class="descclassname">BlockingChannelTransport.</tt><tt class="descname">no_response_frame</tt><em class="property"> = ['Basic.Ack', 'Basic.Reject', 'Basic.RecoverAsync']</em></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt>
 <tt class="descclassname">BlockingChannelTransport.</tt><tt class="descname">add_reply</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<tt class="descclassname">BlockingChannelTransport.</tt><tt class="descname">no_response_frame</tt><em class="property"> = ['Basic.Ack', 'Basic.Reject', 'Basic.RecoverAsync']</em></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -723,6 +718,11 @@ sets our internal state to exit out of the basic_consume.</p>
 <dd><p>Shortcut wrapper to the Connection&#8217;s rpc command using its callback
 stack, passing in our channel number</p>
 </dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descclassname">BlockingChannelTransport.</tt><tt class="descname">_on_rpc_complete</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt>
@@ -821,12 +821,12 @@ our channel number</p>
         <li class="right" >
           <a href="faq.html" title="Frequently Asked Questions"
              >previous</a> |</li>
-        <li><a href="index.html">Pika 0.9.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9.4 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, Tony Garnock-Jones, Gavin M. Roy and others.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1pre.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1pre/ce4bb37a1409.
     </div>
   </body>
 </html>

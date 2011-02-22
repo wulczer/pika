@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>channel &mdash; Pika 0.9.3 documentation</title>
+    <title>channel &mdash; Pika 0.9.4 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.9.3',
+        VERSION:     '0.9.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Pika 0.9.3 documentation" href="index.html" />
+    <link rel="top" title="Pika 0.9.4 documentation" href="index.html" />
     <link rel="next" title="connection" href="connection.html" />
     <link rel="prev" title="callback" href="callback.html" /> 
   </head>
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="callback.html" title="callback"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Pika 0.9.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9.4 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -70,61 +70,6 @@ RabbitMQ. It is recommended that you do not directly invoke
 the creation of a channel object in your application code but rather
 construct the a channel by calling the active connection&#8217;s channel()
 method.</p>
-<dl class="method">
-<dt>
-<tt class="descclassname">Channel.</tt><tt class="descname">_close</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Internal close, is called when all the consumers are closed by both
-Channel.close and Channel._on_cancel_ok</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descclassname">Channel.</tt><tt class="descname">_on_basic_deliver</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Cope with reentrancy. If a particular consumer is still active when
-another delivery appears for it, queue the deliveries up until it
-finally exits.</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descclassname">Channel.</tt><tt class="descname">_on_basic_get_empty</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>When we receive an empty reply do nothing but log it</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descclassname">Channel.</tt><tt class="descname">_on_basic_get_ok</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descclassname">Channel.</tt><tt class="descname">_on_cancel_ok</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Called in response to a frame from the Broker when we call Basic.Cancel</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descclassname">Channel.</tt><tt class="descname">_on_channel_flow_ok</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Called in response to us asking the server to toggle on Channel.Flow</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descclassname">Channel.</tt><tt class="descname">_on_remote_close</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Handle the case where our channel has been closed for us</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descclassname">Channel.</tt><tt class="descname">_open</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Called by our callback handler when we receive a Channel.OpenOk and
-subsequently calls our _on_open_callback which was passed into the
-Channel constructor. The reason we do this is because we want to make
-sure that the on_open_callback parameter passed into the Channel
-constructor is not the first callback we make. ChannelTransport needs
-to know before the app that passed in the callback.</p>
-</dd></dl>
-
 <dl class="method">
 <dt>
 <tt class="descclassname">Channel.</tt><tt class="descname">add_callback</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
@@ -152,9 +97,32 @@ signature one creates for a basic_consume callback.</p>
 
 <dl class="method">
 <dt>
-<tt class="descclassname">Channel.</tt><tt class="descname">basic_ack</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Implements the basic.ack AMQP command. For context and usage:</p>
-<p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.ack">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.ack</a></p>
+<tt class="descclassname">Channel.</tt><tt class="descname">close</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Will invoke a clean shutdown of the channel with the AMQP Broker</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descclassname">Channel.</tt><tt class="descname">_close</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Internal close, is called when all the consumers are closed by both
+Channel.close and Channel._on_cancel_ok</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descclassname">Channel.</tt><tt class="descname">_on_remote_close</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Handle the case where our channel has been closed for us</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descclassname">Channel.</tt><tt class="descname">_open</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Called by our callback handler when we receive a Channel.OpenOk and
+subsequently calls our _on_open_callback which was passed into the
+Channel constructor. The reason we do this is because we want to make
+sure that the on_open_callback parameter passed into the Channel
+constructor is not the first callback we make. ChannelTransport needs
+to know before the app that passed in the callback.</p>
 </dd></dl>
 
 <dl class="method">
@@ -179,6 +147,34 @@ more information on basic_consume, see:</p>
 
 <dl class="method">
 <dt>
+<tt class="descclassname">Channel.</tt><tt class="descname">basic_publish</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Publish to the channel with the given exchange, routing key and body.
+For more information on basic_publish and what the parameters do, see:</p>
+<p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.publish">http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.publish</a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descclassname">Channel.</tt><tt class="descname">consumer_tags</tt></dt>
+<dd><p>Property method that returns a list of currently active consumers</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descclassname">Channel.</tt><tt class="descname">_on_basic_deliver</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Cope with reentrancy. If a particular consumer is still active when
+another delivery appears for it, queue the deliveries up until it
+finally exits.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descclassname">Channel.</tt><tt class="descname">_on_cancel_ok</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Called in response to a frame from the Broker when we call Basic.Cancel</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
 <tt class="descclassname">Channel.</tt><tt class="descname">basic_get</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
 <dd><p>Get a single message from the AMQP broker. The callback method
 signature should have 3 parameters: The method frame, header frame and
@@ -192,10 +188,36 @@ parameters, see:</p>
 
 <dl class="method">
 <dt>
-<tt class="descclassname">Channel.</tt><tt class="descname">basic_publish</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Publish to the channel with the given exchange, routing key and body.
-For more information on basic_publish and what the parameters do, see:</p>
-<p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.publish">http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.publish</a></p>
+<tt class="descclassname">Channel.</tt><tt class="descname">_on_basic_get_ok</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descclassname">Channel.</tt><tt class="descname">_on_basic_get_empty</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>When we receive an empty reply do nothing but log it</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descclassname">Channel.</tt><tt class="descname">flow</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Turn Channel flow control off and on. Pass a callback to be notified
+of the response from the server. active is a bool. Callback should
+expect a bool in response indicating channel flow state. For more
+information, please reference:</p>
+<p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-reference.html#channel.flow">http://www.rabbitmq.com/amqp-0-9-1-reference.html#channel.flow</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descclassname">Channel.</tt><tt class="descname">_on_channel_flow_ok</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Called in response to us asking the server to toggle on Channel.Flow</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descclassname">Channel.</tt><tt class="descname">basic_ack</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Implements the basic.ack AMQP command. For context and usage:</p>
+<p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.ack">http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.ack</a></p>
 </dd></dl>
 
 <dl class="method">
@@ -238,18 +260,6 @@ completed.</p>
 
 <dl class="method">
 <dt>
-<tt class="descclassname">Channel.</tt><tt class="descname">close</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Will invoke a clean shutdown of the channel with the AMQP Broker</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt>
-<tt class="descclassname">Channel.</tt><tt class="descname">consumer_tags</tt></dt>
-<dd><p>Property method that returns a list of currently active consumers</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
 <tt class="descclassname">Channel.</tt><tt class="descname">exchange_declare</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
 <dd><p>Implements the Exchange.Declare AMQP command. For context and usage:</p>
 <blockquote>
@@ -270,16 +280,6 @@ completed.</p>
 send to the AMQP broker until it has completed. It is recommended to
 pass in a parameter to callback to be notified when this command has
 completed.</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descclassname">Channel.</tt><tt class="descname">flow</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Turn Channel flow control off and on. Pass a callback to be notified
-of the response from the server. active is a bool. Callback should
-expect a bool in response indicating channel flow state. For more
-information, please reference:</p>
-<p><a class="reference external" href="http://www.rabbitmq.com/amqp-0-9-1-reference.html#channel.flow">http://www.rabbitmq.com/amqp-0-9-1-reference.html#channel.flow</a></p>
 </dd></dl>
 
 <dl class="method">
@@ -395,6 +395,20 @@ removed and uses tcp backpressure instead. Since we only support 0-9-1
 which was not introduced in RabbitMQ until 2.0, server side channel
 flow detection has been removed.</p>
 <dl class="method">
+<dt id="channel.ChannelTransport._on_open">
+<tt class="descname">_on_open</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.ChannelTransport._on_open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called as a result of receiving a spec.Channel.OpenOk frame.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="channel.ChannelTransport.deliver">
+<tt class="descname">deliver</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.ChannelTransport.deliver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deliver a frame to the frame handler. When it&#8217;s gotten to a point that
+it has build our frame responses in a way we can use them, it will
+call our callback stack to figure out what to do.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="channel.ChannelTransport._ensure">
 <tt class="descname">_ensure</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.ChannelTransport._ensure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make sure the transport is open</p>
@@ -404,36 +418,6 @@ flow detection has been removed.</p>
 <dt id="channel.ChannelTransport._has_content">
 <tt class="descname">_has_content</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.ChannelTransport._has_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a bool if it&#8217;s a content method as defined by the spec</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="channel.ChannelTransport._on_event_ok">
-<tt class="descname">_on_event_ok</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.ChannelTransport._on_event_ok" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generic events that returned ok that may have internal callbacks.
-We keep a list of what we&#8217;ve yet to implement so that we don&#8217;t silently
-drain events that we don&#8217;t support.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="channel.ChannelTransport._on_open">
-<tt class="descname">_on_open</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.ChannelTransport._on_open" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called as a result of receiving a spec.Channel.OpenOk frame.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="channel.ChannelTransport._on_synchronous_complete">
-<tt class="descname">_on_synchronous_complete</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.ChannelTransport._on_synchronous_complete" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is called when a synchronous command is completed. It will undo
-the blocking state and send all the frames that stacked up while we
-were in the blocking state.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="channel.ChannelTransport.deliver">
-<tt class="descname">deliver</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.ChannelTransport.deliver" title="Permalink to this definition">¶</a></dt>
-<dd><p>Deliver a frame to the frame handler. When it&#8217;s gotten to a point that
-it has build our frame responses in a way we can use them, it will
-call our callback stack to figure out what to do.</p>
 </dd></dl>
 
 <dl class="method">
@@ -448,6 +432,22 @@ stack, passing in our channel number</p>
 <tt class="descname">send_method</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.ChannelTransport.send_method" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shortcut wrapper to send a method through our connection, passing in
 our channel number</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="channel.ChannelTransport._on_event_ok">
+<tt class="descname">_on_event_ok</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.ChannelTransport._on_event_ok" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic events that returned ok that may have internal callbacks.
+We keep a list of what we&#8217;ve yet to implement so that we don&#8217;t silently
+drain events that we don&#8217;t support.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="channel.ChannelTransport._on_synchronous_complete">
+<tt class="descname">_on_synchronous_complete</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.ChannelTransport._on_synchronous_complete" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is called when a synchronous command is completed. It will undo
+the blocking state and send all the frames that stacked up while we
+were in the blocking state.</p>
 </dd></dl>
 
 </dd></dl>
@@ -477,18 +477,11 @@ been met at which point it will call the finish method. This calls
 the callback manager with the method frame, header frame and assembled
 body and then reset the self._handler to the _handle_method_frame method.</p>
 <dl class="method">
-<dt id="channel.ContentHandler._handle_body_frame">
-<tt class="descname">_handle_body_frame</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.ContentHandler._handle_body_frame" title="Permalink to this definition">¶</a></dt>
-<dd><p>Receive body frames. We&#8217;ll keep receiving them in handler until we&#8217;ve
-received the body size specified in the header frame. When done
-call our finish function which will call our transports callbacks</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="channel.ContentHandler._handle_header_frame">
-<tt class="descname">_handle_header_frame</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.ContentHandler._handle_header_frame" title="Permalink to this definition">¶</a></dt>
-<dd><p>Receive a header frame and process that, setting the next handler
-to the body frame handler</p>
+<dt id="channel.ContentHandler.process">
+<tt class="descname">process</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.ContentHandler.process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invoked by the ChannelTransport object when passed frames that are not
+setup in the rpc process and that don&#8217;t have explicit reply types
+defined. This includes Basic.Publish, Basic.GetOk and Basic.Return</p>
 </dd></dl>
 
 <dl class="method">
@@ -499,11 +492,18 @@ reach this handler, set the next handler to be the header frame handler</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="channel.ContentHandler.process">
-<tt class="descname">process</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.ContentHandler.process" title="Permalink to this definition">¶</a></dt>
-<dd><p>Invoked by the ChannelTransport object when passed frames that are not
-setup in the rpc process and that don&#8217;t have explicit reply types
-defined. This includes Basic.Publish, Basic.GetOk and Basic.Return</p>
+<dt id="channel.ContentHandler._handle_header_frame">
+<tt class="descname">_handle_header_frame</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.ContentHandler._handle_header_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Receive a header frame and process that, setting the next handler
+to the body frame handler</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="channel.ContentHandler._handle_body_frame">
+<tt class="descname">_handle_body_frame</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#channel.ContentHandler._handle_body_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Receive body frames. We&#8217;ll keep receiving them in handler until we&#8217;ve
+received the body size specified in the header frame. When done
+call our finish function which will call our transports callbacks</p>
 </dd></dl>
 
 </dd></dl>
@@ -570,12 +570,12 @@ defined. This includes Basic.Publish, Basic.GetOk and Basic.Return</p>
         <li class="right" >
           <a href="callback.html" title="callback"
              >previous</a> |</li>
-        <li><a href="index.html">Pika 0.9.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9.4 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, Tony Garnock-Jones, Gavin M. Roy and others.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1pre.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1pre/ce4bb37a1409.
     </div>
   </body>
 </html>

@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>simplebuffer &mdash; Pika 0.9.3 documentation</title>
+    <title>simplebuffer &mdash; Pika 0.9.4 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.9.3',
+        VERSION:     '0.9.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Pika 0.9.3 documentation" href="index.html" />
+    <link rel="top" title="Pika 0.9.4 documentation" href="index.html" />
     <link rel="next" title="spec" href="spec.html" />
     <link rel="prev" title="reconnection_strategies" href="reconnection_strategies.html" /> 
   </head>
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="reconnection_strategies.html" title="reconnection_strategies"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Pika 0.9.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9.4 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -87,20 +87,20 @@ Use this to avoid concatenating or splitting large strings.</p>
 </div>
 <dl class="method">
 <dt>
-<tt class="descclassname">SimpleBuffer.</tt><tt class="descname">consume</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Move pointer and discard first &#8216;size&#8217; bytes.</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<tt class="descclassname">SimpleBuffer.</tt><tt class="descname">flush</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Remove all the data from buffer.</p>
+<tt class="descclassname">SimpleBuffer.</tt><tt class="descname">write</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Append given strings to the buffer.</p>
 </dd></dl>
 
 <dl class="method">
 <dt>
 <tt class="descclassname">SimpleBuffer.</tt><tt class="descname">read</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
 <dd><p>Read the data from the buffer, at most &#8216;size&#8217; bytes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descclassname">SimpleBuffer.</tt><tt class="descname">consume</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Move pointer and discard first &#8216;size&#8217; bytes.</p>
 </dd></dl>
 
 <dl class="method">
@@ -117,8 +117,8 @@ Use this to avoid concatenating or splitting large strings.</p>
 
 <dl class="method">
 <dt>
-<tt class="descclassname">SimpleBuffer.</tt><tt class="descname">write</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
-<dd><p>Append given strings to the buffer.</p>
+<tt class="descclassname">SimpleBuffer.</tt><tt class="descname">flush</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Remove all the data from buffer.</p>
 </dd></dl>
 
 </dd></dl>
@@ -183,12 +183,12 @@ Use this to avoid concatenating or splitting large strings.</p>
         <li class="right" >
           <a href="reconnection_strategies.html" title="reconnection_strategies"
              >previous</a> |</li>
-        <li><a href="index.html">Pika 0.9.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9.4 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, Tony Garnock-Jones, Gavin M. Roy and others.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1pre.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1pre/ce4bb37a1409.
     </div>
   </body>
 </html>

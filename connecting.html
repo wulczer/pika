@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Connecting to RabbitMQ &mdash; Pika 0.9.3 documentation</title>
+    <title>Connecting to RabbitMQ &mdash; Pika 0.9.4 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.9.3',
+        VERSION:     '0.9.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Pika 0.9.3 documentation" href="index.html" />
+    <link rel="top" title="Pika 0.9.4 documentation" href="index.html" />
     <link rel="next" title="Communicating with RabbitMQ" href="communicating.html" />
     <link rel="prev" title="Introduction to Pika" href="index.html" /> 
   </head>
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="index.html" title="Introduction to Pika"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Pika 0.9.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9.4 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -519,6 +519,12 @@ async library. Because of the nature of AMQP there are a few callbacks
 one needs to do, even in a blocking implementation. These include receiving
 messages from Basic.Deliver, Basic.GetOk, and Basic.Return.</p>
 <dl class="method">
+<dt id="adapters.blocking_connection.BlockingConnection.channel">
+<tt class="descname">channel</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.blocking_connection.BlockingConnection.channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new channel with the next available or specified channel #</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="adapters.blocking_connection.BlockingConnection.add_backpressure_callback">
 <tt class="descname">add_backpressure_callback</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.blocking_connection.BlockingConnection.add_backpressure_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a callback notification when we think backpressue is being applied
@@ -535,12 +541,6 @@ due to the size of the output buffer being exceeded.</p>
 <dt id="adapters.blocking_connection.BlockingConnection.add_on_open_callback">
 <tt class="descname">add_on_open_callback</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.blocking_connection.BlockingConnection.add_on_open_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a callback notification when the connection has opened</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="adapters.blocking_connection.BlockingConnection.channel">
-<tt class="descname">channel</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#adapters.blocking_connection.BlockingConnection.channel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a new channel with the next available or specified channel #</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -638,12 +638,12 @@ callback.</p>
         <li class="right" >
           <a href="index.html" title="Introduction to Pika"
              >previous</a> |</li>
-        <li><a href="index.html">Pika 0.9.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Pika 0.9.4 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, Tony Garnock-Jones, Gavin M. Roy and others.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1pre.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1pre/ce4bb37a1409.
     </div>
   </body>
 </html>
