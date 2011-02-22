@@ -31,9 +31,9 @@ Or you can directly install from GitHub with pip::
 
 You may also download the source for this version as a zip or tar.gz with the following URLs:
 
- - http://pypi.python.org/packages/source/p/pika/pika-v0.9.4.tar.gz
+ - http://pypi.python.org/packages/source/p/pika/pika-0.9.4.tar.gz
 
-   MD5 File Signature: f668c487df2e7d44658e1fc69270461d
+   MD5 File Signature: f5fd92121790693b7fe3b8734d865da3
 
 To install from source, run "python setup.py install" in the root source directory.
 
