@@ -104,7 +104,7 @@ def long_long_int(value):
     return pack('>cq', 'L', value)
 
 
-def short(value):
+def short_int(value):
     """
     Encode an short integer
 
@@ -186,7 +186,7 @@ def field_table(value):
     """
     # If there is no value, return a standard 4 null bytes
     if not value:
-        return '\x00\x00\x00\x00'
+        return pack('>I', 0)
 
     if not isinstance(value, dict):
         raise ValueError("dict type required, got %s", type(value))
@@ -205,7 +205,7 @@ def field_table(value):
 
     # Join all of the data together as a string
     output = ''.join(data)
-    return pack('>I', len(output)) + output
+    return pack('>cI', 'F', len(output)) + output
 
 
 def _encode_integer(value):
@@ -221,7 +221,7 @@ def _encode_integer(value):
     """
     # Send the appropriately sized data value
     if value > -32768 and value < 32767:
-        result = short(int(value))
+        result = short_int(int(value))
     elif value > -2147483648 and value < 2147483647:
         result = long_int(long(value))
     elif value > -9223372036854775808 and value < 9223372036854775807:
