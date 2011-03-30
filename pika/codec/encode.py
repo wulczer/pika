@@ -3,6 +3,11 @@
 # For copyright and licensing please refer to COPYING.
 #
 # ***** END LICENSE BLOCK *****
+"""
+AMQP Data Encoder
+
+Functions for encoding data of various types including field tables and arrays
+"""
 __author__ = 'Gavin M. Roy <gmr@myyearbook.com>'
 __since__ = '2011-03-29'
 
@@ -255,6 +260,37 @@ def field_table(value):
     return pack('>I', len(output)) + output
 
 
+def _encode_integer(value):
+    """
+    Determines the best type of numeric type to encode value as, preferring
+    the smallest data size first.
+
+    Parameters:
+    - int/long
+
+    Returns:
+    - string
+    """
+    # Send the appropriately sized data value
+    if value > -32768 and value < 32767:
+        result = short(int(value))
+    elif value > -65535 and value < 65535:
+        result = ushort(int(value))
+    elif value > -2147483648 and value < 2147483647:
+        result = long_int(long(value))
+    elif value > -4294967295 and value < 4294967295:
+        result = long_uint(long(value))
+    elif value > -9223372036854775808 and value < 9223372036854775807:
+        result = long_long_int(long(value))
+    elif value > -18446744073709551615 and value < 18446744073709551615:
+        result = long_long_uint(long(value))
+    else:
+        raise ValueError("Numeric value exceeds long-long-uint max: %r",
+                         value)
+    # Return the encoded value
+    return result
+
+
 def _encode_value(value):
     """
     Takes a value of any type and tries to encode it with the proper encoder
@@ -267,32 +303,22 @@ def _encode_value(value):
     """
     # Determine the field type and encode it
     if isinstance(value, bool):
-        return boolean(value)
+        result = boolean(value)
     elif isinstance(value, int) or isinstance(value, long):
-        # Send the appropriately sized data value
-        if value > -32768 and value < 32767:
-            return short(int(value))
-        elif value > -65535 and value < 65535:
-            return ushort(int(value))
-        elif value > -2147483648 and value < 2147483647:
-            return long_int(long(value))
-        elif value > -4294967295 and value < 4294967295:
-            return long_uint(long(value))
-        elif value > -9223372036854775808 and value < 9223372036854775807:
-            return long_long_int(long(value))
-        elif value > -18446744073709551615 and value < 18446744073709551615:
-            return long_long_uint(long(value))
+        result = _encode_integer(value)
     elif isinstance(value, Decimal):
-        return decimal(value)
+        result = decimal(value)
     elif isinstance(value, float):
-        return floating_point(value)
+        result = floating_point(value)
     elif isinstance(value, str):
-        return string(value)
+        result = string(value)
     elif isinstance(value, datetime) or isinstance(value, struct_time):
-        return timestamp(value)
+        result = timestamp(value)
     elif isinstance(value, dict):
-        return field_table(value)
+        result = field_table(value)
     elif isinstance(value, list):
-        return field_array(value)
-
-    raise ValueError("Unknown type: %s (%r)", type(value), value)
+        result = field_array(value)
+    else:
+        raise ValueError("Unknown type: %s (%r)", type(value), value)
+    # Return the encoded value
+    return result

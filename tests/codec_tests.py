@@ -287,7 +287,7 @@ def test_encode_field_table_empty():
 
 def test_encode_field_table_type_error():
     try:
-        codec.encode.field_table([1,2,3])
+        codec.encode.field_table([1, 2, 3])
     except ValueError:
         return
     assert False, "encode.field_table did not raise a ValueError Exception"
@@ -306,27 +306,3 @@ def test_encode_field_table():
     value = codec.encode.field_table(data)
     if value != check:
         assert False, "Encoded value does not match check value: %r" % value
-
-def test_doctest():
-    r'''
-    >>> codec.encode.field_table(None)
-    '\x00\x00\x00\x00'
-    >>> codec.encode.field_table({})
-    '\x00\x00\x00\x00'
-    >>> codec.encode.field_table({'a':1, 'c':1, 'd':'x', 'e':{}})
-    '\x00\x00\x00\x18\x01aU\x00\x01\x01cU\x00\x01\x01e\x00\x00\x00\x00\x01dS\x00\x00\x00\x01x'
-    >>> codec.encode.field_table({'a':Decimal('1.0')})
-    '\x00\x00\x00\x08\x01aD\x00\x00\x00\x00\x01'
-    >>> codec.encode.field_table({'a':Decimal('5E-3')})
-    '\x00\x00\x00\x08\x01aD\x03\x00\x00\x00\x05'
-    >>> codec.encode.field_table({'a':datetime(2010,12,31,23,58,59)})
-    '\x00\x00\x00\x0b\x01aT\x00\x00\x00\x00M\x1enC'
-    >>> codec.encode.field_table({'test':Decimal('-0.01')})
-    '\x00\x00\x00\x0b\x04testD\x02\xff\xff\xff\xff'
-    >>> codec.encode.field_table({'a':-1, 'b':[1,2,3,4,-1],'g':-1})
-    '\x00\x00\x00 \x01aU\xff\xff\x01bA\x00\x00\x00\x0fU\x00\x01U\x00\x02U\x00\x03U\x00\x04U\xff\xff\x01gU\xff\xff'
-    >>> codec.encode.field_table({'a': 4611686018427387904L, 'b': -4611686018427387904L})
-    '\x00\x00\x00\x16\x01aL@\x00\x00\x00\x00\x00\x00\x00\x01bL\xc0\x00\x00\x00\x00\x00\x00\x00'
-    >>> codec.encode.field_table({'a': True, 'b': False})
-    '\x00\x00\x00\x08\x01at\x01\x01bt\x00'
-    '''
