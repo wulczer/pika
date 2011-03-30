@@ -86,23 +86,6 @@ def long_int(value):
     return pack('>cl', 'I', value)
 
 
-def long_uint(value):
-    """
-    Encode a unsigned unsigned long int
-
-    Parameters:
-    - long value
-
-    Returns:
-    - encoded value
-    """
-    if not isinstance(value, long) and not isinstance(value, int):
-        raise ValueError("int or long type required")
-    if value < -4294967295 or value > 4294967295:
-        raise ValueError("Long integer range: -4294967295 to 4294967295")
-    return pack('>cL', 'i', value)
-
-
 def long_long_int(value):
     """
     Encode a long-long int
@@ -116,27 +99,9 @@ def long_long_int(value):
     if not isinstance(value, long) and not isinstance(value, int):
         raise ValueError("int or long type required")
     if value < -9223372036854775808 or value > 9223372036854775807:
-        raise ValueError("Unsigned long-long range: \
+        raise ValueError("long-long integer range: \
 -9223372036854775808 to 9223372036854775807")
     return pack('>cq', 'L', value)
-
-
-def long_long_uint(value):
-    """
-    Encode a unsigned long-long int
-
-    Parameters:
-    - long value
-
-    Returns:
-    - encoded value
-    """
-    if not isinstance(value, long) and not isinstance(value, int):
-        raise ValueError("int or long type required")
-    if value < -18446744073709551615 or value > 18446744073709551615:
-        raise ValueError("Unsigned long-long range: \
--18446744073709551615 to 18446744073709551615")
-    return pack('>cQ', 'l', value)
 
 
 def short(value):
@@ -169,23 +134,6 @@ def string(value):
     if not isinstance(value, str) and not isinstance(value, unicode):
         raise ValueError("str or unicode type required")
     return pack('>cI', 'S', len(value)) + value
-
-
-def ushort(value):
-    """
-    Encode an integer
-
-    Parameters:
-    - int value
-
-    Returns:
-    - encoded value
-    """
-    if not isinstance(value, int):
-        raise ValueError("int type required")
-    if value < -65535 or value > 65535:
-        raise ValueError("Unsigned short range: -65535 to 65535")
-    return pack('>cH', 'u', value)
 
 
 def timestamp(value):
@@ -274,18 +222,12 @@ def _encode_integer(value):
     # Send the appropriately sized data value
     if value > -32768 and value < 32767:
         result = short(int(value))
-    elif value > -65535 and value < 65535:
-        result = ushort(int(value))
     elif value > -2147483648 and value < 2147483647:
         result = long_int(long(value))
-    elif value > -4294967295 and value < 4294967295:
-        result = long_uint(long(value))
     elif value > -9223372036854775808 and value < 9223372036854775807:
         result = long_long_int(long(value))
-    elif value > -18446744073709551615 and value < 18446744073709551615:
-        result = long_long_uint(long(value))
     else:
-        raise ValueError("Numeric value exceeds long-long-uint max: %r",
+        raise ValueError("Numeric value exceeds long-long-int max: %r",
                          value)
     # Return the encoded value
     return result
