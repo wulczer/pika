@@ -271,9 +271,23 @@ def test_encode_field_array():
         assert False, "Encoded value does not match check value: %r" % value
 
 
-def test_encode_field_table_error():
+def test_encode_field_table_value_type_error():
     try:
         codec.encode.field_table({'test': object()})
+    except ValueError:
+        return
+    assert False, "encode.field_table did not raise a ValueError Exception"
+
+
+def test_encode_field_table_empty():
+    value = codec.encode.field_table(None)
+    if value != '\x00\x00\x00\x00':
+        assert False, "Encoded value does not match check value: %r" % value
+
+
+def test_encode_field_table_type_error():
+    try:
+        codec.encode.field_table([1,2,3])
     except ValueError:
         return
     assert False, "encode.field_table did not raise a ValueError Exception"
