@@ -153,7 +153,7 @@ def field_table(value):
     - str
 
     Returns:
-    - tuple of bytes used and a list of values
+    - tuple of bytes used and a dict
     """
     length = unpack_from('>l', value)[0]
     offset = 4
