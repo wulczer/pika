@@ -1,7 +1,303 @@
+#!/usr/bin/env python
+"""Generates the amqp.py file used as a foundation for AMQP communication
+
+For copyright and licensing please refer to COPYING.
 """
-Module document
-"""
-__author__ = 'gmr'
-__since__ = '3/31/11'
+__author__ = 'Gavin M. Roy'
+__email__ = 'gmr@myyearbook.com'
+__date__ = '2011-03-31'
+
+CODEGEN_DIR = 'rabbitmq-codegen-default'
+CODEGEN_IGNORE_CLASSES = ['access']
+CODEGEN_JSON = 'amqp-rabbitmq-0.9.1.json'
+CODEGEN_OUTPUT = '../pika/amqp.py'
+CODEGEN_URL = 'http://hg.rabbitmq.com/rabbitmq-codegen/archive/default.tar.bz2'
+
+RESERVED_WORDS = 'global'
+
+from datetime import date
+from json import load
+from os import unlink
+from os.path import exists
+from tarfile import open as tarfile_open
+from tempfile import NamedTemporaryFile
+from urllib import urlopen
+
+# Outut buffer list
+output = []
 
 
+def newline(text=''):
+    """Append a new line to the output buffer"""
+    global output
+    output.append(text)
+
+
+def classify(text):
+    """Replace the AMQP constant with a more pythonic classname"""
+    parts = text.split('-')
+    class_name = ''
+    for part in parts:
+        class_name += part.title()
+    return class_name
+
+
+def comment(text):
+    """Append a comment to the output buffer"""
+    newline('# %s' % text)
+
+
+def dashify(text):
+    """Replace a - with a _ for the passed in text"""
+    return text.replace('-', '_')
+
+
+def indent_and_wrap(text, indent, indent_first_line=False):
+    docstring = list()
+    padding = ''.join([' ' for position in xrange(0, indent)])
+    max_length = 79 - indent
+    try:
+        offset = text.rindex(' ', 0, max_length)
+    except ValueError:
+        if indent_first_line:
+            return padding + text
+        else:
+            return text
+
+    if indent_first_line:
+        docstring.append(padding + text[0:offset])
+    else:
+        docstring.append(text[0:offset])
+    while (offset + max_length) < len(text):
+        try:
+            end = text.rindex(' ', offset, offset + max_length)
+        except ValueError:
+            break
+        docstring.append(padding + text[offset:end])
+        offset = end
+    if offset < len(text):
+        docstring.append(padding + text[offset:])
+    return '\n'.join(docstring)
+
+
+def docify(text, indent=4):
+    """Return a wrapping docstring block for the given string"""
+    docstring = list()
+    padding = ''.join([' ' for position in xrange(0, indent)])
+    max_length = 79 - indent
+    try:
+        offset = text.rindex(' ', 0, max_length - 3)
+    except ValueError:
+        return '%s"""%s"""' % (padding, text)
+    docstring.append('%s"""%s' % (padding, text[0:offset]))
+    while (offset + max_length) < len(text):
+        try:
+            end = text.rindex(' ', offset, offset + max_length)
+        except ValueError:
+            break
+        docstring.append(padding + text[offset:end])
+        offset = end
+    if offset < len(text):
+        docstring.append(padding + text[offset:])
+    return '\n'.join(docstring) + '\n\n' + padding + '"""'
+
+
+# Check to see if we have the codegen file in this directory
+if not exists(CODEGEN_JSON):
+
+    # Retieve the codegen archive
+    print "Downloading codegen JSON file."
+    handle = urlopen(CODEGEN_URL)
+    bzip2_tarball = handle.read()
+
+    # Write the file out to a temp file
+    tempfile = NamedTemporaryFile(delete=False)
+    tempfile.write(bzip2_tarball)
+    tempfile.close()
+
+    # Extract the CODEGEN_JSON file to this directory
+    tarball = tarfile_open(tempfile.name, 'r:*')
+    json_data = tarball.extractfile('%s/%s' % (CODEGEN_DIR, CODEGEN_JSON))
+
+    # Write out the JSON file
+    with open(CODEGEN_JSON, 'w') as handle:
+        handle.write(json_data.read())
+
+    # Remove the tempfile
+    unlink(tempfile.name)
+
+# Read in the codegen JSON file
+with open(CODEGEN_JSON, 'r') as handle:
+    amqp = load(handle)
+
+# Our output list
+output = list()
+
+# Create and append our docblock
+docblock = '''"""%s
+
+Auto-generated AMQP Support Module
+
+WARNING: DO NOT EDIT. To Generate run tools/codegen.py
+
+For copyright and licensing please refer to COPYING.
+
+"""''' % CODEGEN_OUTPUT.split('/')[-1]
+newline(docblock)
+newline()
+
+# Append our metadata
+newline('__date__ = "%s"' % date.today().isoformat())
+newline('__author__ = "%s"' % __file__)
+newline()
+
+# AMQP Version Header
+comment("AMQP Protocol Version")
+newline('AMQP_VERSION = (%i, %i, %i)' % (amqp['major-version'],
+                                         amqp['minor-version'],
+                                         amqp['revision']))
+newline()
+
+# Defaults
+comment("RabbitMQ Defaults")
+newline('DEFAULT_HOST = "localhost"')
+newline('DEFAULT_PORT = %i' % amqp['port'])
+newline('DEFAULT_USER = "guest"')
+newline('DEFAULT_PASS = "guest"')
+newline()
+
+# Constant
+comment("AMQP Constants")
+for constant in amqp['constants']:
+    if 'class' not in constant:
+        newline('AMQP_%s = %i' % \
+                (dashify(constant['name']), constant['value']))
+newline()
+newline()
+
+# Warnings and Exceptions
+comment("AMQP Errors")
+newline()
+errors = {}
+for constant in amqp['constants']:
+    if 'class' in constant:
+        class_name = 'AMQP' + classify(constant['name'])
+        if constant['class'] == 'soft-error':
+            extends = 'Warning'
+        elif constant['class'] == 'hard-error':
+            extends = 'Exception'
+        else:
+            raise ValueError('Unexpected class: %s', constant['class'])
+        newline('class %s(%s):' % (class_name, extends))
+        newline('    """Class used to map AMQP error values to an Exception')
+        newline('    or Warning class based upon being a hard or soft error.')
+        newline()
+        newline('    """')
+        newline()
+        newline('    name = "%s"' % constant['name'])
+        newline('    value = %i' % constant['value'])
+        newline()
+        newline()
+        errors[constant['value']] = class_name
+
+# Error mapping to class
+error_lines = []
+for error_code in errors.keys():
+    error_lines.append('               %i: %s,' % (error_code,
+                                                  errors[error_code]))
+comment("AMQP Error code to class mapping")
+error_lines[0] = error_lines[0].replace('               ',
+                                        'AMQP_ERRORS = {')
+error_lines[-1] = error_lines[-1].replace(',', '}')
+output += error_lines
+
+# Load the docstrings
+with open("docstrings.json", "r") as handle:
+    docstrings = load(handle)
+
+# Get the amqp class list so we can sort it
+class_list = list()
+for amqp_class in amqp['classes']:
+    class_list.append(amqp_class['name'])
+
+# Sort them alphabetically
+class_list.sort()
+
+newline()
+comment("AMQP Classes and Methods")
+newline()
+
+# Protocol Class and Methods
+for amqp_class in class_list:
+
+    # Make sure we're not hitting a deprecated class like Access
+    if amqp_class not in CODEGEN_IGNORE_CLASSES:
+
+        # find the offset in our amqp classes list
+        for offset in xrange(0, len(amqp['classes'])):
+            if amqp['classes'][offset]['name'] == amqp_class:
+                break
+
+        # Construct the class docstring and id value
+        newline()
+        newline('class %s(object):' % amqp_class.title())
+        if amqp_class in docstrings['classes']:
+            newline(docify(docstrings['classes'][amqp_class]))
+        if 'id' in amqp['classes'][offset].keys():
+            newline("    id = %i" % amqp['classes'][offset]['id'])
+        newline()
+
+        # Build the method python classes
+        for method in amqp['classes'][offset]['methods']:
+
+            # Build a pythonic class name for the method
+            method_name = classify(method['name'])
+
+            # Define the class
+            newline('    class %s(object):' % method_name)
+
+            # Get the docstring if there is one
+            full_name = '%s.%s' % (amqp_class, method['name'])
+            if full_name in docstrings['methods']:
+                newline(docify(docstrings['methods'][full_name], 8))
+            else:
+                newline("        # %s" % full_name)
+
+            # Specify the class id
+            newline('        id = %i' % method['id'])
+            newline()
+
+            # Build the constructor
+            params = {'unnamed': ['self'], 'named': []}
+            if 'arguments' in method:
+                for argument in method['arguments']:
+                    param = argument['name'].replace('-', '_')
+                    if param in RESERVED_WORDS:
+                        param += '_'
+
+                    if 'default-value' in argument and \
+                       argument['default-value'] not in ["", {}, []]:
+                        if 'domain' in argument:
+                            argument['type'] = argument['domain']
+                        if argument['type'] in ['shortstr', 'longstr']:
+                            param += '="%s"' % argument['default-value']
+                        else:
+                            param += '=%s' % argument['default-value']
+                        params['named'].append(param)
+                    else:
+                        params['unnamed'].append(param)
+
+                arguments = ', '.join([', '.join(params['unnamed']),
+                                       ', '.join(params['named'])])
+            else:
+                arguments = 'self'
+            arguments = indent_and_wrap(arguments.rstrip(','), 20, False)
+            newline('        def __init__(%s):' % \
+                    arguments.strip().rstrip(','))
+            newline('            pass')
+            newline()
+
+# Spit out the file
+print '\n'.join(output)
+with open(CODEGEN_OUTPUT, 'w') as handle:
+    handle.write('\n'.join(output))
