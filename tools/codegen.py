@@ -19,6 +19,7 @@ from datetime import date
 from json import load
 from os import unlink
 from os.path import exists
+from re import sub
 from tarfile import open as tarfile_open
 from tempfile import NamedTemporaryFile
 from urllib import urlopen
@@ -27,11 +28,18 @@ from urllib import urlopen
 output = []
 
 
-def newline(text=''):
+def newline(text='', lpad=0):
     """Append a new line to the output buffer"""
     global output
-    output.append(text)
 
+    # If we specified a pad amount
+    if lpad:
+        # Pad the left of the string
+        output.append("%s%s" % (''.join([' ' for position in xrange(0, lpad)]),
+                                text))
+    # Otherwise just append the string
+    else:
+        output.append(text)
 
 def classify(text):
     """Replace the AMQP constant with a more pythonic classname"""
@@ -211,6 +219,155 @@ error_lines[0] = error_lines[0].replace('               ',
 error_lines[-1] = error_lines[-1].replace(',', '}')
 output += error_lines
 
+# Get the amqp class list so we can sort it
+class_list = list()
+for amqp_class in amqp['classes']:
+    class_list.append(amqp_class['name'])
+
+# Sort them alphabetically
+class_list.sort()
+
+
+
+newline()
+comment("AMQP Classes and Methods")
+newline()
+newline()
+
+# First line prefix
+prefix = "FRAMES = { "
+base_width = 10
+
+# Protocol Class and Methods Dict
+for amqp_class in class_list:
+
+    # Make sure we're not hitting a deprecated class like Access
+    if amqp_class not in CODEGEN_IGNORE_CLASSES:
+
+        # find the offset in our amqp classes list
+        for offset in xrange(0, len(amqp['classes'])):
+            if amqp['classes'][offset]['name'] == amqp_class:
+                break
+
+        # Create our class prefix
+        class_prefix = "%i: { " % amqp['classes'][offset]['id']
+
+        # Append our class line
+        newline("%s%s\"name\": \"%s\"," % (prefix, class_prefix, amqp_class))
+
+        # Replace our previous prefix with spaces
+        if prefix:
+            prefix = "".join([" " for padding in xrange(0, len(prefix))])
+
+        # Create the methods prefix for this AMQP class
+        methods_prefix = "\"methods\": { "
+
+        # Iterate through each method
+        for method in amqp['classes'][offset].get('methods', []):
+
+            # Build our method prefix
+            method_prefix = "%s%i: { " % (methods_prefix,
+                                          method['id'])
+
+            # Replace the methods prefix with spaces
+            if methods_prefix:
+                methods_prefix = \
+                    "".join([" " for padding in \
+                            xrange(0, len(methods_prefix))])
+
+            # Add our method name line
+            newline("%s\"name\": \"%s\"," % \
+                    (method_prefix,
+                     method['name']),
+                    len(prefix) + len(class_prefix))
+
+            # Parameters
+            params_prefix = "\"args\": [ "
+
+            # Iterate through the parameters adding method parameters lines
+            for parameter in method.get('arguments', []):
+
+                # Add our parameter name
+                newline("%s{ \"name\": \"%s\"," % \
+                        (params_prefix,
+                         parameter['name']),
+                         len(prefix) + len(class_prefix) + len(method_prefix))
+
+                # Replace the methods prefix with spaces
+                if params_prefix:
+                    params_prefix = \
+                        "".join([" " for padding in \
+                                xrange(0, len(params_prefix))])
+
+                # Add our parameter type or domain
+                newline("%s  \"type\": \"%s\"," % \
+                        (params_prefix,
+                         parameter.get('type',
+                                       parameter.get('domain', 'Unknown'))),
+                         len(prefix) + len(class_prefix) + len(method_prefix))
+
+                default = parameter.get("default-value", "None")
+
+                if default == 'false':
+                    default = False
+                elif default == 'true':
+                    default = True
+                elif default == "" or \
+                     default == {} or \
+                    default == "None":
+                    default = None
+                else:
+                    try:
+                        default = int(default)
+                    except ValueError:
+                        default = "\"%s\"" % default
+
+                # Add our parameter default
+                newline("%s  \"default\": %s," % \
+                        (params_prefix, default),
+                         len(prefix) + len(class_prefix) + len(method_prefix))
+
+                # Close out the parameters
+                newline("},",
+                        len(prefix) + len(class_prefix) + \
+                        len(method_prefix) + len(params_prefix))
+
+            # Close out the method
+            if  method.get('arguments', None):
+                newline("],",
+                        len(prefix) + len(class_prefix) +\
+                        len(method_prefix) + len(params_prefix) - 2)
+
+            # Close out the method
+            newline("},",
+                    len(prefix) + len(class_prefix) + len(method_prefix) - 2)
+
+        # Close out the methods
+        newline("},", len(prefix) + len(class_prefix) - 2)
+
+
+        # Close out the class
+        newline("},", len(prefix))
+
+newline("}", base_width - 2)
+
+output_string = '\n'.join(output)
+
+output_string = sub(',\n([ ]*)},', ' },', output_string)
+output_string = sub('},\n([ ]*)],', '} ],', output_string)
+output_string = sub('],\n([ ]*)},', '] },', output_string)
+for replacement in xrange(0, 2):
+    output_string = sub('},\n([ ]*)},', '} },', output_string)
+output_string = sub('},\n([ ]*)}', '} }', output_string)
+
+
+# Spit out the file
+with open(CODEGEN_OUTPUT, 'w') as handle:
+    handle.write(output_string)
+
+"""
+I want to use this but in a different context
+
 # Load the docstrings
 with open("docstrings.json", "r") as handle:
     docstrings = load(handle)
@@ -222,6 +379,8 @@ for amqp_class in amqp['classes']:
 
 # Sort them alphabetically
 class_list.sort()
+
+
 
 newline()
 comment("AMQP Classes and Methods")
@@ -301,3 +460,4 @@ for amqp_class in class_list:
 print '\n'.join(output)
 with open(CODEGEN_OUTPUT, 'w') as handle:
     handle.write('\n'.join(output))
+"""
