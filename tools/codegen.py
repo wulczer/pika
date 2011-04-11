@@ -181,11 +181,34 @@ for constant in amqp['constants']:
         newline('AMQP_%s = %i' % \
                 (dashify(constant['name']), constant['value']))
 newline()
+
+# Data types
+data_types = []
+domains = []
+for domain, data_type in amqp['domains']:
+    if domain == data_type:
+        data_types.append('                   "%s",' % domain)
+    else:
+        domains.append('                "%s": "%s",' % (domain, data_type))
+
+comment("AMQP data types")
+data_types[0] = data_types[0].replace('                   ',
+                                      'AMQP_DATA_TYPES = [')
+data_types[-1] = data_types[-1].replace(',', ']')
+output += data_types
 newline()
 
-# Warnings and Exceptions
-comment("AMQP Errors")
+comment("AMQP domains")
+domains[0] = domains[0].replace('                ',
+                                'AMQP_DOMAINS = {')
+domains[-1] = domains[-1].replace(',', '}')
+output += domains
 newline()
+
+
+# Warnings and Exceptions
+newline()
+comment("AMQP Errors")
 errors = {}
 for constant in amqp['constants']:
     if 'class' in constant:
@@ -237,8 +260,6 @@ for amqp_class in amqp['classes']:
 
 # Sort them alphabetically
 class_list.sort()
-
-
 
 newline()
 comment("AMQP Classes and Methods")
@@ -309,10 +330,18 @@ for amqp_class in class_list:
                                 xrange(0, len(params_prefix))])
 
                 # Add our parameter type or domain
+                domain_name = parameter.get('domain', None)
+                if domain_name:
+                    for domain in amqp['domains']:
+                        if domain[0] == domain_name:
+                            data_type = domain[1]
+                            break
+                else:
+                    data_type = parameter.get('type')
+
+                # Building the data type
                 newline("%s\"type\": \"%s\"," % \
-                        (params_prefix,
-                         parameter.get('type',
-                                       parameter.get('domain', 'Unknown'))),
+                        (params_prefix, data_type),
                          len(prefix) + len(class_prefix) + len(method_prefix))
 
                 default = parameter.get("default-value", "None")
@@ -346,6 +375,14 @@ for amqp_class in class_list:
                 newline("],",
                         len(prefix) + len(class_prefix) +\
                         len(method_prefix) + len(params_prefix) - 2)
+
+            # specify if it's a synchronous flag
+            if  method.get('synchronous', None):
+                newline("\"synchronous\": %s," % method['synchronous'],
+                        len(prefix) + len(class_prefix) + len(method_prefix))
+            else:
+                newline("\"synchronous\": False,",
+                        len(prefix) + len(class_prefix) + len(method_prefix))
 
             # Close out the method
             newline("},",
