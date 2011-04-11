@@ -84,6 +84,19 @@ def long_long_int(value):
     return 8, unpack_from('>q', value)[0]
 
 
+def octet(value):
+    """
+    Decode an octet value
+
+    Parameters:
+    - str
+
+    Returns:
+    - tuple of bytes used and an char value
+    """
+    return 1, unpack_from('>b', value)[0]
+
+
 def short_int(value):
     """
     Decode a short integer value
@@ -201,7 +214,20 @@ def _decode_value(value):
         consumed, result = string(value[1:])
     elif value[0] == 'U':
         consumed, result = short_int(value[1:])
+    elif value[0] == '\x00':
+        consumed, result = 0, None
     else:
         raise ValueError("Unknown type: %s", value[0])
     # Return the bytes used and the decoded value
     return consumed + 1, result
+
+# Define a data type mapping to methods
+METHODS = {"bit": boolean,
+           "long": long_int,
+           "longlong": long_long_int ,
+           "longstr": string,
+           "octet": octet,
+           "short": short_int,
+           "shortstr": string,
+           "table": field_table,
+           "timestamp": timestamp}
