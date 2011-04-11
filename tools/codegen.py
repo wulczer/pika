@@ -201,18 +201,29 @@ for constant in amqp['constants']:
         newline('    or Warning class based upon being a hard or soft error.')
         newline()
         newline('    """')
-        newline()
         newline('    name = "%s"' % constant['name'])
         newline('    value = %i' % constant['value'])
         newline()
         newline()
         errors[constant['value']] = class_name
 
+# Class mapping to id
+class_lines = []
+for amqp_class in amqp['classes']:
+    class_lines.append('                "%s": %i,' % \
+                       (amqp_class['name'].upper(), amqp_class['id']))
+comment("AMQP class to id mapping")
+class_lines[0] = class_lines[0].replace('                ',
+                                        'AMQP_CLASSES = {')
+class_lines[-1] = class_lines[-1].replace(',', '}')
+output += class_lines
+newline()
+
 # Error mapping to class
 error_lines = []
 for error_code in errors.keys():
     error_lines.append('               %i: %s,' % (error_code,
-                                                  errors[error_code]))
+                                                   errors[error_code]))
 comment("AMQP Error code to class mapping")
 error_lines[0] = error_lines[0].replace('               ',
                                         'AMQP_ERRORS = {')
@@ -231,12 +242,10 @@ class_list.sort()
 
 newline()
 comment("AMQP Classes and Methods")
-newline()
-newline()
 
 # First line prefix
-prefix = "FRAMES = { "
-base_width = 10
+prefix = "FRAMES = {"
+base_width = 9
 
 # Protocol Class and Methods Dict
 for amqp_class in class_list:
@@ -250,7 +259,7 @@ for amqp_class in class_list:
                 break
 
         # Create our class prefix
-        class_prefix = "%i: { " % amqp['classes'][offset]['id']
+        class_prefix = "%i:{" % amqp['classes'][offset]['id']
 
         # Append our class line
         newline("%s%s\"name\": \"%s\"," % (prefix, class_prefix, amqp_class))
@@ -260,13 +269,13 @@ for amqp_class in class_list:
             prefix = "".join([" " for padding in xrange(0, len(prefix))])
 
         # Create the methods prefix for this AMQP class
-        methods_prefix = "\"methods\": { "
+        methods_prefix = "\"methods\": {"
 
         # Iterate through each method
         for method in amqp['classes'][offset].get('methods', []):
 
             # Build our method prefix
-            method_prefix = "%s%i: { " % (methods_prefix,
+            method_prefix = "%s%i: {" % (methods_prefix,
                                           method['id'])
 
             # Replace the methods prefix with spaces
@@ -282,13 +291,13 @@ for amqp_class in class_list:
                     len(prefix) + len(class_prefix))
 
             # Parameters
-            params_prefix = "\"args\": [ "
+            params_prefix = "\"args\": ["
 
             # Iterate through the parameters adding method parameters lines
             for parameter in method.get('arguments', []):
 
                 # Add our parameter name
-                newline("%s{ \"name\": \"%s\"," % \
+                newline("%s{\"name\": \"%s\"," % \
                         (params_prefix,
                          parameter['name']),
                          len(prefix) + len(class_prefix) + len(method_prefix))
@@ -300,7 +309,7 @@ for amqp_class in class_list:
                                 xrange(0, len(params_prefix))])
 
                 # Add our parameter type or domain
-                newline("%s  \"type\": \"%s\"," % \
+                newline("%s\"type\": \"%s\"," % \
                         (params_prefix,
                          parameter.get('type',
                                        parameter.get('domain', 'Unknown'))),
@@ -323,7 +332,7 @@ for amqp_class in class_list:
                         default = "\"%s\"" % default
 
                 # Add our parameter default
-                newline("%s  \"default\": %s," % \
+                newline("%s\"default\": %s," % \
                         (params_prefix, default),
                          len(prefix) + len(class_prefix) + len(method_prefix))
 
@@ -342,122 +351,85 @@ for amqp_class in class_list:
             newline("},",
                     len(prefix) + len(class_prefix) + len(method_prefix) - 2)
 
+
         # Close out the methods
         newline("},", len(prefix) + len(class_prefix) - 2)
 
+        if  amqp['classes'][offset].get('properties', None):
+
+            # Create the methods prefix for the class properties
+            props_prefix = "\"properties\": ["
+
+            # Iterate through each method
+            for prop in amqp['classes'][offset]['properties']:
+
+                # Add our parameter name
+                newline("%s{\"name\": \"%s\"," % \
+                        (props_prefix,
+                         prop['name']),
+                         len(prefix) + len(class_prefix))
+
+                # Replace the methods prefix with spaces
+                if props_prefix:
+                    props_prefix = \
+                        "".join([" " for padding in \
+                                xrange(0, len(props_prefix))])
+
+                # Add our parameter type or domain
+                newline("%s \"type\": \"%s\"," % \
+                        (props_prefix,
+                         prop.get('type', prop.get('domain', 'Unknown'))),
+                         len(prefix) + len(class_prefix))
+
+                default = prop.get("default-value", "None")
+
+                if default == 'false':
+                    default = False
+                elif default == 'true':
+                    default = True
+                elif default == "" or \
+                     default == {} or \
+                    default == "None":
+                    default = None
+                else:
+                    try:
+                        default = int(default)
+                    except ValueError:
+                        default = "\"%s\"" % default
+
+                # Add our parameter default
+                newline("%s \"default\": %s," % \
+                        (props_prefix, default),
+                         len(prefix) + len(class_prefix))
+
+                # Close out the properties
+                newline("},",
+                        len(prefix) + \
+                        len(class_prefix) + \
+                        len(props_prefix) - 2)
+
+            # Close out the properties
+            newline("],", len(prefix) + len(class_prefix) - 2)
 
         # Close out the class
         newline("},", len(prefix))
 
+# Close out the dict
 newline("}", base_width - 2)
+newline()
 
+# Create our output string
 output_string = '\n'.join(output)
 
-output_string = sub(',\n([ ]*)},', ' },', output_string)
-output_string = sub('},\n([ ]*)],', '} ],', output_string)
-output_string = sub('],\n([ ]*)},', '] },', output_string)
+# Clean up the dict line endings
+output_string = sub(',\n([ ]*)},', '},', output_string)
+output_string = sub('],\n([ ]*)},', ']},', output_string)
+output_string = sub('},\n([ ]*)],', '}],', output_string)
 for replacement in xrange(0, 2):
-    output_string = sub('},\n([ ]*)},', '} },', output_string)
-output_string = sub('},\n([ ]*)}', '} }', output_string)
-
+    output_string = sub('},\n([ ]*)},', '}},', output_string)
+output_string = sub('},\n([ ]*)}', '}}', output_string)
+output_string = sub('},\n([ ]*)]', '}]', output_string)
 
 # Spit out the file
 with open(CODEGEN_OUTPUT, 'w') as handle:
     handle.write(output_string)
-
-"""
-I want to use this but in a different context
-
-# Load the docstrings
-with open("docstrings.json", "r") as handle:
-    docstrings = load(handle)
-
-# Get the amqp class list so we can sort it
-class_list = list()
-for amqp_class in amqp['classes']:
-    class_list.append(amqp_class['name'])
-
-# Sort them alphabetically
-class_list.sort()
-
-
-
-newline()
-comment("AMQP Classes and Methods")
-newline()
-
-# Protocol Class and Methods
-for amqp_class in class_list:
-
-    # Make sure we're not hitting a deprecated class like Access
-    if amqp_class not in CODEGEN_IGNORE_CLASSES:
-
-        # find the offset in our amqp classes list
-        for offset in xrange(0, len(amqp['classes'])):
-            if amqp['classes'][offset]['name'] == amqp_class:
-                break
-
-        # Construct the class docstring and id value
-        newline()
-        newline('class %s(object):' % amqp_class.title())
-        if amqp_class in docstrings['classes']:
-            newline(docify(docstrings['classes'][amqp_class]))
-        if 'id' in amqp['classes'][offset].keys():
-            newline("    id = %i" % amqp['classes'][offset]['id'])
-        newline()
-
-        # Build the method python classes
-        for method in amqp['classes'][offset]['methods']:
-
-            # Build a pythonic class name for the method
-            method_name = classify(method['name'])
-
-            # Define the class
-            newline('    class %s(object):' % method_name)
-
-            # Get the docstring if there is one
-            full_name = '%s.%s' % (amqp_class, method['name'])
-            if full_name in docstrings['methods']:
-                newline(docify(docstrings['methods'][full_name], 8))
-            else:
-                newline("        # %s" % full_name)
-
-            # Specify the class id
-            newline('        id = %i' % method['id'])
-            newline()
-
-            # Build the constructor
-            params = {'unnamed': ['self'], 'named': []}
-            if 'arguments' in method:
-                for argument in method['arguments']:
-                    param = argument['name'].replace('-', '_')
-                    if param in RESERVED_WORDS:
-                        param += '_'
-
-                    if 'default-value' in argument and \
-                       argument['default-value'] not in ["", {}, []]:
-                        if 'domain' in argument:
-                            argument['type'] = argument['domain']
-                        if argument['type'] in ['shortstr', 'longstr']:
-                            param += '="%s"' % argument['default-value']
-                        else:
-                            param += '=%s' % argument['default-value']
-                        params['named'].append(param)
-                    else:
-                        params['unnamed'].append(param)
-
-                arguments = ', '.join([', '.join(params['unnamed']),
-                                       ', '.join(params['named'])])
-            else:
-                arguments = 'self'
-            arguments = indent_and_wrap(arguments.rstrip(','), 20, False)
-            newline('        def __init__(%s):' % \
-                    arguments.strip().rstrip(','))
-            newline('            pass')
-            newline()
-
-# Spit out the file
-print '\n'.join(output)
-with open(CODEGEN_OUTPUT, 'w') as handle:
-    handle.write('\n'.join(output))
-"""
