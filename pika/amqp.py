@@ -604,7 +604,14 @@ class Connection(object):
             self.synchronous = False
 
     class Properties(object):
-        pass
+        """Content Properties"""
+
+        def __init__(self):
+            """Initialize the Connection.Properties class
+
+
+            """
+
 
 
 class Channel(object):
@@ -629,7 +636,7 @@ class Channel(object):
         def __init__(self, out_of_band=None):
             """Initialize the Channel.Open class
 
-            :param out_of_band: Protocol level field, do not use, must be zero..
+            :param out_of_band: Protocol level field, do not use, must be zero.
             :type out_of_band: str.
 
             """
@@ -2076,7 +2083,88 @@ class Basic(object):
             self.requeue = requeue
 
     class Properties(object):
-        pass
+        """Content Properties"""
+
+        def __init__(self, content_type=None, content_encoding=None,
+                     headers=None, delivery_mode=None, priority=None,
+                     correlation_id=None, reply_to=None, expiration=None,
+                     message_id=None, timestamp=None, type=None, user_id=None,
+                     app_id=None, cluster_id=None):
+            """Initialize the Basic.Properties class
+
+            :param content_type: MIME content type.
+            :type content_type: str.
+            :param content_encoding: MIME content encoding.
+            :type content_encoding: str.
+            :param headers: Message header field table.
+            :type headers: dict.
+            :param delivery_mode: Non-persistent (1) or persistent (2).
+            :type delivery_mode: int.
+            :param priority: Message priority, 0 to 9.
+            :type priority: int.
+            :param correlation_id: Application correlation identifier.
+            :type correlation_id: str.
+            :param reply_to: Address to reply to.
+            :type reply_to: str.
+            :param expiration: Message expiration specification.
+            :type expiration: str.
+            :param message_id: Application message identifier.
+            :type message_id: str.
+            :param timestamp: Message timestamp.
+            :type timestamp: struct_time.
+            :param type: Message type name.
+            :type type: str.
+            :param user_id: Creating user id.
+            :type user_id: str.
+            :param app_id: Creating application id.
+            :type app_id: str.
+            :param cluster_id: Deprecated.
+            :type cluster_id: str.
+
+            """
+
+                # MIME content type
+                self.content_type = content_type
+
+                # MIME content encoding
+                self.content_encoding = content_encoding
+
+                # Message header field table
+                self.headers = headers
+
+                # Non-persistent (1) or persistent (2)
+                self.delivery_mode = delivery_mode
+
+                # Message priority, 0 to 9
+                self.priority = priority
+
+                # Application correlation identifier
+                self.correlation_id = correlation_id
+
+                # Address to reply to
+                self.reply_to = reply_to
+
+                # Message expiration specification
+                self.expiration = expiration
+
+                # Application message identifier
+                self.message_id = message_id
+
+                # Message timestamp
+                self.timestamp = timestamp
+
+                # Message type name
+                self.type = type
+
+                # Creating user id
+                self.user_id = user_id
+
+                # Creating application id
+                self.app_id = app_id
+
+                # Deprecated
+                self.cluster_id = cluster_id
+
 
 
 class TX(object):

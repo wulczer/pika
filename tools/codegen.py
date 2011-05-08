@@ -570,6 +570,8 @@ for class_name in class_list:
     if 'properties' in definition:
         new_line('class Properties(object):', indent)
         indent += 4
+        comment('"""Content Properties"""', indent, '')
+        new_line()
 
         # Function definition
         new_function("__init__",  definition['properties'], indent)
