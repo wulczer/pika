@@ -451,8 +451,9 @@ for class_name in class_list:
         new_line()
         new_line('"""', indent)
 
-    comment("AMQP Class #", indent + 2)
+    comment("AMQP Class Number and Mapping Index", indent + 2)
     new_line('id = %i' % definition['id'], indent)
+    new_line('index = 0x%08X' % (definition['id'] << 16), indent)
     new_line()
 
     # We use this later down in methods to get method xml to look for stuff
@@ -479,8 +480,10 @@ for class_name in class_list:
                 new_line()
                 new_line('"""', indent)
 
-        comment("AMQP Method #", indent + 2)
+        comment("AMQP Method Number and Mapping Index", indent + 2)
         new_line('id = %i' % method['id'], indent)
+        new_line('index = 0x%08X' % (definition['id'] << 16 | method['id']),
+                 indent)
         new_line()
 
         # Get the method's XML node
@@ -619,18 +622,18 @@ for class_name in class_list:
         indent -= 4
 
 
-comment("AMQP Class.Method ID Mapping")
+comment("AMQP Class.Method Index Mapping")
 mapping = list()
 for amqp_class in amqp['classes']:
     if amqp_class['name'] not in CODEGEN_IGNORE_CLASSES:
         for method in amqp_class['methods']:
             key = amqp_class['id'] << 16 | method['id']
-            mapping.append(('              0x%08X: %s.%s,' % \
+            mapping.append(('                 0x%08X: %s.%s,' % \
                            (key,
                             pep8_class_name(amqp_class['name']),
                             pep8_class_name(method['name']))))
-mapping[0] = mapping[0].replace('              ',
-                                'ID_MAPPING = {')
+mapping[0] = mapping[0].replace('                 ',
+                                'INDEX_MAPPING = {')
 mapping[-1] = mapping[-1].replace(',', '}')
 output += mapping
 new_line()

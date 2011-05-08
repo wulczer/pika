@@ -9,7 +9,7 @@ For copyright and licensing please refer to COPYING.
 """
 
 __date__ = "2011-05-08"
-__author__ = "./codegen.py"
+__author__ = "codegen.py"
 
 # AMQP Protocol Version
 AMQP_VERSION = (0, 9, 1)
@@ -261,8 +261,9 @@ class Connection(object):
     thereafter.
 
     """
-    # AMQP Class #
+    # AMQP Class Number and Mapping Index
     id = 10
+    index = 0x000A0000
 
     class Start(object):
         """Start connection negotiation
@@ -272,8 +273,9 @@ class Connection(object):
         of security mechanisms which the client can use for authentication.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 10
+        index = 0x000A000A
 
         def __init__(self, version_major=0, version_minor=9,
                      server_properties=None, mechanisms="PLAIN",
@@ -320,8 +322,9 @@ class Connection(object):
         This method selects a SASL security mechanism.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 11
+        index = 0x000A000B
 
         def __init__(self, client_properties=None, mechanism="PLAIN",
                      response=None, locale="en_US"):
@@ -361,8 +364,9 @@ class Connection(object):
         other. This method challenges the client to provide more information.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 20
+        index = 0x000A0014
 
         def __init__(self, challenge=None):
             """Initialize the Connection.Secure class
@@ -388,8 +392,9 @@ class Connection(object):
         the security mechanism at the server side.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 21
+        index = 0x000A0015
 
         def __init__(self, response=None):
             """Initialize the Connection.SecureOK class
@@ -412,8 +417,9 @@ class Connection(object):
         client. The client can accept and/or adjust these.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 30
+        index = 0x000A001E
 
         def __init__(self, channel_max=0, frame_max=0, heartbeat=0):
             """Initialize the Connection.Tune class
@@ -450,8 +456,9 @@ class Connection(object):
         information.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 31
+        index = 0x000A001F
 
         def __init__(self, channel_max=0, frame_max=0, heartbeat=0):
             """Initialize the Connection.TuneOK class
@@ -487,8 +494,9 @@ class Connection(object):
         and/or in total.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 40
+        index = 0x000A0028
 
         def __init__(self, virtual_host="/", capabilities=None, insist=False):
             """Initialize the Connection.Open class
@@ -523,8 +531,9 @@ class Connection(object):
         This method signals to the client that the connection is ready for use.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 41
+        index = 0x000A0029
 
         def __init__(self, known_hosts=None):
             """Initialize the Connection.OpenOK class
@@ -550,8 +559,9 @@ class Connection(object):
         the method which caused the exception.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 50
+        index = 0x000A0032
 
         def __init__(self, reply_code=None, reply_text=None, class_id=None,
                      method_id=None):
@@ -594,8 +604,9 @@ class Connection(object):
         socket.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 51
+        index = 0x000A0033
 
         def __init__(self):
             """Initialize the Connection.CloseOK class
@@ -622,8 +633,9 @@ class Channel(object):
     server and for both peers to operate the channel thereafter.
 
     """
-    # AMQP Class #
+    # AMQP Class Number and Mapping Index
     id = 20
+    index = 0x00140000
 
     class Open(object):
         """Open a channel for use
@@ -631,8 +643,9 @@ class Channel(object):
         This method opens a channel to the server.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 10
+        index = 0x0014000A
 
         def __init__(self, out_of_band=None):
             """Initialize the Channel.Open class
@@ -657,8 +670,9 @@ class Channel(object):
         This method signals to the client that the channel is ready for use.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 11
+        index = 0x0014000B
 
         def __init__(self, channel_id=None):
             """Initialize the Channel.OpenOK class
@@ -685,8 +699,9 @@ class Channel(object):
         by Basic.Get-Ok methods.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 20
+        index = 0x00140014
 
         def __init__(self, active=None):
             """Initialize the Channel.Flow class
@@ -711,8 +726,9 @@ class Channel(object):
         Confirms to the peer that a flow command was received and processed.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 21
+        index = 0x00140015
 
         def __init__(self, active=None):
             """Initialize the Channel.FlowOK class
@@ -738,8 +754,9 @@ class Channel(object):
         method which caused the exception.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 40
+        index = 0x00140028
 
         def __init__(self, reply_code=None, reply_text=None, class_id=None,
                      method_id=None):
@@ -781,8 +798,9 @@ class Channel(object):
         that it is safe to release resources for the channel.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 41
+        index = 0x00140029
 
         def __init__(self):
             """Initialize the Channel.CloseOK class
@@ -800,8 +818,9 @@ class Exchange(object):
     configured in the server or declared at runtime.
 
     """
-    # AMQP Class #
+    # AMQP Class Number and Mapping Index
     id = 40
+    index = 0x00280000
 
     class Declare(object):
         """Verify exchange exists, create if needed
@@ -811,8 +830,9 @@ class Exchange(object):
         class.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 10
+        index = 0x0028000A
 
         def __init__(self, ticket=0, exchange=None, type="direct",
                      passive=False, durable=False, auto_delete=False,
@@ -879,8 +899,9 @@ class Exchange(object):
         exchange, essential for automatically-named exchanges.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 11
+        index = 0x0028000B
 
         def __init__(self):
             """Initialize the Exchange.DeclareOK class
@@ -897,8 +918,9 @@ class Exchange(object):
         bindings on the exchange are cancelled.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 20
+        index = 0x00280014
 
         def __init__(self, ticket=0, exchange=None, if_unused=False,
                      nowait=False):
@@ -938,8 +960,9 @@ class Exchange(object):
         This method confirms the deletion of an exchange.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 21
+        index = 0x00280015
 
         def __init__(self):
             """Initialize the Exchange.DeleteOK class
@@ -955,8 +978,9 @@ class Exchange(object):
         This method binds an exchange to an exchange.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 30
+        index = 0x0028001E
 
         def __init__(self, ticket=0, destination=None, source=None,
                      routing_key=None, nowait=False, arguments="{}"):
@@ -1007,8 +1031,9 @@ class Exchange(object):
         This method confirms that the bind was successful.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 31
+        index = 0x0028001F
 
         def __init__(self):
             """Initialize the Exchange.BindOK class
@@ -1024,8 +1049,9 @@ class Exchange(object):
         This method unbinds an exchange from an exchange.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 40
+        index = 0x00280028
 
         def __init__(self, ticket=0, destination=None, source=None,
                      routing_key=None, nowait=False, arguments="{}"):
@@ -1074,8 +1100,9 @@ class Exchange(object):
         This method confirms that the unbind was successful.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 51
+        index = 0x00280033
 
         def __init__(self):
             """Initialize the Exchange.UnbindOK class
@@ -1094,8 +1121,9 @@ class Queue(object):
     order to receive messages from publishers.
 
     """
-    # AMQP Class #
+    # AMQP Class Number and Mapping Index
     id = 50
+    index = 0x00320000
 
     class Declare(object):
         """Declare queue, create if needed
@@ -1105,8 +1133,9 @@ class Queue(object):
         the queue and its contents, and the level of sharing for the queue.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 10
+        index = 0x0032000A
 
         def __init__(self, ticket=0, queue=None, passive=False, durable=False,
                      exclusive=False, auto_delete=False, nowait=False,
@@ -1168,8 +1197,9 @@ class Queue(object):
         queue, essential for automatically-named queues.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 11
+        index = 0x0032000B
 
         def __init__(self, queue=None, message_count=None,
                      consumer_count=None):
@@ -1204,8 +1234,9 @@ class Queue(object):
         are bound to a topic exchange.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 20
+        index = 0x00320014
 
         def __init__(self, ticket=0, queue=None, exchange=None,
                      routing_key=None, nowait=False, arguments="{}"):
@@ -1255,8 +1286,9 @@ class Queue(object):
         This method confirms that the bind was successful.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 21
+        index = 0x00320015
 
         def __init__(self):
             """Initialize the Queue.BindOK class
@@ -1273,8 +1305,9 @@ class Queue(object):
         acknowledgment.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 30
+        index = 0x0032001E
 
         def __init__(self, ticket=0, queue=None, nowait=False):
             """Initialize the Queue.Purge class
@@ -1308,8 +1341,9 @@ class Queue(object):
         This method confirms the purge of a queue.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 31
+        index = 0x0032001F
 
         def __init__(self, message_count=None):
             """Initialize the Queue.PurgeOK class
@@ -1332,8 +1366,9 @@ class Queue(object):
         server configuration, and all consumers on the queue are cancelled.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 40
+        index = 0x00320028
 
         def __init__(self, ticket=0, queue=None, if_unused=False,
                      if_empty=False, nowait=False):
@@ -1378,8 +1413,9 @@ class Queue(object):
         This method confirms the deletion of a queue.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 41
+        index = 0x00320029
 
         def __init__(self, message_count=None):
             """Initialize the Queue.DeleteOK class
@@ -1400,8 +1436,9 @@ class Queue(object):
         This method unbinds a queue from an exchange.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 50
+        index = 0x00320032
 
         def __init__(self, ticket=0, queue=None, exchange=None,
                      routing_key=None, arguments="{}"):
@@ -1445,8 +1482,9 @@ class Queue(object):
         This method confirms that the unbind was successful.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 51
+        index = 0x00320033
 
         def __init__(self):
             """Initialize the Queue.UnbindOK class
@@ -1464,8 +1502,9 @@ class Basic(object):
     messaging model.
 
     """
-    # AMQP Class #
+    # AMQP Class Number and Mapping Index
     id = 60
+    index = 0x003C0000
 
     class Qos(object):
         """Specify quality of service
@@ -1478,8 +1517,9 @@ class Basic(object):
         for the server.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 10
+        index = 0x003C000A
 
         def __init__(self, prefetch_size=0, prefetch_count=0, global_=False):
             """Initialize the Basic.Qos class
@@ -1516,8 +1556,9 @@ class Basic(object):
         consumers until a new QoS is defined.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 11
+        index = 0x003C000B
 
         def __init__(self):
             """Initialize the Basic.QosOK class
@@ -1535,8 +1576,9 @@ class Basic(object):
         the channel they were declared on, or until the client cancels them.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 20
+        index = 0x003C0014
 
         def __init__(self, ticket=0, queue=None, consumer_tag=None,
                      no_local=False, no_ack=False, exclusive=False,
@@ -1597,8 +1639,9 @@ class Basic(object):
         the client for methods called on the consumer at a later stage.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 21
+        index = 0x003C0015
 
         def __init__(self, consumer_tag=None):
             """Initialize the Basic.ConsumeOK class
@@ -1623,8 +1666,9 @@ class Basic(object):
         ok reply.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 30
+        index = 0x003C001E
 
         def __init__(self, consumer_tag=None, nowait=False):
             """Initialize the Basic.Cancel class
@@ -1654,8 +1698,9 @@ class Basic(object):
         This method confirms that the cancellation was completed.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 31
+        index = 0x003C001F
 
         def __init__(self, consumer_tag=None):
             """Initialize the Basic.CancelOK class
@@ -1680,8 +1725,9 @@ class Basic(object):
         committed.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 40
+        index = 0x003C0028
 
         def __init__(self, ticket=0, exchange=None, routing_key=None,
                      mandatory=False, immediate=False):
@@ -1726,8 +1772,9 @@ class Basic(object):
         the reason that the message was undeliverable.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 50
+        index = 0x003C0032
 
         def __init__(self, reply_code=None, reply_text=None, exchange=None,
                      routing_key=None):
@@ -1767,8 +1814,9 @@ class Basic(object):
         and when messages arrive for that consumer.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 60
+        index = 0x003C003C
 
         def __init__(self, consumer_tag=None, delivery_tag=None,
                      redelivered=False, exchange=None, routing_key=None):
@@ -1812,8 +1860,9 @@ class Basic(object):
         where synchronous functionality is more important than performance.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 70
+        index = 0x003C0046
 
         def __init__(self, ticket=0, queue=None, no_ack=False):
             """Initialize the Basic.Get class
@@ -1849,8 +1898,9 @@ class Basic(object):
         option was set in the get method.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 71
+        index = 0x003C0047
 
         def __init__(self, delivery_tag=None, redelivered=False, exchange=None,
                      routing_key=None, message_count=None):
@@ -1893,8 +1943,9 @@ class Basic(object):
         for the client.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 72
+        index = 0x003C0048
 
         def __init__(self, cluster_id=None):
             """Initialize the Basic.GetEmpty class
@@ -1921,8 +1972,9 @@ class Basic(object):
         message.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 80
+        index = 0x003C0050
 
         def __init__(self, delivery_tag=0, multiple=False):
             """Initialize the Basic.Ack class
@@ -1951,8 +2003,9 @@ class Basic(object):
         messages to their original queue.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 90
+        index = 0x003C005A
 
         def __init__(self, delivery_tag=None, requeue=True):
             """Initialize the Basic.Reject class
@@ -1981,8 +2034,9 @@ class Basic(object):
         method is deprecated in favour of the synchronous Recover/Recover-Ok.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 100
+        index = 0x003C0064
 
         def __init__(self, requeue=False):
             """Initialize the Basic.RecoverAsync class
@@ -2011,8 +2065,9 @@ class Basic(object):
         method replaces the asynchronous Recover.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 110
+        index = 0x003C006E
 
         def __init__(self, requeue=False):
             """Initialize the Basic.Recover class
@@ -2034,8 +2089,9 @@ class Basic(object):
         This method acknowledges a Basic.Recover method.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 111
+        index = 0x003C006F
 
         def __init__(self):
             """Initialize the Basic.RecoverOK class
@@ -2056,8 +2112,9 @@ class Basic(object):
         needs to republish the offending messages.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 120
+        index = 0x003C0078
 
         def __init__(self, delivery_tag=0, multiple=False, requeue=True):
             """Initialize the Basic.Nack class
@@ -2181,8 +2238,9 @@ class TX(object):
     mandatory flags on Basic.Publish methods is not defined.
 
     """
-    # AMQP Class #
+    # AMQP Class Number and Mapping Index
     id = 90
+    index = 0x005A0000
 
     class Select(object):
         """Select standard transaction mode
@@ -2192,8 +2250,9 @@ class TX(object):
         or Rollback methods.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 10
+        index = 0x005A000A
 
         def __init__(self):
             """Initialize the TX.Select class
@@ -2213,8 +2272,9 @@ class TX(object):
         set to use standard transactions.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 11
+        index = 0x005A000B
 
         def __init__(self):
             """Initialize the TX.SelectOK class
@@ -2232,8 +2292,9 @@ class TX(object):
         immediately after a commit.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 20
+        index = 0x005A0014
 
         def __init__(self):
             """Initialize the TX.Commit class
@@ -2253,8 +2314,9 @@ class TX(object):
         if a commit fails, the server raises a channel exception.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 21
+        index = 0x005A0015
 
         def __init__(self):
             """Initialize the TX.CommitOK class
@@ -2274,8 +2336,9 @@ class TX(object):
         recover call should be issued.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 30
+        index = 0x005A001E
 
         def __init__(self):
             """Initialize the TX.Rollback class
@@ -2295,8 +2358,9 @@ class TX(object):
         that if an rollback fails, the server raises a channel exception.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 31
+        index = 0x005A001F
 
         def __init__(self):
             """Initialize the TX.RollbackOK class
@@ -2325,8 +2389,9 @@ class Confirm(object):
     to these sequence numbers.
 
     """
-    # AMQP Class #
+    # AMQP Class Number and Mapping Index
     id = 85
+    index = 0x00550000
 
     class Select(object):
         """Select confirm mode (i.e. enable publisher acknowledgements)
@@ -2335,8 +2400,9 @@ class Confirm(object):
         client can only use this method on a non-transactional channel.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 10
+        index = 0x0055000A
 
         def __init__(self, nowait=False):
             """Initialize the Confirm.Select class
@@ -2362,8 +2428,9 @@ class Confirm(object):
         set to use publisher acknowledgements.
 
         """
-        # AMQP Method #
+        # AMQP Method Number and Mapping Index
         id = 11
+        index = 0x0055000B
 
         def __init__(self):
             """Initialize the Confirm.SelectOK class
@@ -2373,64 +2440,64 @@ class Confirm(object):
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
-# AMQP Class.Method ID Mapping
-ID_MAPPING = {0x000A000A: Connection.Start,
-              0x000A000B: Connection.StartOK,
-              0x000A0014: Connection.Secure,
-              0x000A0015: Connection.SecureOK,
-              0x000A001E: Connection.Tune,
-              0x000A001F: Connection.TuneOK,
-              0x000A0028: Connection.Open,
-              0x000A0029: Connection.OpenOK,
-              0x000A0032: Connection.Close,
-              0x000A0033: Connection.CloseOK,
-              0x0014000A: Channel.Open,
-              0x0014000B: Channel.OpenOK,
-              0x00140014: Channel.Flow,
-              0x00140015: Channel.FlowOK,
-              0x00140028: Channel.Close,
-              0x00140029: Channel.CloseOK,
-              0x0028000A: Exchange.Declare,
-              0x0028000B: Exchange.DeclareOK,
-              0x00280014: Exchange.Delete,
-              0x00280015: Exchange.DeleteOK,
-              0x0028001E: Exchange.Bind,
-              0x0028001F: Exchange.BindOK,
-              0x00280028: Exchange.Unbind,
-              0x00280033: Exchange.UnbindOK,
-              0x0032000A: Queue.Declare,
-              0x0032000B: Queue.DeclareOK,
-              0x00320014: Queue.Bind,
-              0x00320015: Queue.BindOK,
-              0x0032001E: Queue.Purge,
-              0x0032001F: Queue.PurgeOK,
-              0x00320028: Queue.Delete,
-              0x00320029: Queue.DeleteOK,
-              0x00320032: Queue.Unbind,
-              0x00320033: Queue.UnbindOK,
-              0x003C000A: Basic.Qos,
-              0x003C000B: Basic.QosOK,
-              0x003C0014: Basic.Consume,
-              0x003C0015: Basic.ConsumeOK,
-              0x003C001E: Basic.Cancel,
-              0x003C001F: Basic.CancelOK,
-              0x003C0028: Basic.Publish,
-              0x003C0032: Basic.Return,
-              0x003C003C: Basic.Deliver,
-              0x003C0046: Basic.Get,
-              0x003C0047: Basic.GetOK,
-              0x003C0048: Basic.GetEmpty,
-              0x003C0050: Basic.Ack,
-              0x003C005A: Basic.Reject,
-              0x003C0064: Basic.RecoverAsync,
-              0x003C006E: Basic.Recover,
-              0x003C006F: Basic.RecoverOK,
-              0x003C0078: Basic.Nack,
-              0x005A000A: TX.Select,
-              0x005A000B: TX.SelectOK,
-              0x005A0014: TX.Commit,
-              0x005A0015: TX.CommitOK,
-              0x005A001E: TX.Rollback,
-              0x005A001F: TX.RollbackOK,
-              0x0055000A: Confirm.Select,
-              0x0055000B: Confirm.SelectOK}
+# AMQP Class.Method Index Mapping
+INDEX_MAPPING = {0x000A000A: Connection.Start,
+                 0x000A000B: Connection.StartOK,
+                 0x000A0014: Connection.Secure,
+                 0x000A0015: Connection.SecureOK,
+                 0x000A001E: Connection.Tune,
+                 0x000A001F: Connection.TuneOK,
+                 0x000A0028: Connection.Open,
+                 0x000A0029: Connection.OpenOK,
+                 0x000A0032: Connection.Close,
+                 0x000A0033: Connection.CloseOK,
+                 0x0014000A: Channel.Open,
+                 0x0014000B: Channel.OpenOK,
+                 0x00140014: Channel.Flow,
+                 0x00140015: Channel.FlowOK,
+                 0x00140028: Channel.Close,
+                 0x00140029: Channel.CloseOK,
+                 0x0028000A: Exchange.Declare,
+                 0x0028000B: Exchange.DeclareOK,
+                 0x00280014: Exchange.Delete,
+                 0x00280015: Exchange.DeleteOK,
+                 0x0028001E: Exchange.Bind,
+                 0x0028001F: Exchange.BindOK,
+                 0x00280028: Exchange.Unbind,
+                 0x00280033: Exchange.UnbindOK,
+                 0x0032000A: Queue.Declare,
+                 0x0032000B: Queue.DeclareOK,
+                 0x00320014: Queue.Bind,
+                 0x00320015: Queue.BindOK,
+                 0x0032001E: Queue.Purge,
+                 0x0032001F: Queue.PurgeOK,
+                 0x00320028: Queue.Delete,
+                 0x00320029: Queue.DeleteOK,
+                 0x00320032: Queue.Unbind,
+                 0x00320033: Queue.UnbindOK,
+                 0x003C000A: Basic.Qos,
+                 0x003C000B: Basic.QosOK,
+                 0x003C0014: Basic.Consume,
+                 0x003C0015: Basic.ConsumeOK,
+                 0x003C001E: Basic.Cancel,
+                 0x003C001F: Basic.CancelOK,
+                 0x003C0028: Basic.Publish,
+                 0x003C0032: Basic.Return,
+                 0x003C003C: Basic.Deliver,
+                 0x003C0046: Basic.Get,
+                 0x003C0047: Basic.GetOK,
+                 0x003C0048: Basic.GetEmpty,
+                 0x003C0050: Basic.Ack,
+                 0x003C005A: Basic.Reject,
+                 0x003C0064: Basic.RecoverAsync,
+                 0x003C006E: Basic.Recover,
+                 0x003C006F: Basic.RecoverOK,
+                 0x003C0078: Basic.Nack,
+                 0x005A000A: TX.Select,
+                 0x005A000B: TX.SelectOK,
+                 0x005A0014: TX.Commit,
+                 0x005A0015: TX.CommitOK,
+                 0x005A001E: TX.Rollback,
+                 0x005A001F: TX.RollbackOK,
+                 0x0055000A: Confirm.Select,
+                 0x0055000B: Confirm.SelectOK}
