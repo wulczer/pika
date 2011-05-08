@@ -9,3 +9,9 @@ Tornado and Twisted.
 Python versions supported: 2.6+
 
 Documentation is available at http://pika.github.com
+
+Requirements
+------------
+
+Codegen:
+ - lxml
