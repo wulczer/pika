@@ -252,7 +252,7 @@ def _encode_value(value):
         result = decimal(value)
     elif isinstance(value, float):
         result = floating_point(value)
-    elif isinstance(value, str):
+    elif isinstance(value, basestring):
         result = string(value)
     elif isinstance(value, datetime) or isinstance(value, struct_time):
         result = timestamp(value)
