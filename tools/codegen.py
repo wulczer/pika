@@ -51,7 +51,7 @@ def classify(text):
 
 def comment(text, indent=0, prefix='# '):
     """Append a comment to the output buffer"""
-    lines = get_comments(text, indent, prefix)
+    lines = get_comments(text, indent + len(prefix), prefix)
     for line in lines:
         new_line(line)
 
@@ -76,11 +76,7 @@ def pep8_class_name(value):
     output = list()
     parts = value.split('-')
     for part in parts:
-        if len(part) > 2:
-            output.append(part[0:1].upper() + part[1:])
-        else:
-            output.append(part.upper())
-
+        output.append(part[0:1].upper() + part[1:])
     return ''.join(output)
 
 
@@ -174,7 +170,7 @@ def argument_name(name):
         output += '_'
     return output
 
-def get_argument_type(argument):
+def get_argument_type_doc(argument):
 
     if 'domain' in argument:
         for domain, data_type in amqp['domains']:
@@ -202,6 +198,20 @@ def get_argument_type(argument):
             return 'dict'
         elif argument['type'] == "timestamp":
             return 'struct_time'
+
+    return 'Unknown'
+
+
+def get_argument_type(argument):
+
+    if 'domain' in argument:
+        for domain, data_type in amqp['domains']:
+            if argument['domain'] == domain:
+                argument['type'] = data_type
+                break
+
+    if 'type' in argument:
+        return argument['type']
 
     return 'Unknown'
 
@@ -451,7 +461,7 @@ for class_name in class_list:
         new_line()
         new_line('"""', indent)
 
-    comment("AMQP Class Number and Mapping Index", indent + 2)
+    comment("AMQP Class Number and Mapping Index", indent)
     new_line('id = %i' % definition['id'], indent)
     new_line('index = 0x%08X' % (definition['id'] << 16), indent)
     new_line()
@@ -480,11 +490,34 @@ for class_name in class_list:
                 new_line()
                 new_line('"""', indent)
 
-        comment("AMQP Method Number and Mapping Index", indent + 2)
+        comment("AMQP Method Number and Mapping Index", indent)
         new_line('id = %i' % method['id'], indent)
         new_line('index = 0x%08X' % (definition['id'] << 16 | method['id']),
                  indent)
         new_line()
+
+        comment("AMQP Method Arguments", indent)
+        arguments = list()
+        for argument in method['arguments']:
+            arguments.append('"%s",' % argument_name(argument['name']))
+
+        if arguments:
+            arguments[-1] = arguments[-1].replace(',', ']')
+            new_line('arguments = [' + arguments.pop(0), indent)
+            for line in arguments:
+                new_line(line, indent + 13)
+        else:
+            new_line('arguments = []', indent)
+        new_line()
+
+        if method['arguments']:
+            comment("Class Attribute Types", indent)
+            for argument in method['arguments']:
+                new_line('%s = "%s"' % (argument_name(argument['name']),
+                                        get_argument_type(argument)),
+                         indent)
+            new_line()
+
 
         # Get the method's XML node
         if class_xml:
@@ -516,7 +549,8 @@ for class_name in class_list:
                     new_line(':param %s: %s' % (name, label), indent)
                 else:
                     new_line(':param %s:' % name, indent)
-                new_line(':type %s: %s.' % (name, get_argument_type(argument)),
+                new_line(':type %s: %s.' % (name,
+                                            get_argument_type_doc(argument)),
                          indent)
 
         # Note the deprecation warning in the docblock
@@ -534,12 +568,12 @@ for class_name in class_list:
 
         # Check if we're deprecated and warn if so
         if deprecated:
-            comment(DEPRECATION_WARNING, indent + 2)
+            comment(DEPRECATION_WARNING, indent)
             new_line('raise DeprecationWarning(DEPRECATION_WARNING)', indent)
             new_line()
 
         # Add an attribute that signifies if it's a sync command
-        comment("Specifies if this is a synchronous AMQP method", indent + 2)
+        comment("Specifies if this is a synchronous AMQP method", indent)
         if 'synchronous' in method and method['synchronous']:
             new_line('self.synchronous = True', indent)
 
@@ -553,7 +587,7 @@ for class_name in class_list:
                     responses.append(response_name)
                 if responses:
                     new_line()
-                    comment('Valid responses to this method', indent + 2)
+                    comment('Valid responses to this method', indent)
                     new_line('self.valid_responses = [%s]' % \
                              ', '.join(responses), indent)
         else:
@@ -567,7 +601,7 @@ for class_name in class_list:
                              'method': method['name'],
                              'field': argument['name']})
             if doc:
-                comment(doc, indent + 2)
+                comment(doc, indent)
 
             new_line('self.%s = %s' % (name, name), indent)
             new_line()
@@ -600,7 +634,7 @@ for class_name in class_list:
                 line = ':param %s: %s' % (name, label)
                 new_line(line.strip(), indent)
 
-            new_line(':type %s: %s.' % (name, get_argument_type(argument)),
+            new_line(':type %s: %s.' % (name, get_argument_type_doc(argument)),
                      indent)
 
         new_line()
@@ -613,7 +647,7 @@ for class_name in class_list:
             doc = get_label({'class': class_name,
                              'field': argument['name']})
             if doc:
-                comment(doc, indent + 2)
+                comment(doc, indent)
 
             new_line('self.%s = %s' % (name, name), indent)
             new_line()

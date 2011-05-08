@@ -9,7 +9,7 @@ For copyright and licensing please refer to COPYING.
 """
 
 __date__ = "2011-05-08"
-__author__ = "codegen.py"
+__author__ = "./codegen.py"
 
 # AMQP Protocol Version
 AMQP_VERSION = (0, 9, 1)
@@ -277,6 +277,20 @@ class Connection(object):
         id = 10
         index = 0x000A000A
 
+        # AMQP Method Arguments
+        arguments = ["version_major",
+                     "version_minor",
+                     "server_properties",
+                     "mechanisms",
+                     "locales"]
+
+        # Class Attribute Types
+        version_major = "octet"
+        version_minor = "octet"
+        server_properties = "table"
+        mechanisms = "longstr"
+        locales = "longstr"
+
         def __init__(self, version_major=0, version_minor=9,
                      server_properties=None, mechanisms="PLAIN",
                      locales="en_US"):
@@ -299,7 +313,7 @@ class Connection(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Connection.StartOK]
+            self.valid_responses = [Connection.StartOk]
 
             # Protocol major version
             self.version_major = version_major
@@ -316,7 +330,7 @@ class Connection(object):
             # Available message locales
             self.locales = locales
 
-    class StartOK(object):
+    class StartOk(object):
         """Select security mechanism and locale
 
         This method selects a SASL security mechanism.
@@ -326,9 +340,21 @@ class Connection(object):
         id = 11
         index = 0x000A000B
 
+        # AMQP Method Arguments
+        arguments = ["client_properties",
+                     "mechanism",
+                     "response",
+                     "locale"]
+
+        # Class Attribute Types
+        client_properties = "table"
+        mechanism = "shortstr"
+        response = "longstr"
+        locale = "shortstr"
+
         def __init__(self, client_properties=None, mechanism="PLAIN",
                      response=None, locale="en_US"):
-            """Initialize the Connection.StartOK class
+            """Initialize the Connection.StartOk class
 
             :param client_properties: Client properties.
             :type client_properties: dict.
@@ -368,6 +394,12 @@ class Connection(object):
         id = 20
         index = 0x000A0014
 
+        # AMQP Method Arguments
+        arguments = ["challenge"]
+
+        # Class Attribute Types
+        challenge = "longstr"
+
         def __init__(self, challenge=None):
             """Initialize the Connection.Secure class
 
@@ -380,12 +412,12 @@ class Connection(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Connection.SecureOK]
+            self.valid_responses = [Connection.SecureOk]
 
             # Security challenge data
             self.challenge = challenge
 
-    class SecureOK(object):
+    class SecureOk(object):
         """Security mechanism response
 
         This method attempts to authenticate, passing a block of SASL data for
@@ -396,8 +428,14 @@ class Connection(object):
         id = 21
         index = 0x000A0015
 
+        # AMQP Method Arguments
+        arguments = ["response"]
+
+        # Class Attribute Types
+        response = "longstr"
+
         def __init__(self, response=None):
-            """Initialize the Connection.SecureOK class
+            """Initialize the Connection.SecureOk class
 
             :param response: Security response data.
             :type response: str.
@@ -421,6 +459,16 @@ class Connection(object):
         id = 30
         index = 0x000A001E
 
+        # AMQP Method Arguments
+        arguments = ["channel_max",
+                     "frame_max",
+                     "heartbeat"]
+
+        # Class Attribute Types
+        channel_max = "short"
+        frame_max = "long"
+        heartbeat = "short"
+
         def __init__(self, channel_max=0, frame_max=0, heartbeat=0):
             """Initialize the Connection.Tune class
 
@@ -437,7 +485,7 @@ class Connection(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Connection.TuneOK]
+            self.valid_responses = [Connection.TuneOk]
 
             # Proposed maximum channels
             self.channel_max = channel_max
@@ -448,7 +496,7 @@ class Connection(object):
             # Desired heartbeat delay
             self.heartbeat = heartbeat
 
-    class TuneOK(object):
+    class TuneOk(object):
         """Negotiate connection tuning parameters
 
         This method sends the client's connection tuning parameters to the
@@ -460,8 +508,18 @@ class Connection(object):
         id = 31
         index = 0x000A001F
 
+        # AMQP Method Arguments
+        arguments = ["channel_max",
+                     "frame_max",
+                     "heartbeat"]
+
+        # Class Attribute Types
+        channel_max = "short"
+        frame_max = "long"
+        heartbeat = "short"
+
         def __init__(self, channel_max=0, frame_max=0, heartbeat=0):
-            """Initialize the Connection.TuneOK class
+            """Initialize the Connection.TuneOk class
 
             :param channel_max: Negotiated maximum channels.
             :type channel_max: int.
@@ -498,6 +556,16 @@ class Connection(object):
         id = 40
         index = 0x000A0028
 
+        # AMQP Method Arguments
+        arguments = ["virtual_host",
+                     "capabilities",
+                     "insist"]
+
+        # Class Attribute Types
+        virtual_host = "shortstr"
+        capabilities = "shortstr"
+        insist = "bit"
+
         def __init__(self, virtual_host="/", capabilities=None, insist=False):
             """Initialize the Connection.Open class
 
@@ -514,7 +582,7 @@ class Connection(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Connection.OpenOK]
+            self.valid_responses = [Connection.OpenOk]
 
             # Virtual host name
             self.virtual_host = virtual_host
@@ -525,7 +593,7 @@ class Connection(object):
             # Deprecated
             self.insist = insist
 
-    class OpenOK(object):
+    class OpenOk(object):
         """Signal that connection is ready
 
         This method signals to the client that the connection is ready for use.
@@ -535,8 +603,14 @@ class Connection(object):
         id = 41
         index = 0x000A0029
 
+        # AMQP Method Arguments
+        arguments = ["known_hosts"]
+
+        # Class Attribute Types
+        known_hosts = "shortstr"
+
         def __init__(self, known_hosts=None):
-            """Initialize the Connection.OpenOK class
+            """Initialize the Connection.OpenOk class
 
             :param known_hosts: Deprecated.
             :type known_hosts: str.
@@ -563,6 +637,18 @@ class Connection(object):
         id = 50
         index = 0x000A0032
 
+        # AMQP Method Arguments
+        arguments = ["reply_code",
+                     "reply_text",
+                     "class_id",
+                     "method_id"]
+
+        # Class Attribute Types
+        reply_code = "short"
+        reply_text = "shortstr"
+        class_id = "short"
+        method_id = "short"
+
         def __init__(self, reply_code=None, reply_text=None, class_id=None,
                      method_id=None):
             """Initialize the Connection.Close class
@@ -582,7 +668,7 @@ class Connection(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Connection.CloseOK]
+            self.valid_responses = [Connection.CloseOk]
 
             # Reply code from server
             self.reply_code = reply_code
@@ -596,7 +682,7 @@ class Connection(object):
             # Failing method ID
             self.method_id = method_id
 
-    class CloseOK(object):
+    class CloseOk(object):
         """Confirm a connection close
 
         This method confirms a Connection.Close method and tells the recipient
@@ -608,8 +694,11 @@ class Connection(object):
         id = 51
         index = 0x000A0033
 
+        # AMQP Method Arguments
+        arguments = []
+
         def __init__(self):
-            """Initialize the Connection.CloseOK class
+            """Initialize the Connection.CloseOk class
 
             """
 
@@ -647,6 +736,12 @@ class Channel(object):
         id = 10
         index = 0x0014000A
 
+        # AMQP Method Arguments
+        arguments = ["out_of_band"]
+
+        # Class Attribute Types
+        out_of_band = "shortstr"
+
         def __init__(self, out_of_band=None):
             """Initialize the Channel.Open class
 
@@ -659,12 +754,12 @@ class Channel(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Channel.OpenOK]
+            self.valid_responses = [Channel.OpenOk]
 
             # Protocol level field, do not use, must be zero.
             self.out_of_band = out_of_band
 
-    class OpenOK(object):
+    class OpenOk(object):
         """Signal that the channel is ready
 
         This method signals to the client that the channel is ready for use.
@@ -674,8 +769,14 @@ class Channel(object):
         id = 11
         index = 0x0014000B
 
+        # AMQP Method Arguments
+        arguments = ["channel_id"]
+
+        # Class Attribute Types
+        channel_id = "longstr"
+
         def __init__(self, channel_id=None):
-            """Initialize the Channel.OpenOK class
+            """Initialize the Channel.OpenOk class
 
             :param channel_id: Deprecated.
             :type channel_id: str.
@@ -703,6 +804,12 @@ class Channel(object):
         id = 20
         index = 0x00140014
 
+        # AMQP Method Arguments
+        arguments = ["active"]
+
+        # Class Attribute Types
+        active = "bit"
+
         def __init__(self, active=None):
             """Initialize the Channel.Flow class
 
@@ -715,12 +822,12 @@ class Channel(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Channel.FlowOK]
+            self.valid_responses = [Channel.FlowOk]
 
             # Start/stop content frames
             self.active = active
 
-    class FlowOK(object):
+    class FlowOk(object):
         """Confirm a flow method
 
         Confirms to the peer that a flow command was received and processed.
@@ -730,8 +837,14 @@ class Channel(object):
         id = 21
         index = 0x00140015
 
+        # AMQP Method Arguments
+        arguments = ["active"]
+
+        # Class Attribute Types
+        active = "bit"
+
         def __init__(self, active=None):
-            """Initialize the Channel.FlowOK class
+            """Initialize the Channel.FlowOk class
 
             :param active: Current flow setting.
             :type active: bool.
@@ -758,6 +871,18 @@ class Channel(object):
         id = 40
         index = 0x00140028
 
+        # AMQP Method Arguments
+        arguments = ["reply_code",
+                     "reply_text",
+                     "class_id",
+                     "method_id"]
+
+        # Class Attribute Types
+        reply_code = "short"
+        reply_text = "shortstr"
+        class_id = "short"
+        method_id = "short"
+
         def __init__(self, reply_code=None, reply_text=None, class_id=None,
                      method_id=None):
             """Initialize the Channel.Close class
@@ -777,7 +902,7 @@ class Channel(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Channel.CloseOK]
+            self.valid_responses = [Channel.CloseOk]
 
             # Reply code from server
             self.reply_code = reply_code
@@ -791,7 +916,7 @@ class Channel(object):
             # Failing method ID
             self.method_id = method_id
 
-    class CloseOK(object):
+    class CloseOk(object):
         """Confirm a channel close
 
         This method confirms a Channel.Close method and tells the recipient
@@ -802,8 +927,11 @@ class Channel(object):
         id = 41
         index = 0x00140029
 
+        # AMQP Method Arguments
+        arguments = []
+
         def __init__(self):
-            """Initialize the Channel.CloseOK class
+            """Initialize the Channel.CloseOk class
 
             """
 
@@ -833,6 +961,28 @@ class Exchange(object):
         # AMQP Method Number and Mapping Index
         id = 10
         index = 0x0028000A
+
+        # AMQP Method Arguments
+        arguments = ["ticket",
+                     "exchange",
+                     "type",
+                     "passive",
+                     "durable",
+                     "auto_delete",
+                     "internal",
+                     "nowait",
+                     "arguments"]
+
+        # Class Attribute Types
+        ticket = "short"
+        exchange = "shortstr"
+        type = "shortstr"
+        passive = "bit"
+        durable = "bit"
+        auto_delete = "bit"
+        internal = "bit"
+        nowait = "bit"
+        arguments = "table"
 
         def __init__(self, ticket=0, exchange=None, type="direct",
                      passive=False, durable=False, auto_delete=False,
@@ -864,7 +1014,7 @@ class Exchange(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Exchange.DeclareOK]
+            self.valid_responses = [Exchange.DeclareOk]
 
             # Deprecated
             self.ticket = ticket
@@ -892,7 +1042,7 @@ class Exchange(object):
             # Arguments for declaration
             self.arguments = arguments
 
-    class DeclareOK(object):
+    class DeclareOk(object):
         """Confirm exchange declaration
 
         This method confirms a Declare method and confirms the name of the
@@ -903,8 +1053,11 @@ class Exchange(object):
         id = 11
         index = 0x0028000B
 
+        # AMQP Method Arguments
+        arguments = []
+
         def __init__(self):
-            """Initialize the Exchange.DeclareOK class
+            """Initialize the Exchange.DeclareOk class
 
             """
 
@@ -921,6 +1074,18 @@ class Exchange(object):
         # AMQP Method Number and Mapping Index
         id = 20
         index = 0x00280014
+
+        # AMQP Method Arguments
+        arguments = ["ticket",
+                     "exchange",
+                     "if_unused",
+                     "nowait"]
+
+        # Class Attribute Types
+        ticket = "short"
+        exchange = "shortstr"
+        if_unused = "bit"
+        nowait = "bit"
 
         def __init__(self, ticket=0, exchange=None, if_unused=False,
                      nowait=False):
@@ -941,7 +1106,7 @@ class Exchange(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Exchange.DeleteOK]
+            self.valid_responses = [Exchange.DeleteOk]
 
             # Deprecated
             self.ticket = ticket
@@ -954,7 +1119,7 @@ class Exchange(object):
             # Do not send a reply method
             self.nowait = nowait
 
-    class DeleteOK(object):
+    class DeleteOk(object):
         """Confirm deletion of an exchange
 
         This method confirms the deletion of an exchange.
@@ -964,8 +1129,11 @@ class Exchange(object):
         id = 21
         index = 0x00280015
 
+        # AMQP Method Arguments
+        arguments = []
+
         def __init__(self):
-            """Initialize the Exchange.DeleteOK class
+            """Initialize the Exchange.DeleteOk class
 
             """
 
@@ -981,6 +1149,22 @@ class Exchange(object):
         # AMQP Method Number and Mapping Index
         id = 30
         index = 0x0028001E
+
+        # AMQP Method Arguments
+        arguments = ["ticket",
+                     "destination",
+                     "source",
+                     "routing_key",
+                     "nowait",
+                     "arguments"]
+
+        # Class Attribute Types
+        ticket = "short"
+        destination = "shortstr"
+        source = "shortstr"
+        routing_key = "shortstr"
+        nowait = "bit"
+        arguments = "table"
 
         def __init__(self, ticket=0, destination=None, source=None,
                      routing_key=None, nowait=False, arguments="{}"):
@@ -1005,7 +1189,7 @@ class Exchange(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Exchange.BindOK]
+            self.valid_responses = [Exchange.BindOk]
 
             # Deprecated
             self.ticket = ticket
@@ -1025,7 +1209,7 @@ class Exchange(object):
             # Arguments for binding
             self.arguments = arguments
 
-    class BindOK(object):
+    class BindOk(object):
         """Confirm bind successful
 
         This method confirms that the bind was successful.
@@ -1035,8 +1219,11 @@ class Exchange(object):
         id = 31
         index = 0x0028001F
 
+        # AMQP Method Arguments
+        arguments = []
+
         def __init__(self):
-            """Initialize the Exchange.BindOK class
+            """Initialize the Exchange.BindOk class
 
             """
 
@@ -1052,6 +1239,22 @@ class Exchange(object):
         # AMQP Method Number and Mapping Index
         id = 40
         index = 0x00280028
+
+        # AMQP Method Arguments
+        arguments = ["ticket",
+                     "destination",
+                     "source",
+                     "routing_key",
+                     "nowait",
+                     "arguments"]
+
+        # Class Attribute Types
+        ticket = "short"
+        destination = "shortstr"
+        source = "shortstr"
+        routing_key = "shortstr"
+        nowait = "bit"
+        arguments = "table"
 
         def __init__(self, ticket=0, destination=None, source=None,
                      routing_key=None, nowait=False, arguments="{}"):
@@ -1076,7 +1279,7 @@ class Exchange(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Exchange.UnbindOK]
+            self.valid_responses = [Exchange.UnbindOk]
 
             # Deprecated
             self.ticket = ticket
@@ -1094,7 +1297,7 @@ class Exchange(object):
             # Arguments of binding
             self.arguments = arguments
 
-    class UnbindOK(object):
+    class UnbindOk(object):
         """Confirm unbind successful
 
         This method confirms that the unbind was successful.
@@ -1104,8 +1307,11 @@ class Exchange(object):
         id = 51
         index = 0x00280033
 
+        # AMQP Method Arguments
+        arguments = []
+
         def __init__(self):
-            """Initialize the Exchange.UnbindOK class
+            """Initialize the Exchange.UnbindOk class
 
             """
 
@@ -1137,6 +1343,26 @@ class Queue(object):
         id = 10
         index = 0x0032000A
 
+        # AMQP Method Arguments
+        arguments = ["ticket",
+                     "queue",
+                     "passive",
+                     "durable",
+                     "exclusive",
+                     "auto_delete",
+                     "nowait",
+                     "arguments"]
+
+        # Class Attribute Types
+        ticket = "short"
+        queue = "shortstr"
+        passive = "bit"
+        durable = "bit"
+        exclusive = "bit"
+        auto_delete = "bit"
+        nowait = "bit"
+        arguments = "table"
+
         def __init__(self, ticket=0, queue=None, passive=False, durable=False,
                      exclusive=False, auto_delete=False, nowait=False,
                      arguments="{}"):
@@ -1165,7 +1391,7 @@ class Queue(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Queue.DeclareOK]
+            self.valid_responses = [Queue.DeclareOk]
 
             # Deprecated
             self.ticket = ticket
@@ -1190,7 +1416,7 @@ class Queue(object):
             # Arguments for declaration
             self.arguments = arguments
 
-    class DeclareOK(object):
+    class DeclareOk(object):
         """Confirms a queue definition
 
         This method confirms a Declare method and confirms the name of the
@@ -1201,9 +1427,19 @@ class Queue(object):
         id = 11
         index = 0x0032000B
 
+        # AMQP Method Arguments
+        arguments = ["queue",
+                     "message_count",
+                     "consumer_count"]
+
+        # Class Attribute Types
+        queue = "shortstr"
+        message_count = "long"
+        consumer_count = "long"
+
         def __init__(self, queue=None, message_count=None,
                      consumer_count=None):
-            """Initialize the Queue.DeclareOK class
+            """Initialize the Queue.DeclareOk class
 
             :param queue:
             :type queue: str.
@@ -1238,6 +1474,22 @@ class Queue(object):
         id = 20
         index = 0x00320014
 
+        # AMQP Method Arguments
+        arguments = ["ticket",
+                     "queue",
+                     "exchange",
+                     "routing_key",
+                     "nowait",
+                     "arguments"]
+
+        # Class Attribute Types
+        ticket = "short"
+        queue = "shortstr"
+        exchange = "shortstr"
+        routing_key = "shortstr"
+        nowait = "bit"
+        arguments = "table"
+
         def __init__(self, ticket=0, queue=None, exchange=None,
                      routing_key=None, nowait=False, arguments="{}"):
             """Initialize the Queue.Bind class
@@ -1261,7 +1513,7 @@ class Queue(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Queue.BindOK]
+            self.valid_responses = [Queue.BindOk]
 
             # Deprecated
             self.ticket = ticket
@@ -1280,7 +1532,7 @@ class Queue(object):
             # Arguments for binding
             self.arguments = arguments
 
-    class BindOK(object):
+    class BindOk(object):
         """Confirm bind successful
 
         This method confirms that the bind was successful.
@@ -1290,8 +1542,11 @@ class Queue(object):
         id = 21
         index = 0x00320015
 
+        # AMQP Method Arguments
+        arguments = []
+
         def __init__(self):
-            """Initialize the Queue.BindOK class
+            """Initialize the Queue.BindOk class
 
             """
 
@@ -1309,6 +1564,16 @@ class Queue(object):
         id = 30
         index = 0x0032001E
 
+        # AMQP Method Arguments
+        arguments = ["ticket",
+                     "queue",
+                     "nowait"]
+
+        # Class Attribute Types
+        ticket = "short"
+        queue = "shortstr"
+        nowait = "bit"
+
         def __init__(self, ticket=0, queue=None, nowait=False):
             """Initialize the Queue.Purge class
 
@@ -1325,7 +1590,7 @@ class Queue(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Queue.PurgeOK]
+            self.valid_responses = [Queue.PurgeOk]
 
             # Deprecated
             self.ticket = ticket
@@ -1335,7 +1600,7 @@ class Queue(object):
             # Do not send a reply method
             self.nowait = nowait
 
-    class PurgeOK(object):
+    class PurgeOk(object):
         """Confirms a queue purge
 
         This method confirms the purge of a queue.
@@ -1345,8 +1610,14 @@ class Queue(object):
         id = 31
         index = 0x0032001F
 
+        # AMQP Method Arguments
+        arguments = ["message_count"]
+
+        # Class Attribute Types
+        message_count = "long"
+
         def __init__(self, message_count=None):
-            """Initialize the Queue.PurgeOK class
+            """Initialize the Queue.PurgeOk class
 
             :param message_count:
             :type message_count: int/long.
@@ -1370,6 +1641,20 @@ class Queue(object):
         id = 40
         index = 0x00320028
 
+        # AMQP Method Arguments
+        arguments = ["ticket",
+                     "queue",
+                     "if_unused",
+                     "if_empty",
+                     "nowait"]
+
+        # Class Attribute Types
+        ticket = "short"
+        queue = "shortstr"
+        if_unused = "bit"
+        if_empty = "bit"
+        nowait = "bit"
+
         def __init__(self, ticket=0, queue=None, if_unused=False,
                      if_empty=False, nowait=False):
             """Initialize the Queue.Delete class
@@ -1391,7 +1676,7 @@ class Queue(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Queue.DeleteOK]
+            self.valid_responses = [Queue.DeleteOk]
 
             # Deprecated
             self.ticket = ticket
@@ -1407,7 +1692,7 @@ class Queue(object):
             # Do not send a reply method
             self.nowait = nowait
 
-    class DeleteOK(object):
+    class DeleteOk(object):
         """Confirm deletion of a queue
 
         This method confirms the deletion of a queue.
@@ -1417,8 +1702,14 @@ class Queue(object):
         id = 41
         index = 0x00320029
 
+        # AMQP Method Arguments
+        arguments = ["message_count"]
+
+        # Class Attribute Types
+        message_count = "long"
+
         def __init__(self, message_count=None):
-            """Initialize the Queue.DeleteOK class
+            """Initialize the Queue.DeleteOk class
 
             :param message_count:
             :type message_count: int/long.
@@ -1439,6 +1730,20 @@ class Queue(object):
         # AMQP Method Number and Mapping Index
         id = 50
         index = 0x00320032
+
+        # AMQP Method Arguments
+        arguments = ["ticket",
+                     "queue",
+                     "exchange",
+                     "routing_key",
+                     "arguments"]
+
+        # Class Attribute Types
+        ticket = "short"
+        queue = "shortstr"
+        exchange = "shortstr"
+        routing_key = "shortstr"
+        arguments = "table"
 
         def __init__(self, ticket=0, queue=None, exchange=None,
                      routing_key=None, arguments="{}"):
@@ -1461,7 +1766,7 @@ class Queue(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Queue.UnbindOK]
+            self.valid_responses = [Queue.UnbindOk]
 
             # Deprecated
             self.ticket = ticket
@@ -1476,7 +1781,7 @@ class Queue(object):
             # Arguments of binding
             self.arguments = arguments
 
-    class UnbindOK(object):
+    class UnbindOk(object):
         """Confirm unbind successful
 
         This method confirms that the unbind was successful.
@@ -1486,8 +1791,11 @@ class Queue(object):
         id = 51
         index = 0x00320033
 
+        # AMQP Method Arguments
+        arguments = []
+
         def __init__(self):
-            """Initialize the Queue.UnbindOK class
+            """Initialize the Queue.UnbindOk class
 
             """
 
@@ -1521,6 +1829,16 @@ class Basic(object):
         id = 10
         index = 0x003C000A
 
+        # AMQP Method Arguments
+        arguments = ["prefetch_size",
+                     "prefetch_count",
+                     "global_"]
+
+        # Class Attribute Types
+        prefetch_size = "long"
+        prefetch_count = "short"
+        global_ = "bit"
+
         def __init__(self, prefetch_size=0, prefetch_count=0, global_=False):
             """Initialize the Basic.Qos class
 
@@ -1537,7 +1855,7 @@ class Basic(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Basic.QosOK]
+            self.valid_responses = [Basic.QosOk]
 
             # Prefetch window in octets
             self.prefetch_size = prefetch_size
@@ -1548,7 +1866,7 @@ class Basic(object):
             # Apply to entire connection
             self.global_ = global_
 
-    class QosOK(object):
+    class QosOk(object):
         """Confirm the requested qos
 
         This method tells the client that the requested QoS levels could be
@@ -1560,8 +1878,11 @@ class Basic(object):
         id = 11
         index = 0x003C000B
 
+        # AMQP Method Arguments
+        arguments = []
+
         def __init__(self):
-            """Initialize the Basic.QosOK class
+            """Initialize the Basic.QosOk class
 
             """
 
@@ -1579,6 +1900,26 @@ class Basic(object):
         # AMQP Method Number and Mapping Index
         id = 20
         index = 0x003C0014
+
+        # AMQP Method Arguments
+        arguments = ["ticket",
+                     "queue",
+                     "consumer_tag",
+                     "no_local",
+                     "no_ack",
+                     "exclusive",
+                     "nowait",
+                     "arguments"]
+
+        # Class Attribute Types
+        ticket = "short"
+        queue = "shortstr"
+        consumer_tag = "shortstr"
+        no_local = "bit"
+        no_ack = "bit"
+        exclusive = "bit"
+        nowait = "bit"
+        arguments = "table"
 
         def __init__(self, ticket=0, queue=None, consumer_tag=None,
                      no_local=False, no_ack=False, exclusive=False,
@@ -1608,7 +1949,7 @@ class Basic(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Basic.ConsumeOK]
+            self.valid_responses = [Basic.ConsumeOk]
 
             # Deprecated
             self.ticket = ticket
@@ -1632,7 +1973,7 @@ class Basic(object):
             # Arguments for declaration
             self.arguments = arguments
 
-    class ConsumeOK(object):
+    class ConsumeOk(object):
         """Confirm a new consumer
 
         The server provides the client with a consumer tag, which is used by
@@ -1643,8 +1984,14 @@ class Basic(object):
         id = 21
         index = 0x003C0015
 
+        # AMQP Method Arguments
+        arguments = ["consumer_tag"]
+
+        # Class Attribute Types
+        consumer_tag = "shortstr"
+
         def __init__(self, consumer_tag=None):
-            """Initialize the Basic.ConsumeOK class
+            """Initialize the Basic.ConsumeOk class
 
             :param consumer_tag:
             :type consumer_tag: str.
@@ -1670,6 +2017,14 @@ class Basic(object):
         id = 30
         index = 0x003C001E
 
+        # AMQP Method Arguments
+        arguments = ["consumer_tag",
+                     "nowait"]
+
+        # Class Attribute Types
+        consumer_tag = "shortstr"
+        nowait = "bit"
+
         def __init__(self, consumer_tag=None, nowait=False):
             """Initialize the Basic.Cancel class
 
@@ -1684,7 +2039,7 @@ class Basic(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Basic.CancelOK]
+            self.valid_responses = [Basic.CancelOk]
 
             # Consumer tag
             self.consumer_tag = consumer_tag
@@ -1692,7 +2047,7 @@ class Basic(object):
             # Do not send a reply method
             self.nowait = nowait
 
-    class CancelOK(object):
+    class CancelOk(object):
         """Confirm a cancelled consumer
 
         This method confirms that the cancellation was completed.
@@ -1702,8 +2057,14 @@ class Basic(object):
         id = 31
         index = 0x003C001F
 
+        # AMQP Method Arguments
+        arguments = ["consumer_tag"]
+
+        # Class Attribute Types
+        consumer_tag = "shortstr"
+
         def __init__(self, consumer_tag=None):
-            """Initialize the Basic.CancelOK class
+            """Initialize the Basic.CancelOk class
 
             :param consumer_tag: Consumer tag.
             :type consumer_tag: str.
@@ -1728,6 +2089,20 @@ class Basic(object):
         # AMQP Method Number and Mapping Index
         id = 40
         index = 0x003C0028
+
+        # AMQP Method Arguments
+        arguments = ["ticket",
+                     "exchange",
+                     "routing_key",
+                     "mandatory",
+                     "immediate"]
+
+        # Class Attribute Types
+        ticket = "short"
+        exchange = "shortstr"
+        routing_key = "shortstr"
+        mandatory = "bit"
+        immediate = "bit"
 
         def __init__(self, ticket=0, exchange=None, routing_key=None,
                      mandatory=False, immediate=False):
@@ -1776,6 +2151,18 @@ class Basic(object):
         id = 50
         index = 0x003C0032
 
+        # AMQP Method Arguments
+        arguments = ["reply_code",
+                     "reply_text",
+                     "exchange",
+                     "routing_key"]
+
+        # Class Attribute Types
+        reply_code = "short"
+        reply_text = "shortstr"
+        exchange = "shortstr"
+        routing_key = "shortstr"
+
         def __init__(self, reply_code=None, reply_text=None, exchange=None,
                      routing_key=None):
             """Initialize the Basic.Return class
@@ -1817,6 +2204,20 @@ class Basic(object):
         # AMQP Method Number and Mapping Index
         id = 60
         index = 0x003C003C
+
+        # AMQP Method Arguments
+        arguments = ["consumer_tag",
+                     "delivery_tag",
+                     "redelivered",
+                     "exchange",
+                     "routing_key"]
+
+        # Class Attribute Types
+        consumer_tag = "shortstr"
+        delivery_tag = "longlong"
+        redelivered = "bit"
+        exchange = "shortstr"
+        routing_key = "shortstr"
 
         def __init__(self, consumer_tag=None, delivery_tag=None,
                      redelivered=False, exchange=None, routing_key=None):
@@ -1864,6 +2265,16 @@ class Basic(object):
         id = 70
         index = 0x003C0046
 
+        # AMQP Method Arguments
+        arguments = ["ticket",
+                     "queue",
+                     "no_ack"]
+
+        # Class Attribute Types
+        ticket = "short"
+        queue = "shortstr"
+        no_ack = "bit"
+
         def __init__(self, ticket=0, queue=None, no_ack=False):
             """Initialize the Basic.Get class
 
@@ -1880,7 +2291,7 @@ class Basic(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Basic.GetOK, Basic.GetEmpty]
+            self.valid_responses = [Basic.GetOk, Basic.GetEmpty]
 
             # Deprecated
             self.ticket = ticket
@@ -1890,7 +2301,7 @@ class Basic(object):
             # No acknowledgement needed
             self.no_ack = no_ack
 
-    class GetOK(object):
+    class GetOk(object):
         """Provide client with a message
 
         This method delivers a message to the client following a get method. A
@@ -1902,9 +2313,23 @@ class Basic(object):
         id = 71
         index = 0x003C0047
 
+        # AMQP Method Arguments
+        arguments = ["delivery_tag",
+                     "redelivered",
+                     "exchange",
+                     "routing_key",
+                     "message_count"]
+
+        # Class Attribute Types
+        delivery_tag = "longlong"
+        redelivered = "bit"
+        exchange = "shortstr"
+        routing_key = "shortstr"
+        message_count = "long"
+
         def __init__(self, delivery_tag=None, redelivered=False, exchange=None,
                      routing_key=None, message_count=None):
-            """Initialize the Basic.GetOK class
+            """Initialize the Basic.GetOk class
 
             :param delivery_tag: Server-assigned delivery tag.
             :type delivery_tag: int/long.
@@ -1947,6 +2372,12 @@ class Basic(object):
         id = 72
         index = 0x003C0048
 
+        # AMQP Method Arguments
+        arguments = ["cluster_id"]
+
+        # Class Attribute Types
+        cluster_id = "shortstr"
+
         def __init__(self, cluster_id=None):
             """Initialize the Basic.GetEmpty class
 
@@ -1975,6 +2406,14 @@ class Basic(object):
         # AMQP Method Number and Mapping Index
         id = 80
         index = 0x003C0050
+
+        # AMQP Method Arguments
+        arguments = ["delivery_tag",
+                     "multiple"]
+
+        # Class Attribute Types
+        delivery_tag = "longlong"
+        multiple = "bit"
 
         def __init__(self, delivery_tag=0, multiple=False):
             """Initialize the Basic.Ack class
@@ -2007,6 +2446,14 @@ class Basic(object):
         id = 90
         index = 0x003C005A
 
+        # AMQP Method Arguments
+        arguments = ["delivery_tag",
+                     "requeue"]
+
+        # Class Attribute Types
+        delivery_tag = "longlong"
+        requeue = "bit"
+
         def __init__(self, delivery_tag=None, requeue=True):
             """Initialize the Basic.Reject class
 
@@ -2037,6 +2484,12 @@ class Basic(object):
         # AMQP Method Number and Mapping Index
         id = 100
         index = 0x003C0064
+
+        # AMQP Method Arguments
+        arguments = ["requeue"]
+
+        # Class Attribute Types
+        requeue = "bit"
 
         def __init__(self, requeue=False):
             """Initialize the Basic.RecoverAsync class
@@ -2069,6 +2522,12 @@ class Basic(object):
         id = 110
         index = 0x003C006E
 
+        # AMQP Method Arguments
+        arguments = ["requeue"]
+
+        # Class Attribute Types
+        requeue = "bit"
+
         def __init__(self, requeue=False):
             """Initialize the Basic.Recover class
 
@@ -2083,7 +2542,7 @@ class Basic(object):
             # Requeue the message
             self.requeue = requeue
 
-    class RecoverOK(object):
+    class RecoverOk(object):
         """Confirm recovery
 
         This method acknowledges a Basic.Recover method.
@@ -2093,8 +2552,11 @@ class Basic(object):
         id = 111
         index = 0x003C006F
 
+        # AMQP Method Arguments
+        arguments = []
+
         def __init__(self):
-            """Initialize the Basic.RecoverOK class
+            """Initialize the Basic.RecoverOk class
 
             """
 
@@ -2115,6 +2577,16 @@ class Basic(object):
         # AMQP Method Number and Mapping Index
         id = 120
         index = 0x003C0078
+
+        # AMQP Method Arguments
+        arguments = ["delivery_tag",
+                     "multiple",
+                     "requeue"]
+
+        # Class Attribute Types
+        delivery_tag = "longlong"
+        multiple = "bit"
+        requeue = "bit"
 
         def __init__(self, delivery_tag=0, multiple=False, requeue=True):
             """Initialize the Basic.Nack class
@@ -2224,7 +2696,7 @@ class Basic(object):
             self.cluster_id = cluster_id
 
 
-class TX(object):
+class Tx(object):
     """Work with transactions
 
     The Tx class allows publish and ack operations to be batched into atomic
@@ -2254,8 +2726,11 @@ class TX(object):
         id = 10
         index = 0x005A000A
 
+        # AMQP Method Arguments
+        arguments = []
+
         def __init__(self):
-            """Initialize the TX.Select class
+            """Initialize the Tx.Select class
 
             """
 
@@ -2263,9 +2738,9 @@ class TX(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [TX.SelectOK]
+            self.valid_responses = [Tx.SelectOk]
 
-    class SelectOK(object):
+    class SelectOk(object):
         """Confirm transaction mode
 
         This method confirms to the client that the channel was successfully
@@ -2276,8 +2751,11 @@ class TX(object):
         id = 11
         index = 0x005A000B
 
+        # AMQP Method Arguments
+        arguments = []
+
         def __init__(self):
-            """Initialize the TX.SelectOK class
+            """Initialize the Tx.SelectOk class
 
             """
 
@@ -2296,8 +2774,11 @@ class TX(object):
         id = 20
         index = 0x005A0014
 
+        # AMQP Method Arguments
+        arguments = []
+
         def __init__(self):
-            """Initialize the TX.Commit class
+            """Initialize the Tx.Commit class
 
             """
 
@@ -2305,9 +2786,9 @@ class TX(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [TX.CommitOK]
+            self.valid_responses = [Tx.CommitOk]
 
-    class CommitOK(object):
+    class CommitOk(object):
         """Confirm a successful commit
 
         This method confirms to the client that the commit succeeded. Note that
@@ -2318,8 +2799,11 @@ class TX(object):
         id = 21
         index = 0x005A0015
 
+        # AMQP Method Arguments
+        arguments = []
+
         def __init__(self):
-            """Initialize the TX.CommitOK class
+            """Initialize the Tx.CommitOk class
 
             """
 
@@ -2340,8 +2824,11 @@ class TX(object):
         id = 30
         index = 0x005A001E
 
+        # AMQP Method Arguments
+        arguments = []
+
         def __init__(self):
-            """Initialize the TX.Rollback class
+            """Initialize the Tx.Rollback class
 
             """
 
@@ -2349,9 +2836,9 @@ class TX(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [TX.RollbackOK]
+            self.valid_responses = [Tx.RollbackOk]
 
-    class RollbackOK(object):
+    class RollbackOk(object):
         """Confirm successful rollback
 
         This method confirms to the client that the rollback succeeded. Note
@@ -2362,8 +2849,11 @@ class TX(object):
         id = 31
         index = 0x005A001F
 
+        # AMQP Method Arguments
+        arguments = []
+
         def __init__(self):
-            """Initialize the TX.RollbackOK class
+            """Initialize the Tx.RollbackOk class
 
             """
 
@@ -2404,6 +2894,12 @@ class Confirm(object):
         id = 10
         index = 0x0055000A
 
+        # AMQP Method Arguments
+        arguments = ["nowait"]
+
+        # Class Attribute Types
+        nowait = "bit"
+
         def __init__(self, nowait=False):
             """Initialize the Confirm.Select class
 
@@ -2416,12 +2912,12 @@ class Confirm(object):
             self.synchronous = True
 
             # Valid responses to this method
-            self.valid_responses = [Confirm.SelectOK]
+            self.valid_responses = [Confirm.SelectOk]
 
             # Do not send a reply method
             self.nowait = nowait
 
-    class SelectOK(object):
+    class SelectOk(object):
         """Acknowledge confirm mode
 
         This method confirms to the client that the channel was successfully
@@ -2432,8 +2928,11 @@ class Confirm(object):
         id = 11
         index = 0x0055000B
 
+        # AMQP Method Arguments
+        arguments = []
+
         def __init__(self):
-            """Initialize the Confirm.SelectOK class
+            """Initialize the Confirm.SelectOk class
 
             """
 
@@ -2442,62 +2941,62 @@ class Confirm(object):
 
 # AMQP Class.Method Index Mapping
 INDEX_MAPPING = {0x000A000A: Connection.Start,
-                 0x000A000B: Connection.StartOK,
+                 0x000A000B: Connection.StartOk,
                  0x000A0014: Connection.Secure,
-                 0x000A0015: Connection.SecureOK,
+                 0x000A0015: Connection.SecureOk,
                  0x000A001E: Connection.Tune,
-                 0x000A001F: Connection.TuneOK,
+                 0x000A001F: Connection.TuneOk,
                  0x000A0028: Connection.Open,
-                 0x000A0029: Connection.OpenOK,
+                 0x000A0029: Connection.OpenOk,
                  0x000A0032: Connection.Close,
-                 0x000A0033: Connection.CloseOK,
+                 0x000A0033: Connection.CloseOk,
                  0x0014000A: Channel.Open,
-                 0x0014000B: Channel.OpenOK,
+                 0x0014000B: Channel.OpenOk,
                  0x00140014: Channel.Flow,
-                 0x00140015: Channel.FlowOK,
+                 0x00140015: Channel.FlowOk,
                  0x00140028: Channel.Close,
-                 0x00140029: Channel.CloseOK,
+                 0x00140029: Channel.CloseOk,
                  0x0028000A: Exchange.Declare,
-                 0x0028000B: Exchange.DeclareOK,
+                 0x0028000B: Exchange.DeclareOk,
                  0x00280014: Exchange.Delete,
-                 0x00280015: Exchange.DeleteOK,
+                 0x00280015: Exchange.DeleteOk,
                  0x0028001E: Exchange.Bind,
-                 0x0028001F: Exchange.BindOK,
+                 0x0028001F: Exchange.BindOk,
                  0x00280028: Exchange.Unbind,
-                 0x00280033: Exchange.UnbindOK,
+                 0x00280033: Exchange.UnbindOk,
                  0x0032000A: Queue.Declare,
-                 0x0032000B: Queue.DeclareOK,
+                 0x0032000B: Queue.DeclareOk,
                  0x00320014: Queue.Bind,
-                 0x00320015: Queue.BindOK,
+                 0x00320015: Queue.BindOk,
                  0x0032001E: Queue.Purge,
-                 0x0032001F: Queue.PurgeOK,
+                 0x0032001F: Queue.PurgeOk,
                  0x00320028: Queue.Delete,
-                 0x00320029: Queue.DeleteOK,
+                 0x00320029: Queue.DeleteOk,
                  0x00320032: Queue.Unbind,
-                 0x00320033: Queue.UnbindOK,
+                 0x00320033: Queue.UnbindOk,
                  0x003C000A: Basic.Qos,
-                 0x003C000B: Basic.QosOK,
+                 0x003C000B: Basic.QosOk,
                  0x003C0014: Basic.Consume,
-                 0x003C0015: Basic.ConsumeOK,
+                 0x003C0015: Basic.ConsumeOk,
                  0x003C001E: Basic.Cancel,
-                 0x003C001F: Basic.CancelOK,
+                 0x003C001F: Basic.CancelOk,
                  0x003C0028: Basic.Publish,
                  0x003C0032: Basic.Return,
                  0x003C003C: Basic.Deliver,
                  0x003C0046: Basic.Get,
-                 0x003C0047: Basic.GetOK,
+                 0x003C0047: Basic.GetOk,
                  0x003C0048: Basic.GetEmpty,
                  0x003C0050: Basic.Ack,
                  0x003C005A: Basic.Reject,
                  0x003C0064: Basic.RecoverAsync,
                  0x003C006E: Basic.Recover,
-                 0x003C006F: Basic.RecoverOK,
+                 0x003C006F: Basic.RecoverOk,
                  0x003C0078: Basic.Nack,
-                 0x005A000A: TX.Select,
-                 0x005A000B: TX.SelectOK,
-                 0x005A0014: TX.Commit,
-                 0x005A0015: TX.CommitOK,
-                 0x005A001E: TX.Rollback,
-                 0x005A001F: TX.RollbackOK,
+                 0x005A000A: Tx.Select,
+                 0x005A000B: Tx.SelectOk,
+                 0x005A0014: Tx.Commit,
+                 0x005A0015: Tx.CommitOk,
+                 0x005A001E: Tx.Rollback,
+                 0x005A001F: Tx.RollbackOk,
                  0x0055000A: Confirm.Select,
-                 0x0055000B: Confirm.SelectOK}
+                 0x0055000B: Confirm.SelectOk}
