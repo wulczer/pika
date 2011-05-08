@@ -504,7 +504,7 @@ for class_name in class_list:
                 label = get_label({'class': class_name,
                                    'method': method['name'],
                                    'field': argument['name']})
-                if label:
+                if label and label[-1] != '.':
                     label += '.'
 
                 new_line(':param %s: %s'.strip() % (name, label), indent)
@@ -570,7 +570,46 @@ for class_name in class_list:
     if 'properties' in definition:
         new_line('class Properties(object):', indent)
         indent += 4
-        new_line('pass', indent)
+
+        # Function definition
+        new_function("__init__",  definition['properties'], indent)
+        indent += 4
+        new_line('"""Initialize the %s.Properties class' % \
+                 pep8_class_name(class_name),
+                 indent)
+
+        # List the arguments in the docblock
+        new_line()
+        for argument in definition['properties']:
+            name = argument_name(argument['name'])
+            label = get_label({'class': class_name,
+                               'field': argument['name']})
+            if label and label[-1] != '.':
+                label += '.'
+
+            new_line(':param %s: %s'.strip() % (name, label), indent)
+            new_line(':type %s: %s.' % (name, get_argument_type(argument)),
+                     indent)
+
+        new_line()
+        new_line('"""', indent)
+        new_line()
+
+        indent += 4
+        # Create assignments from the arguments to attributes of the object
+        for argument in definition['properties']:
+            name = argument_name(argument['name'])
+            doc = get_label({'class': class_name,
+                             'field': argument['name']})
+            if doc:
+                comment(doc, indent + 2)
+
+            new_line('self.%s = %s' % (name, name), indent)
+            new_line()
+
+        # End of function
+        indent -= 8
+
         new_line()
         indent -= 4
 
