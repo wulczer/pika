@@ -66,6 +66,7 @@ AMQP_DOMAINS = {"channel-id": "longstr",
 # Other constants
 DEPRECATION_WARNING = "This command is deprecated in AMQP 0-9-1"
 
+
 # AMQP Errors
 class AMQPContentTooLarge(Warning):
     """
@@ -820,7 +821,7 @@ class Exchange(object):
 
             :param ticket: Deprecated.
             :type ticket: int.
-            :param exchange: 
+            :param exchange:
             :type exchange: str.
             :param type: Exchange type.
             :type type: str.
@@ -828,7 +829,7 @@ class Exchange(object):
             :type passive: bool.
             :param durable: Request a durable exchange.
             :type durable: bool.
-            :param auto_delete: Automatically delete when all consumers have finishing using it.
+            :param auto_delete: Automatically delete when not in use.
             :type auto_delete: bool.
             :param internal: Deprecated.
             :type internal: bool.
@@ -859,7 +860,7 @@ class Exchange(object):
             # Request a durable exchange
             self.durable = durable
 
-            # Automatically delete when all consumers have finishing using it
+            # Automatically delete when not in use
             self.auto_delete = auto_delete
 
             # Deprecated
@@ -905,7 +906,7 @@ class Exchange(object):
 
             :param ticket: Deprecated.
             :type ticket: int.
-            :param exchange: 
+            :param exchange:
             :type exchange: str.
             :param if_unused: Delete only if unused.
             :type if_unused: bool.
@@ -1032,9 +1033,9 @@ class Exchange(object):
 
             :param ticket: Deprecated.
             :type ticket: int.
-            :param destination: 
+            :param destination:
             :type destination: str.
-            :param source: 
+            :param source:
             :type source: str.
             :param routing_key: Routing key of binding.
             :type routing_key: str.
@@ -1114,7 +1115,7 @@ class Queue(object):
 
             :param ticket: Deprecated.
             :type ticket: int.
-            :param queue: 
+            :param queue:
             :type queue: str.
             :param passive: Do not create queue.
             :type passive: bool.
@@ -1174,7 +1175,7 @@ class Queue(object):
                      consumer_count=None):
             """Initialize the Queue.DeclareOK class
 
-            :param queue: 
+            :param queue:
             :type queue: str.
             :param message_count: Number of messages in queue.
             :type message_count: int/long.
@@ -1212,7 +1213,7 @@ class Queue(object):
 
             :param ticket: Deprecated.
             :type ticket: int.
-            :param queue: 
+            :param queue:
             :type queue: str.
             :param exchange: Name of the exchange to bind to.
             :type exchange: str.
@@ -1280,7 +1281,7 @@ class Queue(object):
 
             :param ticket: Deprecated.
             :type ticket: int.
-            :param queue: 
+            :param queue:
             :type queue: str.
             :param nowait: Do not send a reply method.
             :type nowait: bool.
@@ -1313,7 +1314,7 @@ class Queue(object):
         def __init__(self, message_count=None):
             """Initialize the Queue.PurgeOK class
 
-            :param message_count: 
+            :param message_count:
             :type message_count: int/long.
 
             """
@@ -1340,7 +1341,7 @@ class Queue(object):
 
             :param ticket: Deprecated.
             :type ticket: int.
-            :param queue: 
+            :param queue:
             :type queue: str.
             :param if_unused: Delete only if unused.
             :type if_unused: bool.
@@ -1383,7 +1384,7 @@ class Queue(object):
         def __init__(self, message_count=None):
             """Initialize the Queue.DeleteOK class
 
-            :param message_count: 
+            :param message_count:
             :type message_count: int/long.
 
             """
@@ -1408,9 +1409,9 @@ class Queue(object):
 
             :param ticket: Deprecated.
             :type ticket: int.
-            :param queue: 
+            :param queue:
             :type queue: str.
-            :param exchange: 
+            :param exchange:
             :type exchange: str.
             :param routing_key: Routing key of binding.
             :type routing_key: str.
@@ -1544,9 +1545,9 @@ class Basic(object):
 
             :param ticket: Deprecated.
             :type ticket: int.
-            :param queue: 
+            :param queue:
             :type queue: str.
-            :param consumer_tag: 
+            :param consumer_tag:
             :type consumer_tag: str.
             :param no_local: Do not deliver own messages.
             :type no_local: bool.
@@ -1602,7 +1603,7 @@ class Basic(object):
         def __init__(self, consumer_tag=None):
             """Initialize the Basic.ConsumeOK class
 
-            :param consumer_tag: 
+            :param consumer_tag:
             :type consumer_tag: str.
 
             """
@@ -1688,7 +1689,7 @@ class Basic(object):
 
             :param ticket: Deprecated.
             :type ticket: int.
-            :param exchange: 
+            :param exchange:
             :type exchange: str.
             :param routing_key: Message routing key.
             :type routing_key: str.
@@ -1736,7 +1737,7 @@ class Basic(object):
             :type reply_code: int.
             :param reply_text: Localised reply text.
             :type reply_text: str.
-            :param exchange: 
+            :param exchange:
             :type exchange: str.
             :param routing_key: Message routing key.
             :type routing_key: str.
@@ -1779,7 +1780,7 @@ class Basic(object):
             :type delivery_tag: int/long.
             :param redelivered: Message is being redelivered.
             :type redelivered: bool.
-            :param exchange: 
+            :param exchange:
             :type exchange: str.
             :param routing_key: Message routing key.
             :type routing_key: str.
@@ -1819,7 +1820,7 @@ class Basic(object):
 
             :param ticket: Deprecated.
             :type ticket: int.
-            :param queue: 
+            :param queue:
             :type queue: str.
             :param no_ack: No acknowledgement needed.
             :type no_ack: bool.
@@ -1859,7 +1860,7 @@ class Basic(object):
             :type delivery_tag: int/long.
             :param redelivered: Message is being redelivered.
             :type redelivered: bool.
-            :param exchange: 
+            :param exchange:
             :type exchange: str.
             :param routing_key: Message routing key.
             :type routing_key: str.

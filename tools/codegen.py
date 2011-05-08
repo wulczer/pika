@@ -374,6 +374,7 @@ DEPRECATION_WARNING = 'This command is deprecated in AMQP %s' % \
                                    str(amqp['minor-version']),
                                    str(amqp['revision'])]))
 new_line('DEPRECATION_WARNING = "%s"' % DEPRECATION_WARNING)
+new_line()
 
 
 # Warnings and Exceptions
@@ -506,10 +507,12 @@ for class_name in class_list:
                 label = get_label({'class': class_name,
                                    'method': method['name'],
                                    'field': argument['name']})
-                if label and label[-1] != '.':
-                    label += '.'
-
-                new_line(':param %s: %s'.strip() % (name, label), indent)
+                if label:
+                    if label[-1] != '.':
+                        label += '.'
+                    new_line(':param %s: %s' % (name, label), indent)
+                else:
+                    new_line(':param %s:' % name, indent)
                 new_line(':type %s: %s.' % (name, get_argument_type(argument)),
                          indent)
 
@@ -588,10 +591,12 @@ for class_name in class_list:
             name = argument_name(argument['name'])
             label = get_label({'class': class_name,
                                'field': argument['name']})
-            if label and label[-1] != '.':
-                label += '.'
+            if label:
+                if label[-1] != '.':
+                    label += '.'
+                line = ':param %s: %s' % (name, label)
+                new_line(line.strip(), indent)
 
-            new_line(':param %s: %s'.strip() % (name, label), indent)
             new_line(':type %s: %s.' % (name, get_argument_type(argument)),
                      indent)
 
