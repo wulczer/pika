@@ -326,13 +326,6 @@ new_line('DEFAULT_USER = "guest"')
 new_line('DEFAULT_PASS = "guest"')
 new_line()
 
-# Deprecation Warning
-DEPRECATION_WARNING = 'This command is deprecated in AMQP %s' % \
-                        ('-'.join([str(amqp['major-version']),
-                                   str(amqp['minor-version']),
-                                   str(amqp['revision'])]))
-new_line('DEPRECATION_WARNING = "%s"' % DEPRECATION_WARNING)
-
 # Constant
 comment("AMQP Constants")
 for constant in amqp['constants']:
@@ -373,6 +366,15 @@ domains[0] = domains[0].replace('                ',
 domains[-1] = domains[-1].replace(',', '}')
 output += domains
 new_line()
+
+comment("Other constants")
+# Deprecation Warning
+DEPRECATION_WARNING = 'This command is deprecated in AMQP %s' % \
+                        ('-'.join([str(amqp['major-version']),
+                                   str(amqp['minor-version']),
+                                   str(amqp['revision'])]))
+new_line('DEPRECATION_WARNING = "%s"' % DEPRECATION_WARNING)
+
 
 # Warnings and Exceptions
 new_line()
@@ -597,7 +599,6 @@ for class_name in class_list:
         new_line('"""', indent)
         new_line()
 
-        indent += 4
         # Create assignments from the arguments to attributes of the object
         for argument in definition['properties']:
             name = argument_name(argument['name'])
@@ -610,10 +611,24 @@ for class_name in class_list:
             new_line()
 
         # End of function
-        indent -= 8
-
-        new_line()
         indent -= 4
+
+
+comment("AMQP Class.Method ID Mapping")
+mapping = list()
+for amqp_class in amqp['classes']:
+    if amqp_class['name'] not in CODEGEN_IGNORE_CLASSES:
+        for method in amqp_class['methods']:
+            key = amqp_class['id'] << 16 | method['id']
+            mapping.append(('              0x%08X: %s.%s,' % \
+                           (key,
+                            pep8_class_name(amqp_class['name']),
+                            pep8_class_name(method['name']))))
+mapping[0] = mapping[0].replace('              ',
+                                'ID_MAPPING = {')
+mapping[-1] = mapping[-1].replace(',', '}')
+output += mapping
+new_line()
 
 # Spit out the file
 output_string = '\n'.join(output)

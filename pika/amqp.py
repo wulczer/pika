@@ -20,7 +20,6 @@ DEFAULT_PORT = 5672
 DEFAULT_USER = "guest"
 DEFAULT_PASS = "guest"
 
-DEPRECATION_WARNING = "This command is deprecated in AMQP 0-9-1"
 # AMQP Constants
 AMQP_FRAME_METHOD = 1
 AMQP_FRAME_HEADER = 2
@@ -64,6 +63,8 @@ AMQP_DOMAINS = {"channel-id": "longstr",
                 "reply-text": "shortstr",
                 "security-token": "longstr"}
 
+# Other constants
+DEPRECATION_WARNING = "This command is deprecated in AMQP 0-9-1"
 
 # AMQP Errors
 class AMQPContentTooLarge(Warning):
@@ -611,7 +612,6 @@ class Connection(object):
 
 
             """
-
 
 
 class Channel(object):
@@ -2123,48 +2123,47 @@ class Basic(object):
 
             """
 
-                # MIME content type
-                self.content_type = content_type
+            # MIME content type
+            self.content_type = content_type
 
-                # MIME content encoding
-                self.content_encoding = content_encoding
+            # MIME content encoding
+            self.content_encoding = content_encoding
 
-                # Message header field table
-                self.headers = headers
+            # Message header field table
+            self.headers = headers
 
-                # Non-persistent (1) or persistent (2)
-                self.delivery_mode = delivery_mode
+            # Non-persistent (1) or persistent (2)
+            self.delivery_mode = delivery_mode
 
-                # Message priority, 0 to 9
-                self.priority = priority
+            # Message priority, 0 to 9
+            self.priority = priority
 
-                # Application correlation identifier
-                self.correlation_id = correlation_id
+            # Application correlation identifier
+            self.correlation_id = correlation_id
 
-                # Address to reply to
-                self.reply_to = reply_to
+            # Address to reply to
+            self.reply_to = reply_to
 
-                # Message expiration specification
-                self.expiration = expiration
+            # Message expiration specification
+            self.expiration = expiration
 
-                # Application message identifier
-                self.message_id = message_id
+            # Application message identifier
+            self.message_id = message_id
 
-                # Message timestamp
-                self.timestamp = timestamp
+            # Message timestamp
+            self.timestamp = timestamp
 
-                # Message type name
-                self.type = type
+            # Message type name
+            self.type = type
 
-                # Creating user id
-                self.user_id = user_id
+            # Creating user id
+            self.user_id = user_id
 
-                # Creating application id
-                self.app_id = app_id
+            # Creating application id
+            self.app_id = app_id
 
-                # Deprecated
-                self.cluster_id = cluster_id
-
+            # Deprecated
+            self.cluster_id = cluster_id
 
 
 class TX(object):
@@ -2372,3 +2371,65 @@ class Confirm(object):
 
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
+
+# AMQP Class.Method ID Mapping
+ID_MAPPING = {0x000A000A: Connection.Start,
+              0x000A000B: Connection.StartOK,
+              0x000A0014: Connection.Secure,
+              0x000A0015: Connection.SecureOK,
+              0x000A001E: Connection.Tune,
+              0x000A001F: Connection.TuneOK,
+              0x000A0028: Connection.Open,
+              0x000A0029: Connection.OpenOK,
+              0x000A0032: Connection.Close,
+              0x000A0033: Connection.CloseOK,
+              0x0014000A: Channel.Open,
+              0x0014000B: Channel.OpenOK,
+              0x00140014: Channel.Flow,
+              0x00140015: Channel.FlowOK,
+              0x00140028: Channel.Close,
+              0x00140029: Channel.CloseOK,
+              0x0028000A: Exchange.Declare,
+              0x0028000B: Exchange.DeclareOK,
+              0x00280014: Exchange.Delete,
+              0x00280015: Exchange.DeleteOK,
+              0x0028001E: Exchange.Bind,
+              0x0028001F: Exchange.BindOK,
+              0x00280028: Exchange.Unbind,
+              0x00280033: Exchange.UnbindOK,
+              0x0032000A: Queue.Declare,
+              0x0032000B: Queue.DeclareOK,
+              0x00320014: Queue.Bind,
+              0x00320015: Queue.BindOK,
+              0x0032001E: Queue.Purge,
+              0x0032001F: Queue.PurgeOK,
+              0x00320028: Queue.Delete,
+              0x00320029: Queue.DeleteOK,
+              0x00320032: Queue.Unbind,
+              0x00320033: Queue.UnbindOK,
+              0x003C000A: Basic.Qos,
+              0x003C000B: Basic.QosOK,
+              0x003C0014: Basic.Consume,
+              0x003C0015: Basic.ConsumeOK,
+              0x003C001E: Basic.Cancel,
+              0x003C001F: Basic.CancelOK,
+              0x003C0028: Basic.Publish,
+              0x003C0032: Basic.Return,
+              0x003C003C: Basic.Deliver,
+              0x003C0046: Basic.Get,
+              0x003C0047: Basic.GetOK,
+              0x003C0048: Basic.GetEmpty,
+              0x003C0050: Basic.Ack,
+              0x003C005A: Basic.Reject,
+              0x003C0064: Basic.RecoverAsync,
+              0x003C006E: Basic.Recover,
+              0x003C006F: Basic.RecoverOK,
+              0x003C0078: Basic.Nack,
+              0x005A000A: TX.Select,
+              0x005A000B: TX.SelectOK,
+              0x005A0014: TX.Commit,
+              0x005A0015: TX.CommitOK,
+              0x005A001E: TX.Rollback,
+              0x005A001F: TX.RollbackOK,
+              0x0055000A: Confirm.Select,
+              0x0055000B: Confirm.SelectOK}
