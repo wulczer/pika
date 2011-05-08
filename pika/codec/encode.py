@@ -104,6 +104,21 @@ def long_long_int(value):
     return pack('>cq', 'L', value)
 
 
+def long_string(value):
+    """
+    Encode a string
+
+    Parameters:
+    - str value
+
+    Returns:
+    - encoded value
+    """
+    if not isinstance(value, basestring):
+        raise ValueError("str or unicode type required")
+    return pack('>cI', 'S', len(value)) + value
+
+
 def short_int(value):
     """
     Encode an short integer
@@ -121,7 +136,7 @@ def short_int(value):
     return pack('>ch', 'U', value)
 
 
-def string(value):
+def short_string(value):
     """
     Encode a string
 
@@ -131,9 +146,9 @@ def string(value):
     Returns:
     - encoded value
     """
-    if not isinstance(value, str) and not isinstance(value, unicode):
+    if not isinstance(value, basestring):
         raise ValueError("str or unicode type required")
-    return pack('>cI', 'S', len(value)) + value
+    return pack('>cB', 's', len(value)) + value
 
 
 def timestamp(value):
@@ -253,7 +268,10 @@ def _encode_value(value):
     elif isinstance(value, float):
         result = floating_point(value)
     elif isinstance(value, basestring):
-        result = string(value)
+        if len(value) < 255:
+            result = short_string(value)
+        else:
+            result = long_string(value)
     elif isinstance(value, datetime) or isinstance(value, struct_time):
         result = timestamp(value)
     elif isinstance(value, dict):

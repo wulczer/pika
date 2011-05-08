@@ -110,7 +110,21 @@ def short_int(value):
     return 2, unpack_from('>h', value)[0]
 
 
-def string(value):
+def short_string(value):
+    """
+    Decode a string value
+
+    Parameters:
+    - str
+
+    Returns:
+    - tuple of bytes used and an str value
+    """
+    length = unpack_from('>B', value)[0]
+    return length + 1, value[1:length + 1]
+
+
+def long_string(value):
     """
     Decode a string value
 
@@ -210,8 +224,10 @@ def _decode_value(value):
         consumed, result = boolean(value[1:])
     elif value[0] == 'T':
         consumed, result = timestamp(value[1:])
-    elif value[0] == 's' or value[0] == 'S':
-        consumed, result = string(value[1:])
+    elif value[0] == 's':
+        consumed, result = short_string(value[1:])
+    elif value[0] == 'S':
+        consumed, result = long_string(value[1:])
     elif value[0] == 'U':
         consumed, result = short_int(value[1:])
     elif value[0] == '\x00':
@@ -221,13 +237,48 @@ def _decode_value(value):
     # Return the bytes used and the decoded value
     return consumed + 1, result
 
+
+def decode_by_type(value, data_type):
+    """
+    decodes values using the specified type
+
+    Parameters:
+    - str
+    - str
+
+    Returns:
+    - tuple of bytes consumed and mixed value based on field type
+    """
+    # Determine the field type and encode it
+    if data_type == 'bit':
+        consumed, result = boolean(value)
+    elif data_type == 'long':
+        consumed, result = long_int(value)
+    elif data_type == 'longlong':
+        consumed, result = long_long_int(value)
+    elif data_type == 'longstr':
+        consumed, result = long_string(value)
+    elif data_type == 'short':
+        consumed, result = short_int(value)
+    elif data_type == 'shortstr':
+        consumed, result = short_string(value)
+    elif data_type == 'table':
+        consumed, result = field_table(value)
+    elif data_type == 'timestamp':
+        consumed, result = timestamp(value)
+    else:
+        raise ValueError("Unknown type: %s", value)
+    # Return the bytes used and the decoded value
+    return consumed, result
+
+
 # Define a data type mapping to methods
 METHODS = {"bit": boolean,
            "long": long_int,
            "longlong": long_long_int ,
-           "longstr": string,
+           "longstr": long_string,
            "octet": octet,
            "short": short_int,
-           "shortstr": string,
+           "shortstr": short_string,
            "table": field_table,
            "timestamp": timestamp}

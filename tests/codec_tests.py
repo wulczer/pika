@@ -163,13 +163,24 @@ def test_decode_short():
         assert False, "decode.short_int did not return 32767: %r" % check
 
 
-def test_decode_string():
+def test_decode_long_string():
     value = '\x00\x00\x00\n0123456789'
-    length, check = codec.decode.string(value)
-    if not isinstance(check, str):
-        assert False, "decode.string did not return a str: %r" % check
+    length, check = codec.decode.long_string(value)
+    if not isinstance(check, basestring):
+        assert False, "decode.long_string did not return a str: %r" % check
     if check != '0123456789':
-        assert False, "decode.string did not return '0123456789': %r" % check
+        assert False, \
+            "decode.long_string did not return '0123456789': %r" % check
+
+
+def test_decode_short_string():
+    value = '\n0123456789'
+    length, check = codec.decode.short_string(value)
+    if not isinstance(check, basestring):
+        assert False, "decode.short_string did not return a str: %r" % check
+    if check != '0123456789':
+        assert False, \
+            "decode.short_string did not return '0123456789': %r" % check
 
 
 def test_decode_timestamp():
@@ -348,23 +359,28 @@ def test_encode_short_error():
     assert False, "encode.short_int did not raise a ValueError Exception"
 
 
-def test_encode_string():
+def test_encode_long_string():
     check = 'S\x00\x00\x00\n0123456789'
-    value = codec.encode.string("0123456789")
+    value = codec.encode.long_string("0123456789")
     if value != check:
         assert False, "Encoded value does not match check value: %r" % value
 
+def test_encode_short_string():
+    check = 's\n0123456789'
+    value = codec.encode.short_string("0123456789")
+    if value != check:
+        assert False, "Encoded value does not match check value: %r" % value
 
 def test_encode_unicode():
-    check = 'S\x00\x00\x00\n0123456789'
-    value = codec.encode.string(unicode("0123456789"))
+    check = 's\n0123456789'
+    value = codec.encode.short_string(unicode("0123456789"))
     if value != check:
         assert False, "Encoded value does not match check value: %r" % value
 
 
 def test_encode_string_error():
     try:
-        codec.encode.string(12345.12434)
+        codec.encode.short_string(12345.12434)
     except ValueError:
         return
     assert False, "encode.string did not raise a ValueError Exception"
@@ -403,9 +419,10 @@ def test_encode_field_array_error():
 
 
 def test_encode_field_array():
-    check = 'A\x00\x00\x00<U\x00\x01I\x00\x00\xaf\xc8S\x00\x00\x00\x04TestT\
-\x00\x00\x00\x00Ec)\x92I\xbb\x9a\xca\x00D\x02\x00\x00\x01:f@H\xf5\xc3L\x00\x00\
-\x00\x00\xc4e5\xffL\x80\x00\x00\x00\x00\x00\x00\x08'
+    check = 'A\x00\x00\x009U\x00\x01I\x00\x00\xaf\xc8s\x04TestT\x00\x00\x00\
+\x00Ec)\x92I\xbb\x9a\xca\x00D\x02\x00\x00\x01:f@H\xf5\xc3L\x00\x00\x00\x00\
+\xc4e5\xffL\x80\x00\x00\x00\x00\x00\x00\x08'
+
     data = [1, 45000, 'Test', datetime(2006, 11, 21, 16, 30, 10),
             -1147483648, Decimal('3.14'), 3.14, long(3294967295),
             -9223372036854775800]
@@ -437,11 +454,10 @@ def test_encode_field_table_type_error():
 
 
 def test_encode_field_table():
-    check = 'F\x00\x00\x00\x92\x07longvalI6e&U\x08floatvlaf@H\xf5\xc3\x07\
-boolvalt\x01\x06strvalS\x00\x00\x00\x04Test\x06intvalU\x00\x01\x0ctimestampval\
-T\x00\x00\x00\x00Ec)\x92\x06decvalD\x02\x00\x00\x01:\x08arrayvalA\x00\x00\x00\
-\tU\x00\x01U\x00\x02U\x00\x03\x07dictvalF\x00\x00\x00\x0c\x03fooS\x00\x00\x00\
-\x03bar'
+    check = 'F\x00\x00\x00\x8c\x07longvalI6e&U\x08floatvlaf@H\xf5\xc3\x07\
+boolvalt\x01\x06strvals\x04Test\x06intvalU\x00\x01\x0ctimestampvalT\x00\x00\
+\x00\x00Ec)\x92\x06decvalD\x02\x00\x00\x01:\x08arrayvalA\x00\x00\x00\tU\x00\
+\x01U\x00\x02U\x00\x03\x07dictvalF\x00\x00\x00\t\x03foos\x03bar'
     data = {'intval': 1,
             'strval': 'Test',
             'boolval': True,
