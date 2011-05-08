@@ -17,7 +17,7 @@ CODEGEN_JSON_URL = \
 CODEGEN_XML_URL = \
     'http://www.rabbitmq.com/resources/specs/amqp0-9-1.xml'
 
-XPATH_ORDER = ['class', 'method', 'field']
+XPATH_ORDER = ['class', 'constant', 'method', 'field']
 
 from datetime import date
 from json import load
@@ -99,6 +99,7 @@ def get_documentation(search_path):
     for key in XPATH_ORDER:
         if key in search_path:
             search.append('%s[@name="%s"]' % (key, search_path[key]))
+
     node = xml.xpath('%s/doc' % '/'.join(search))
 
     # Did we not find it? Look for a RabbitMQ extension
@@ -116,6 +117,7 @@ def get_documentation(search_path):
                              node[0].text.split('\n')]).strip()
 
     print 'Doc couldnt find %r' % search_path
+    print '%s/doc' % '/'.join(search)
     # Not found, return None
     return None
 
@@ -609,7 +611,7 @@ for class_name in class_list:
         # End of function
         indent -= 8
 
-    if 'properties' in definition:
+    if 'properties' in definition and definition['properties']:
         new_line('class Properties(object):', indent)
         indent += 4
         comment('"""Content Properties"""', indent, '')

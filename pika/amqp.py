@@ -27,6 +27,9 @@ AMQP_FRAME_BODY = 3
 AMQP_FRAME_HEARTBEAT = 8
 AMQP_FRAME_MIN_SIZE = 4096
 AMQP_FRAME_END = 206
+# Indicates that the method completed successfully. This reply code is reserved
+# for future use - the current protocol design does not use positive
+# confirmation and reply codes are sent only in case of an error.
 AMQP_REPLY_SUCCESS = 200
 
 # AMQP data types
@@ -70,7 +73,8 @@ DEPRECATION_WARNING = "This command is deprecated in AMQP 0-9-1"
 # AMQP Errors
 class AMQPContentTooLarge(Warning):
     """
-    Undocumented AMQP Soft Error
+    The client attempted to transfer content larger than the server could
+    accept at the present time. The client may retry at a later time.
 
     """
     name = "CONTENT-TOO-LARGE"
@@ -88,7 +92,9 @@ class AMQPNoRoute(Warning):
 
 class AMQPNoConsumers(Warning):
     """
-    Undocumented AMQP Soft Error
+    When the exchange cannot deliver to a consumer when the immediate flag is
+    set. As a result of pending data on the queue or the absence of any
+    consumers of the queue.
 
     """
     name = "NO-CONSUMERS"
@@ -97,7 +103,8 @@ class AMQPNoConsumers(Warning):
 
 class AMQPAccessRefused(Warning):
     """
-    Undocumented AMQP Soft Error
+    The client attempted to work with a server entity to which it has no access
+    due to security settings.
 
     """
     name = "ACCESS-REFUSED"
@@ -106,7 +113,7 @@ class AMQPAccessRefused(Warning):
 
 class AMQPNotFound(Warning):
     """
-    Undocumented AMQP Soft Error
+    The client attempted to work with a server entity that does not exist.
 
     """
     name = "NOT-FOUND"
@@ -115,7 +122,8 @@ class AMQPNotFound(Warning):
 
 class AMQPResourceLocked(Warning):
     """
-    Undocumented AMQP Soft Error
+    The client attempted to work with a server entity to which it has no access
+    because another client is working with it.
 
     """
     name = "RESOURCE-LOCKED"
@@ -124,7 +132,8 @@ class AMQPResourceLocked(Warning):
 
 class AMQPPreconditionFailed(Warning):
     """
-    Undocumented AMQP Soft Error
+    The client requested a method that was not allowed because some
+    precondition failed.
 
     """
     name = "PRECONDITION-FAILED"
@@ -133,7 +142,8 @@ class AMQPPreconditionFailed(Warning):
 
 class AMQPConnectionForced(Exception):
     """
-    Undocumented AMQP Hard Error
+    An operator intervened to close the connection for some reason. The client
+    may retry at some later date.
 
     """
     name = "CONNECTION-FORCED"
@@ -142,7 +152,7 @@ class AMQPConnectionForced(Exception):
 
 class AMQPInvalidPath(Exception):
     """
-    Undocumented AMQP Hard Error
+    The client tried to work with an unknown virtual host.
 
     """
     name = "INVALID-PATH"
@@ -151,7 +161,8 @@ class AMQPInvalidPath(Exception):
 
 class AMQPFrameError(Exception):
     """
-    Undocumented AMQP Hard Error
+    The sender sent a malformed frame that the recipient could not decode. This
+    strongly implies a programming error in the sending peer.
 
     """
     name = "FRAME-ERROR"
@@ -160,7 +171,8 @@ class AMQPFrameError(Exception):
 
 class AMQPSyntaxError(Exception):
     """
-    Undocumented AMQP Hard Error
+    The sender sent a frame that contained illegal values for one or more
+    fields. This strongly implies a programming error in the sending peer.
 
     """
     name = "SYNTAX-ERROR"
@@ -169,7 +181,9 @@ class AMQPSyntaxError(Exception):
 
 class AMQPCommandInvalid(Exception):
     """
-    Undocumented AMQP Hard Error
+    The client sent an invalid sequence of frames, attempting to perform an
+    operation that was considered invalid by the server. This usually implies a
+    programming error in the client.
 
     """
     name = "COMMAND-INVALID"
@@ -178,7 +192,8 @@ class AMQPCommandInvalid(Exception):
 
 class AMQPChannelError(Exception):
     """
-    Undocumented AMQP Hard Error
+    The client attempted to work with a channel that had not been correctly
+    opened. This most likely indicates a fault in the client layer.
 
     """
     name = "CHANNEL-ERROR"
@@ -187,7 +202,9 @@ class AMQPChannelError(Exception):
 
 class AMQPUnexpectedFrame(Exception):
     """
-    Undocumented AMQP Hard Error
+    The peer sent a frame that was not expected, usually in the context of a
+    content header and body.  This strongly indicates a fault in the peer's
+    content processing.
 
     """
     name = "UNEXPECTED-FRAME"
@@ -196,7 +213,9 @@ class AMQPUnexpectedFrame(Exception):
 
 class AMQPResourceError(Exception):
     """
-    Undocumented AMQP Hard Error
+    The server could not complete the method because it lacked sufficient
+    resources. This may be due to the client creating too many of some type of
+    entity.
 
     """
     name = "RESOURCE-ERROR"
@@ -205,7 +224,8 @@ class AMQPResourceError(Exception):
 
 class AMQPNotAllowed(Exception):
     """
-    Undocumented AMQP Hard Error
+    The client tried to work with some entity in a manner that is prohibited by
+    the server, due to security settings or by some other criteria.
 
     """
     name = "NOT-ALLOWED"
@@ -214,7 +234,8 @@ class AMQPNotAllowed(Exception):
 
 class AMQPNotImplemented(Exception):
     """
-    Undocumented AMQP Hard Error
+    The client tried to use functionality that is not implemented in the
+    server.
 
     """
     name = "NOT-IMPLEMENTED"
@@ -223,7 +244,9 @@ class AMQPNotImplemented(Exception):
 
 class AMQPInternalError(Exception):
     """
-    Undocumented AMQP Hard Error
+    The server could not complete the method because of an internal error. The
+    server may require intervention by an operator in order to resume normal
+    operations.
 
     """
     name = "INTERNAL-ERROR"
@@ -704,15 +727,6 @@ class Connection(object):
 
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
-
-    class Properties(object):
-        """Content Properties"""
-
-        def __init__(self):
-            """Initialize the Connection.Properties class
-
-
-            """
 
 
 class Channel(object):
