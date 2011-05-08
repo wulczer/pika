@@ -10,36 +10,35 @@ __date__ = '2011-03-31'
 CODEGEN_DIR = 'rabbitmq-codegen-default'
 CODEGEN_IGNORE_CLASSES = ['access']
 CODEGEN_JSON = 'amqp-rabbitmq-0.9.1.json'
+CODEGEN_XML = 'amqp0-9-1.xml'
 CODEGEN_OUTPUT = '../pika/amqp.py'
-CODEGEN_URL = 'http://hg.rabbitmq.com/rabbitmq-codegen/archive/default.tar.bz2'
+CODEGEN_JSON_URL = \
+    'http://hg.rabbitmq.com/rabbitmq-codegen/archive/default.tar.bz2'
+CODEGEN_XML_URL = \
+    'http://www.rabbitmq.com/resources/specs/amqp0-9-1.xml'
 
-RESERVED_WORDS = 'global'
+XPATH_ORDER = ['class', 'method', 'field']
 
 from datetime import date
 from json import load
+from keyword import kwlist
+from lxml import etree
 from os import unlink
 from os.path import exists
-from re import sub
 from tarfile import open as tarfile_open
 from tempfile import NamedTemporaryFile
+from textwrap import fill, wrap
 from urllib import urlopen
 
 # Outut buffer list
 output = []
 
 
-def newline(text='', lpad=0):
+def new_line(text='', indent=0):
     """Append a new line to the output buffer"""
     global output
+    output.append(''.join([' ' for x in xrange(0, indent)]) + text)
 
-    # If we specified a pad amount
-    if lpad:
-        # Pad the left of the string
-        output.append("%s%s" % (''.join([' ' for position in xrange(0, lpad)]),
-                                text))
-    # Otherwise just append the string
-    else:
-        output.append(text)
 
 def classify(text):
     """Replace the AMQP constant with a more pythonic classname"""
@@ -50,9 +49,21 @@ def classify(text):
     return class_name
 
 
-def comment(text):
+def comment(text, indent=0, prefix='# '):
     """Append a comment to the output buffer"""
-    newline('# %s' % text)
+    lines = get_comments(text, indent, prefix)
+    for line in lines:
+        new_line(line)
+
+
+def get_comments(text, indent=0, prefix='# '):
+    """Return a list of lines for a given comment with the comment prefix"""
+    indent_text = prefix.rjust(indent)
+    lines = wrap(text, 79 - len(indent_text))
+    comments = list()
+    for line in lines:
+        comments.append(indent_text + line)
+    return comments
 
 
 def dashify(text):
@@ -60,62 +71,181 @@ def dashify(text):
     return text.replace('-', '_')
 
 
-def indent_and_wrap(text, indent, indent_first_line=False):
-    docstring = list()
-    padding = ''.join([' ' for position in xrange(0, indent)])
-    max_length = 79 - indent
-    try:
-        offset = text.rindex(' ', 0, max_length)
-    except ValueError:
-        if indent_first_line:
-            return padding + text
+def pep8_class_name(value):
+    """Returns a class name in the proper case per PEP8"""
+    output = list()
+    parts = value.split('-')
+    for part in parts:
+        if len(part) > 2:
+            output.append(part[0:1].upper() + part[1:])
         else:
-            return text
+            output.append(part.upper())
 
-    if indent_first_line:
-        docstring.append(padding + text[0:offset])
-    else:
-        docstring.append(text[0:offset])
-    while (offset + max_length) < len(text):
-        try:
-            end = text.rindex(' ', offset, offset + max_length)
-        except ValueError:
-            break
-        docstring.append(padding + text[offset:end])
-        offset = end
-    if offset < len(text):
-        docstring.append(padding + text[offset:])
-    return '\n'.join(docstring)
+    return ''.join(output)
 
 
-def docify(text, indent=4):
-    """Return a wrapping docstring block for the given string"""
-    docstring = list()
-    padding = ''.join([' ' for position in xrange(0, indent)])
-    max_length = 79 - indent
-    try:
-        offset = text.rindex(' ', 0, max_length - 3)
-    except ValueError:
-        return '%s"""%s"""' % (padding, text)
-    docstring.append('%s"""%s' % (padding, text[0:offset]))
-    while (offset + max_length) < len(text):
-        try:
-            end = text.rindex(' ', offset, offset + max_length)
-        except ValueError:
-            break
-        docstring.append(padding + text[offset:end])
-        offset = end
-    if offset < len(text):
-        docstring.append(padding + text[offset:])
-    return '\n'.join(docstring) + '\n\n' + padding + '"""'
+def get_class_definition(name, class_list):
+    """
+    Iterates through class_list trying to match the name against what was
+    passed in.
+
+    """
+    for definition in class_list:
+        if definition['name'] == name:
+            return definition
+
+    # We didn't find it, return none
+    return None
+
+def get_documentation(search_path):
+
+    search = list()
+    for key in XPATH_ORDER:
+        if key in search_path:
+            search.append('%s[@name="%s"]' % (key, search_path[key]))
+    node = xml.xpath('%s/doc' % '/'.join(search))
+
+    # Did we not find it? Look for a RabbitMQ extension
+    if not node:
+        node = rabbitmq.xpath('%s/doc' % '/'.join(search))
+
+    # Look for RabbitMQ extensions of fields
+    if not node and 'field' in search_path:
+        node = rabbitmq.xpath('field[@name="%s"]/doc' % search_path['field'])
+
+    # if we found it, strip all the whitespace
+    if node:
+        return ' '.join([line.strip() \
+                         for line in
+                             node[0].text.split('\n')]).strip()
+
+    print 'Doc couldnt find %r' % search_path
+    # Not found, return None
+    return None
 
 
-# Check to see if we have the codegen file in this directory
+def get_label(search_path):
+    # Look to see if documented & if so, provide the doc as a comment
+    search = list()
+    for key in XPATH_ORDER:
+        if key in search_path:
+            search.append('%s[@name="%s"]' % (key, search_path[key]))
+
+    node = xml.xpath('%s' % '/'.join(search))
+
+    if not node:
+        node = rabbitmq.xpath('%s' % '/'.join(search))
+
+    # Did it have a value by default?
+    if node and 'label' in node[0].attrib:
+        return node[0].attrib['label'][0:1].upper() + \
+               node[0].attrib['label'][1:]
+    elif node and node[0].text:
+        return node[0].text.strip()[0:1].upper() + \
+               node[0].text.strip()[1:].strip()
+
+    # Look in domains
+    if 'field' in search_path:
+        node = xml.xpath('//amqp/domain[@name="%s"]' % search_path['field'])
+        if node and 'label' in node[0].attrib:
+            return node[0].attrib['label'][0:1].upper() + \
+                   node[0].attrib['label'][1:]
+
+    # Look for RabbitMQ extensions of fields
+    if 'field' in search_path:
+        node = rabbitmq.xpath('field[@name="%s"]' % search_path['field'])
+        if node and 'label' in node[0].attrib:
+            return node[0].attrib['label'][0:1].upper() + \
+                   node[0].attrib['label'][1:]
+        elif node and node[0].text:
+            return node[0].text.strip()[0:1].upper() + \
+                   node[0].text.strip()[1:].strip()
+
+    print 'Label couldnt find %r' % search_path
+    return None
+
+
+def argument_name(name):
+    """
+    Returns a valid python argument name for the AMQP argument passed in
+    """
+    output = name.replace('-', '_')
+    if output in kwlist:
+        output += '_'
+    return output
+
+def get_argument_type(argument):
+
+    if 'domain' in argument:
+        for domain, data_type in amqp['domains']:
+            if argument['domain'] == domain:
+                argument['type'] = data_type
+                break
+
+    if 'type' in argument:
+
+        if argument['type'] == "bit":
+            return 'bool'
+        elif argument['type'] == "long":
+            return 'int/long'
+        elif argument['type'] == "longlong":
+            return 'int/long'
+        elif argument['type'] == "longstr":
+            return 'str'
+        elif argument['type'] == "octet":
+            return 'int'
+        elif argument['type'] == "short":
+            return 'int'
+        elif argument['type'] == "shortstr":
+            return 'str'
+        elif argument['type'] == "table":
+            return 'dict'
+        elif argument['type'] == "timestamp":
+            return 'struct_time'
+
+    return 'Unknown'
+
+
+def new_function(function_name, arguments, indent=0):
+    global output
+
+    args = ['self']
+    for argument in arguments:
+        name = argument_name(argument['name'])
+        if 'default-value' in argument and argument['default-value'] != '':
+            if argument['default-value'] in kwlist or \
+               isinstance(argument['default-value'], bool) or \
+               isinstance(argument['default-value'], int):
+                value = argument['default-value']
+            else:
+
+
+
+                value = '"%s"' % argument['default-value']
+        else:
+            value = 'None'
+        args.append('%s=%s' % (name, value))
+
+    # Get the definition line built
+    definition = 'def %s(%s):' % (function_name, ', '.join(args))
+
+    # Build the output of it with wrapping
+    lines = wrap(''.join([' ' for x in xrange(0, indent)]) + definition, 79,
+                 subsequent_indent=\
+                    ''.join([' ' for x in xrange(0,
+                                                 indent + \
+                                                 len(function_name) + 5)]))
+    for line in lines:
+        new_line(line)
+
+
+
+# Check to see if we have the codegen json file in this directory
 if not exists(CODEGEN_JSON):
 
-    # Retieve the codegen archive
+    # Retrieve the codegen archive
     print "Downloading codegen JSON file."
-    handle = urlopen(CODEGEN_URL)
+    handle = urlopen(CODEGEN_JSON_URL)
     bzip2_tarball = handle.read()
 
     # Write the file out to a temp file
@@ -138,6 +268,28 @@ if not exists(CODEGEN_JSON):
 with open(CODEGEN_JSON, 'r') as handle:
     amqp = load(handle)
 
+# Check to see if we have the codegen xml file in this directory
+if not exists(CODEGEN_XML):
+
+    # Retrieve the codegen XML definition
+    print "Downloading codegen XML file."
+    handle = urlopen(CODEGEN_XML_URL)
+    xml_content = handle.read()
+
+    # Write out the XML file
+    with open(CODEGEN_XML, 'w') as handle:
+        handle.write(xml_content)
+
+# Read in the codegen XML file
+with open(CODEGEN_XML, 'r') as handle:
+    amqp_xml = etree.parse(handle)
+    xml = amqp_xml.xpath('//amqp')[0]
+
+# Read in the codegen RabbitMQ Extension XML file
+with open('extensions.xml', 'r') as handle:
+    rabbitmq_xml = etree.parse(handle)
+    rabbitmq = rabbitmq_xml.xpath('//rabbitmq')[0]
+
 # Our output list
 output = list()
 
@@ -151,36 +303,47 @@ WARNING: DO NOT EDIT. To Generate run tools/codegen.py
 For copyright and licensing please refer to COPYING.
 
 """''' % CODEGEN_OUTPUT.split('/')[-1]
-newline(docblock)
-newline()
+new_line(docblock)
+new_line()
 
 # Append our metadata
-newline('__date__ = "%s"' % date.today().isoformat())
-newline('__author__ = "%s"' % __file__)
-newline()
+new_line('__date__ = "%s"' % date.today().isoformat())
+new_line('__author__ = "%s"' % __file__)
+new_line()
 
 # AMQP Version Header
 comment("AMQP Protocol Version")
-newline('AMQP_VERSION = (%i, %i, %i)' % (amqp['major-version'],
+new_line('AMQP_VERSION = (%i, %i, %i)' % (amqp['major-version'],
                                          amqp['minor-version'],
                                          amqp['revision']))
-newline()
+new_line()
 
 # Defaults
 comment("RabbitMQ Defaults")
-newline('DEFAULT_HOST = "localhost"')
-newline('DEFAULT_PORT = %i' % amqp['port'])
-newline('DEFAULT_USER = "guest"')
-newline('DEFAULT_PASS = "guest"')
-newline()
+new_line('DEFAULT_HOST = "localhost"')
+new_line('DEFAULT_PORT = %i' % amqp['port'])
+new_line('DEFAULT_USER = "guest"')
+new_line('DEFAULT_PASS = "guest"')
+new_line()
+
+# Deprecation Warning
+DEPRECATION_WARNING = 'This command is deprecated in AMQP %s' % \
+                        ('-'.join([str(amqp['major-version']),
+                                   str(amqp['minor-version']),
+                                   str(amqp['revision'])]))
+new_line('DEPRECATION_WARNING = "%s"' % DEPRECATION_WARNING)
 
 # Constant
 comment("AMQP Constants")
 for constant in amqp['constants']:
     if 'class' not in constant:
-        newline('AMQP_%s = %i' % \
+        # Look to see if documented & if so, provide the doc as a comment
+        doc = get_documentation({'constant': constant['name'].lower()})
+        if doc:
+            comment(doc)
+        new_line('AMQP_%s = %i' % \
                 (dashify(constant['name']), constant['value']))
-newline()
+new_line()
 
 # Data types
 data_types = []
@@ -189,6 +352,11 @@ for domain, data_type in amqp['domains']:
     if domain == data_type:
         data_types.append('                   "%s",' % domain)
     else:
+        doc = get_documentation({'domain': domain})
+        if doc:
+            comments = get_comments(doc, 18)
+            for line in comments:
+                domains.append(line)
         domains.append('                "%s": "%s",' % (domain, data_type))
 
 comment("AMQP data types")
@@ -196,18 +364,18 @@ data_types[0] = data_types[0].replace('                   ',
                                       'AMQP_DATA_TYPES = [')
 data_types[-1] = data_types[-1].replace(',', ']')
 output += data_types
-newline()
+new_line()
 
 comment("AMQP domains")
 domains[0] = domains[0].replace('                ',
                                 'AMQP_DOMAINS = {')
+
 domains[-1] = domains[-1].replace(',', '}')
 output += domains
-newline()
-
+new_line()
 
 # Warnings and Exceptions
-newline()
+new_line()
 comment("AMQP Errors")
 errors = {}
 for constant in amqp['constants']:
@@ -219,28 +387,24 @@ for constant in amqp['constants']:
             extends = 'Exception'
         else:
             raise ValueError('Unexpected class: %s', constant['class'])
-        newline('class %s(%s):' % (class_name, extends))
-        newline('    """Class used to map AMQP error values to an Exception')
-        newline('    or Warning class based upon being a hard or soft error.')
-        newline()
-        newline('    """')
-        newline('    name = "%s"' % constant['name'])
-        newline('    value = %i' % constant['value'])
-        newline()
-        newline()
+        new_line('class %s(%s):' % (class_name, extends))
+        new_line('    """')
+        # Look to see if documented & if so, provide the doc as a comment
+        doc = get_documentation({'constant': constant['name'].lower()})
+        if doc:
+            comment(doc, 4, '')
+        else:
+            if extends == 'Warning':
+                new_line('    Undocumented AMQP Soft Error')
+            else:
+                new_line('    Undocumented AMQP Hard Error')
+        new_line()
+        new_line('    """')
+        new_line('    name = "%s"' % constant['name'])
+        new_line('    value = %i' % constant['value'])
+        new_line()
+        new_line()
         errors[constant['value']] = class_name
-
-# Class mapping to id
-class_lines = []
-for amqp_class in amqp['classes']:
-    class_lines.append('                "%s": %i,' % \
-                       (amqp_class['name'].upper(), amqp_class['id']))
-comment("AMQP class to id mapping")
-class_lines[0] = class_lines[0].replace('                ',
-                                        'AMQP_CLASSES = {')
-class_lines[-1] = class_lines[-1].replace(',', '}')
-output += class_lines
-newline()
 
 # Error mapping to class
 error_lines = []
@@ -256,217 +420,161 @@ output += error_lines
 # Get the amqp class list so we can sort it
 class_list = list()
 for amqp_class in amqp['classes']:
-    class_list.append(amqp_class['name'])
+    if amqp_class['name'] not in CODEGEN_IGNORE_CLASSES:
+        class_list.append(amqp_class['name'])
 
 # Sort them alphabetically
-class_list.sort()
+#class_list.sort()
 
-newline()
+new_line()
 comment("AMQP Classes and Methods")
+new_line()
 
-# First line prefix
-prefix = "FRAMES = {"
-base_width = 9
+for class_name in class_list:
 
-# Protocol Class and Methods Dict
-for amqp_class in class_list:
+    indent = 4
 
-    # Make sure we're not hitting a deprecated class like Access
-    if amqp_class not in CODEGEN_IGNORE_CLASSES:
+    # Get the class from our JSON file
+    definition = get_class_definition(class_name, amqp['classes'])
+    new_line()
+    new_line('class %s(object):' % pep8_class_name(class_name))
 
-        # find the offset in our amqp classes list
-        for offset in xrange(0, len(amqp['classes'])):
-            if amqp['classes'][offset]['name'] == amqp_class:
-                break
+    doc = get_documentation({'class': class_name})
+    label = get_label({'class': class_name}) or 'Undefined label'
+    if doc:
+        new_line('"""' + label, indent)
+        new_line()
+        comment(doc, indent, '')
+        new_line()
+        new_line('"""', indent)
 
-        # Create our class prefix
-        class_prefix = "%i:{" % amqp['classes'][offset]['id']
+    comment("AMQP Class #", indent + 2)
+    new_line('id = %i' % definition['id'], indent)
+    new_line()
 
-        # Append our class line
-        newline("%s%s\"name\": \"%s\"," % (prefix, class_prefix, amqp_class))
+    # We use this later down in methods to get method xml to look for stuff
+    # that is not in the JSON spec file beyond docs
+    class_xml = xml.xpath('//amqp/class[@name="%s"]' % class_name)
 
-        # Replace our previous prefix with spaces
-        if prefix:
-            prefix = "".join([" " for padding in xrange(0, len(prefix))])
+    # Build the list of methods
+    methods = list()
+    for method in definition['methods']:
+        new_line('class %s(object):' % pep8_class_name(method['name']), indent)
+        indent += 4
 
-        # Create the methods prefix for this AMQP class
-        methods_prefix = "\"methods\": {"
+        # No Confirm in AMQP spec
+        if class_xml:
+            doc = get_documentation({'class': class_name,
+                                     'method': method['name']})
+            label = get_label({'class': class_name,
+                               'method': method['name']}) \
+                    or 'Undefined label'
+            if doc:
+                new_line('"""%s' % label, indent)
+                new_line()
+                comment(doc, indent, '')
+                new_line()
+                new_line('"""', indent)
 
-        # Iterate through each method
-        for method in amqp['classes'][offset].get('methods', []):
+        comment("AMQP Method #", indent + 2)
+        new_line('id = %i' % method['id'], indent)
+        new_line()
 
-            # Build our method prefix
-            method_prefix = "%s%i: {" % (methods_prefix,
-                                          method['id'])
-
-            # Replace the methods prefix with spaces
-            if methods_prefix:
-                methods_prefix = \
-                    "".join([" " for padding in \
-                            xrange(0, len(methods_prefix))])
-
-            # Add our method name line
-            newline("%s\"name\": \"%s\"," % \
-                    (method_prefix,
-                     method['name']),
-                    len(prefix) + len(class_prefix))
-
-            # Parameters
-            params_prefix = "\"args\": ["
-
-            # Iterate through the parameters adding method parameters lines
-            for parameter in method.get('arguments', []):
-
-                # Add our parameter name
-                newline("%s{\"name\": \"%s\"," % \
-                        (params_prefix,
-                         parameter['name']),
-                         len(prefix) + len(class_prefix) + len(method_prefix))
-
-                # Replace the methods prefix with spaces
-                if params_prefix:
-                    params_prefix = \
-                        "".join([" " for padding in \
-                                xrange(0, len(params_prefix))])
-
-                # Add our parameter type or domain
-                domain_name = parameter.get('domain', None)
-                if domain_name:
-                    for domain in amqp['domains']:
-                        if domain[0] == domain_name:
-                            data_type = domain[1]
-                            break
-                else:
-                    data_type = parameter.get('type')
-
-                # Building the data type
-                newline("%s\"type\": \"%s\"," % \
-                        (params_prefix, data_type),
-                         len(prefix) + len(class_prefix) + len(method_prefix))
-
-                default = parameter.get("default-value", "None")
-
-                if default == 'false':
-                    default = False
-                elif default == 'true':
-                    default = True
-                elif default == "" or \
-                     default == {} or \
-                    default == "None":
-                    default = None
-                else:
-                    try:
-                        default = int(default)
-                    except ValueError:
-                        default = "\"%s\"" % default
-
-                # Add our parameter default
-                newline("%s\"default\": %s," % \
-                        (params_prefix, default),
-                         len(prefix) + len(class_prefix) + len(method_prefix))
-
-                # Close out the parameters
-                newline("},",
-                        len(prefix) + len(class_prefix) + \
-                        len(method_prefix) + len(params_prefix))
-
-            # Close out the method
-            if  method.get('arguments', None):
-                newline("],",
-                        len(prefix) + len(class_prefix) +\
-                        len(method_prefix) + len(params_prefix) - 2)
-
-            # specify if it's a synchronous flag
-            if  method.get('synchronous', None):
-                newline("\"synchronous\": %s," % method['synchronous'],
-                        len(prefix) + len(class_prefix) + len(method_prefix))
-            else:
-                newline("\"synchronous\": False,",
-                        len(prefix) + len(class_prefix) + len(method_prefix))
-
-            # Close out the method
-            newline("},",
-                    len(prefix) + len(class_prefix) + len(method_prefix) - 2)
+        # Get the method's XML node
+        if class_xml:
+            method_xml = class_xml[0].xpath('method[@name="%s"]' % \
+                                            method['name'])
+        else:
+            method_xml = None
 
 
-        # Close out the methods
-        newline("},", len(prefix) + len(class_prefix) - 2)
+        # Function definition
+        new_function("__init__",  method['arguments'], indent)
+        indent += 4
+        new_line('"""Initialize the %s.%s class' % \
+                 (pep8_class_name(class_name),
+                  pep8_class_name(method['name'])),
+                 indent)
 
-        if  amqp['classes'][offset].get('properties', None):
+        # List the arguments in the docblock
+        if method['arguments']:
+            new_line()
+            for argument in method['arguments']:
+                name = argument_name(argument['name'])
+                label = get_label({'class': class_name,
+                                   'method': method['name'],
+                                   'field': argument['name']})
+                if label:
+                    label += '.'
 
-            # Create the methods prefix for the class properties
-            props_prefix = "\"properties\": ["
+                new_line(':param %s: %s'.strip() % (name, label), indent)
+                new_line(':type %s: %s.' % (name, get_argument_type(argument)),
+                         indent)
 
-            # Iterate through each method
-            for prop in amqp['classes'][offset]['properties']:
+        # Note the deprecation warning in the docblock
+        if method_xml and 'deprecated' in method_xml[0].attrib and \
+           method_xml[0].attrib['deprecated']:
+            deprecated = True
+            new_line()
+            new_line(':raises: DeprecationWarning', indent)
+        else:
+            deprecated = False
 
-                # Add our parameter name
-                newline("%s{\"name\": \"%s\"," % \
-                        (props_prefix,
-                         prop['name']),
-                         len(prefix) + len(class_prefix))
+        new_line()
+        new_line('"""', indent)
+        new_line()
 
-                # Replace the methods prefix with spaces
-                if props_prefix:
-                    props_prefix = \
-                        "".join([" " for padding in \
-                                xrange(0, len(props_prefix))])
+        # Check if we're deprecated and warn if so
+        if deprecated:
+            comment(DEPRECATION_WARNING, indent + 2)
+            new_line('raise DeprecationWarning(DEPRECATION_WARNING)', indent)
+            new_line()
 
-                # Add our parameter type or domain
-                newline("%s \"type\": \"%s\"," % \
-                        (props_prefix,
-                         prop.get('type', prop.get('domain', 'Unknown'))),
-                         len(prefix) + len(class_prefix))
+        # Add an attribute that signifies if it's a sync command
+        comment("Specifies if this is a synchronous AMQP method", indent + 2)
+        if 'synchronous' in method and method['synchronous']:
+            new_line('self.synchronous = True', indent)
 
-                default = prop.get("default-value", "None")
+            if method_xml:
+                responses = list()
+                for response in method_xml[0].iter('response'):
 
-                if default == 'false':
-                    default = False
-                elif default == 'true':
-                    default = True
-                elif default == "" or \
-                     default == {} or \
-                    default == "None":
-                    default = None
-                else:
-                    try:
-                        default = int(default)
-                    except ValueError:
-                        default = "\"%s\"" % default
+                    response_name = '%s.%s' % \
+                                    (pep8_class_name(class_name),
+                                     pep8_class_name(response.attrib['name']))
+                    responses.append(response_name)
+                if responses:
+                    new_line()
+                    comment('Valid responses to this method', indent + 2)
+                    new_line('self.valid_responses = [%s]' % \
+                             ', '.join(responses), indent)
+        else:
+            new_line('self.synchronous = False', indent)
+        new_line()
 
-                # Add our parameter default
-                newline("%s \"default\": %s," % \
-                        (props_prefix, default),
-                         len(prefix) + len(class_prefix))
+        # Create assignments from the arguments to attributes of the object
+        for argument in method['arguments']:
+            name = argument_name(argument['name'])
+            doc = get_label({'class': class_name,
+                             'method': method['name'],
+                             'field': argument['name']})
+            if doc:
+                comment(doc, indent + 2)
 
-                # Close out the properties
-                newline("},",
-                        len(prefix) + \
-                        len(class_prefix) + \
-                        len(props_prefix) - 2)
+            new_line('self.%s = %s' % (name, name), indent)
+            new_line()
 
-            # Close out the properties
-            newline("],", len(prefix) + len(class_prefix) - 2)
+        # End of function
+        indent -= 8
 
-        # Close out the class
-        newline("},", len(prefix))
-
-# Close out the dict
-newline("}", base_width - 2)
-newline()
-
-# Create our output string
-output_string = '\n'.join(output)
-
-# Clean up the dict line endings
-output_string = sub(',\n([ ]*)},', '},', output_string)
-output_string = sub('],\n([ ]*)},', ']},', output_string)
-output_string = sub('},\n([ ]*)],', '}],', output_string)
-for replacement in xrange(0, 2):
-    output_string = sub('},\n([ ]*)},', '}},', output_string)
-output_string = sub('},\n([ ]*)}', '}}', output_string)
-output_string = sub('},\n([ ]*)]', '}]', output_string)
+    if 'properties' in definition:
+        new_line('class Properties(object):', indent)
+        indent += 4
+        new_line('pass', indent)
+        new_line()
+        indent -= 4
 
 # Spit out the file
+output_string = '\n'.join(output)
 with open(CODEGEN_OUTPUT, 'w') as handle:
     handle.write(output_string)
