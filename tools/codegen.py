@@ -566,13 +566,6 @@ for class_name in class_list:
 
         new_line()
         new_line('"""', indent)
-        new_line()
-
-        # Check if we're deprecated and warn if so
-        if deprecated:
-            comment(DEPRECATION_WARNING, indent)
-            new_line('raise DeprecationWarning(DEPRECATION_WARNING)', indent)
-            new_line()
 
         # Add an attribute that signifies if it's a sync command
         comment("Specifies if this is a synchronous AMQP method", indent)
@@ -606,6 +599,12 @@ for class_name in class_list:
                 comment(doc, indent)
 
             new_line('self.%s = %s' % (name, name), indent)
+            new_line()
+
+        # Check if we're deprecated and warn if so
+        if deprecated:
+            comment(DEPRECATION_WARNING, indent)
+            new_line('raise DeprecationWarning(DEPRECATION_WARNING)', indent)
             new_line()
 
         # End of function

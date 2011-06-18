@@ -22,10 +22,10 @@ DECODING_FAILURE = 0, None, None, None
 def decode_protocol_header_frame(data_in):
     """Attempt to decode a protocol header frame
 
-    :param data_in: Raw byte stream data
-    :type data_in: unicode
-    :returns: tuple of bytes consumed and obj
-    :raises: ValueError
+    :param data_in: Raw byte stream data.
+    :type data_in: unicode.
+    :returns: tuple of bytes consumed and obj.
+    :raises: ValueError.
 
     """
     try:
@@ -45,12 +45,12 @@ def decode_protocol_header_frame(data_in):
 def decode_frame_parts(data_in):
     """Try and decode a low-level AMQP frame and return the parts of the frame.
 
-    :param data_in: Raw byte stream data
-    :type data_in: unicode
+    :param data_in: Raw byte stream data.
+    :type data_in: unicode.
     :returns: tuple of frame type, channel number, frame_end offset and
-              the frame data to decode
-    :raises: ValueError
-    :raises: AMQPFrameError
+              the frame data to decode.
+    :raises: ValueError.
+    :raises: AMQPFrameError.
 
     """
     # Get the Frame Type, Channel Number and Frame Size
@@ -86,13 +86,14 @@ def decode_frame_parts(data_in):
 def decode_method_frame(channel_number, frame_data, frame_end):
     """Attempt to decode a method frame.
 
-    :param channel_number: Channel number the frame is for
-    :type channel_number: int
-    :param frame_data: Raw frame data to assign to our method frame
-    :type frame_data: unicode
-    :param frame_end: Offset where the frame is supposed to end
-    :type frame_end: int
-    :returns: tuple of the amount of data consumed and the frame object
+    :param channel_number: Channel number the frame is for.
+    :type channel_number: int.
+    :param frame_data: Raw frame data to assign to our method frame.
+    :type frame_data: unicode.
+    :param frame_end: Offset where the frame is supposed to end.
+    :type frame_end: int.
+    :returns: tuple of the amount of data consumed and the frame object.
+
     """
     # Get the Method Index from the class data
     bytes_used, method_index = codec.decode.long_int(frame_data)
@@ -107,14 +108,15 @@ def decode_method_frame(channel_number, frame_data, frame_end):
 def decode_header_frame(frame_data, channel_number, frame_end):
     """Attempt to decode a method frame.
 
-    :param channel_number: Channel number the frame is for
-    :type channel_number: int
-    :param frame_data: Raw frame data to assign to our method frame
-    :type frame_data: unicode
-    :returns: tuple of the amount of data consumed and the frame object
-    :param frame_end: Offset where the frame is supposed to end
-    :type frame_end: int
-    :returns: tuple of the amount of data consumed and the frame object
+    :param channel_number: Channel number the frame is for.
+    :type channel_number: int.
+    :param frame_data: Raw frame data to assign to our method frame.
+    :type frame_data: unicode.
+    :returns: tuple of the amount of data consumed and the frame object.
+    :param frame_end: Offset where the frame is supposed to end.
+    :type frame_end: int.
+    :returns: tuple of the amount of data consumed and the frame object.
+
     """
     # Return the header class and body size
     class_id, weight, body_size = struct.unpack_from('>HHQ', frame_data)
@@ -157,10 +159,10 @@ def decode_frame(data_in):
     """Takes in binary data and maps builds the appropriate frame type,
     returning a frame object.
 
-    :param data_in: Raw byte stream data
-    :type data_in: unicode
-    :returns: tuple of bytes consumed and obj
-    :raises: AMQPFrameError
+    :param data_in: Raw byte stream data.
+    :type data_in: unicode.
+    :returns: tuple of bytes consumed and obj.
+    :raises: AMQPFrameError.
 
     """
     # Look to see if it's a protocol header frame
@@ -198,14 +200,14 @@ class ProtocolHeader(object):
 
     def __init__(self, major_version=None, minor_version=None, revision=None):
         """Construct a Protocol Header frame object for the specified AMQP
-        version
+        version.
 
-        :param major_version: Major version number
-        :type major_version: int
-        :param minor_version: Minor version number
-        :type minor_version: int
-        :param revision: Revision number
-        :type revision: int
+        :param major_version: Major version number.
+        :type major_version: int.
+        :param minor_version: Minor version number.
+        :type minor_version: int.
+        :param revision: Revision number.
+        :type revision: int.
         """
         self.major_version = major_version or amqp.AMQP_VERSION[0]
         self.minor_version = minor_version or amqp.AMQP_VERSION[1]
@@ -213,9 +215,9 @@ class ProtocolHeader(object):
 
     def encode(self):
         """Return the full AMQP wire protocol frame data representation of the
-        ProtocolHeader frame
+        ProtocolHeader frame.
 
-        :returns: unicode
+        :returns: unicode.
         """
         return u'AMQP' + struct.pack('BBBB', 0,
                                      self.major_version,
@@ -226,14 +228,14 @@ class ProtocolHeader(object):
 class MethodFrame(object):
 
     def __init__(self, channel, method_index, data_in=None):
-        """Represents an AMQP Method Frame
+        """Represents an AMQP Method Frame.
 
-        :param channel: Channel Number
-        :type channel: int
-        :param method_index: The index mapping # for the AMQP Method/Class
-        :type method_index: int
-        :param data_in: Data that represents values assigned to this frame
-        :type data_in: str
+        :param channel: Channel Number.
+        :type channel: int.
+        :param method_index: The index mapping # for the AMQP Method/Class.
+        :type method_index: int.
+        :param data_in: Data that represents values assigned to this frame.
+        :type data_in: str.
 
         """
         self.channel = channel
@@ -253,10 +255,10 @@ class MethodFrame(object):
 
     def _decode(self, data_in):
         """Decodes data applying the data in order as specified in the amqp
-        class/method definition
+        class/method definition.
 
-        :param data_in: Raw byte stream data
-        :type data_in: unicode
+        :param data_in: Raw byte stream data.
+        :type data_in: unicode.
         """
         for key in self.method_class.arguments:
             offset, val = codec.decode.decode_by_type(data_in,

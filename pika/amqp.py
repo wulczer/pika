@@ -8,8 +8,8 @@ For copyright and licensing please refer to COPYING.
 
 """
 
-__date__ = "2011-05-08"
-__author__ = "./codegen.py"
+__date__ = "2011-06-18"
+__author__ = "codegen.py"
 
 # AMQP Protocol Version
 AMQP_VERSION = (0, 9, 1)
@@ -331,7 +331,6 @@ class Connection(object):
             :type locales: str.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -389,7 +388,6 @@ class Connection(object):
             :type locale: str.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -430,7 +428,6 @@ class Connection(object):
             :type challenge: str.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -464,7 +461,6 @@ class Connection(object):
             :type response: str.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -503,7 +499,6 @@ class Connection(object):
             :type heartbeat: int.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -552,7 +547,6 @@ class Connection(object):
             :type heartbeat: int.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -600,7 +594,6 @@ class Connection(object):
             :type insist: bool.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -639,7 +632,6 @@ class Connection(object):
             :type known_hosts: str.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -686,7 +678,6 @@ class Connection(object):
             :type method_id: int.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -724,7 +715,6 @@ class Connection(object):
             """Initialize the Connection.CloseOk class
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -763,7 +753,6 @@ class Channel(object):
             :type out_of_band: str.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -796,7 +785,6 @@ class Channel(object):
             :type channel_id: str.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -831,7 +819,6 @@ class Channel(object):
             :type active: bool.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -864,7 +851,6 @@ class Channel(object):
             :type active: bool.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -911,7 +897,6 @@ class Channel(object):
             :type method_id: int.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -948,7 +933,6 @@ class Channel(object):
             """Initialize the Channel.CloseOk class
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -1023,7 +1007,6 @@ class Exchange(object):
             :type arguments: dict.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -1074,7 +1057,6 @@ class Exchange(object):
             """Initialize the Exchange.DeclareOk class
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -1115,7 +1097,6 @@ class Exchange(object):
             :type nowait: bool.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -1150,7 +1131,6 @@ class Exchange(object):
             """Initialize the Exchange.DeleteOk class
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -1198,7 +1178,6 @@ class Exchange(object):
             :type arguments: dict.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -1240,7 +1219,6 @@ class Exchange(object):
             """Initialize the Exchange.BindOk class
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -1288,7 +1266,6 @@ class Exchange(object):
             :type arguments: dict.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -1328,7 +1305,6 @@ class Exchange(object):
             """Initialize the Exchange.UnbindOk class
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -1400,7 +1376,6 @@ class Queue(object):
             :type arguments: dict.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -1463,7 +1438,6 @@ class Queue(object):
             :type consumer_count: int/long.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -1522,7 +1496,6 @@ class Queue(object):
             :type arguments: dict.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -1563,7 +1536,6 @@ class Queue(object):
             """Initialize the Queue.BindOk class
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -1599,7 +1571,6 @@ class Queue(object):
             :type nowait: bool.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -1637,7 +1608,6 @@ class Queue(object):
             :type message_count: int/long.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -1685,7 +1655,6 @@ class Queue(object):
             :type nowait: bool.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -1729,7 +1698,6 @@ class Queue(object):
             :type message_count: int/long.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -1775,7 +1743,6 @@ class Queue(object):
             :type arguments: dict.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -1812,7 +1779,6 @@ class Queue(object):
             """Initialize the Queue.UnbindOk class
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -1864,7 +1830,6 @@ class Basic(object):
             :type global_: bool.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -1899,7 +1864,6 @@ class Basic(object):
             """Initialize the Basic.QosOk class
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -1958,7 +1922,6 @@ class Basic(object):
             :type arguments: dict.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -2011,7 +1974,6 @@ class Basic(object):
             :type consumer_tag: str.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -2048,7 +2010,6 @@ class Basic(object):
             :type nowait: bool.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -2084,7 +2045,6 @@ class Basic(object):
             :type consumer_tag: str.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -2134,7 +2094,6 @@ class Basic(object):
             :type immediate: bool.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -2191,7 +2150,6 @@ class Basic(object):
             :type routing_key: str.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -2249,7 +2207,6 @@ class Basic(object):
             :type routing_key: str.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -2300,7 +2257,6 @@ class Basic(object):
             :type no_ack: bool.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -2357,7 +2313,6 @@ class Basic(object):
             :type message_count: int/long.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -2399,7 +2354,6 @@ class Basic(object):
             :type cluster_id: str.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -2438,7 +2392,6 @@ class Basic(object):
             :type multiple: bool.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -2477,7 +2430,6 @@ class Basic(object):
             :type requeue: bool.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -2514,15 +2466,14 @@ class Basic(object):
             :raises: DeprecationWarning
 
             """
-
-            # This command is deprecated in AMQP 0-9-1
-            raise DeprecationWarning(DEPRECATION_WARNING)
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
             # Requeue the message
             self.requeue = requeue
+
+            # This command is deprecated in AMQP 0-9-1
+            raise DeprecationWarning(DEPRECATION_WARNING)
 
     class Recover(object):
         """Redeliver unacknowledged messages
@@ -2549,7 +2500,6 @@ class Basic(object):
             :type requeue: bool.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -2573,7 +2523,6 @@ class Basic(object):
             """Initialize the Basic.RecoverOk class
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -2613,7 +2562,6 @@ class Basic(object):
             :type requeue: bool.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -2747,7 +2695,6 @@ class Tx(object):
             """Initialize the Tx.Select class
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -2772,7 +2719,6 @@ class Tx(object):
             """Initialize the Tx.SelectOk class
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -2795,7 +2741,6 @@ class Tx(object):
             """Initialize the Tx.Commit class
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -2820,7 +2765,6 @@ class Tx(object):
             """Initialize the Tx.CommitOk class
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -2845,7 +2789,6 @@ class Tx(object):
             """Initialize the Tx.Rollback class
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -2870,7 +2813,6 @@ class Tx(object):
             """Initialize the Tx.RollbackOk class
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
@@ -2921,7 +2863,6 @@ class Confirm(object):
             :type nowait: bool.
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = True
 
@@ -2949,7 +2890,6 @@ class Confirm(object):
             """Initialize the Confirm.SelectOk class
 
             """
-
             # Specifies if this is a synchronous AMQP method
             self.synchronous = False
 
