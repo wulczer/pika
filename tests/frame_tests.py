@@ -40,10 +40,10 @@ def validate_attribute(method, attribute, attribute_type, value='ignore'):
                       (value, getattr(method.frame, attribute))
 
 
-def test_protocol_header_marshal():
+def test_protocol_header_encode():
     frame_data = 'AMQP\x00\x00\t\x01'
     test = frame.ProtocolHeader()
-    if test.marshal() != frame_data:
+    if test.encode() != frame_data:
         assert False, "ProtocolHeader frame did not match frame data sample"
 
 
