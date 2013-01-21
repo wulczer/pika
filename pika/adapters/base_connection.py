@@ -1,177 +1,130 @@
-# ***** BEGIN LICENSE BLOCK *****
-#
-# For copyright and licensing please refer to COPYING.
-#
-# ***** END LICENSE BLOCK *****
+"""Base class extended by connection adapters. This extends the
+connection.Connection class to encapsulate connection behavior but still
+isolate socket and low level communication.
 
 """
-Pika provides multiple adapters to connect to RabbitMQ:
-
-- adapters.select_connection.SelectConnection: A native event based connection
-  adapter that implements select, kqueue, poll and epoll.
-- adapters.asyncore_connection.AsyncoreConnection: Legacy adapter kept for
-  convenience of previous Pika users. It is recommended to use the
-  SelectConnection instead of AsyncoreConnection.
-- adapters.tornado_connection.TornadoConnection: Connection adapter for use
-  with the Tornado web framework.
-- adapters.blocking_connection.BlockingConnection: Enables blocking,
-  synchronous operation on top of library for simple uses. This is not
-  recommended and is included for legacy reasons only.
-"""
-
 import errno
+import logging
 import socket
 import time
 
-# See if we have SSL support
+# Workaround for 2.5 support
+try:
+    socket.SOL_TCP
+except AttributeError:
+    socket.SOL_TCP = socket.IPPROTO_TCP
 try:
     import ssl
-    SSL = True
 except ImportError:
-    SSL = False
+    ssl = None
 
-from pika.connection import Connection, CONNECTION_PROTOCOL, CONNECTION_START,\
-    CONNECTION_TUNE
-from pika.exceptions import AMQPConnectionError, IncompatibleProtocolError, \
-    ProbableAuthenticationError, ProbableAccessDeniedError
-import pika.log as log
+from pika import connection
+from pika import exceptions
 
-# Use epoll's constants to keep life easy
-READ = 0x0001
-WRITE = 0x0004
-ERROR = 0x0008
-
-# Connection timeout (2 seconds to open socket)
-CONNECTION_TIMEOUT = 2
-ERRORS_TO_IGNORE = [errno.EWOULDBLOCK, errno.EAGAIN, errno.EINTR]
+LOGGER = logging.getLogger(__name__)
 
 
-class BaseConnection(Connection):
+class BaseConnection(connection.Connection):
+    """BaseConnection class that should be extended by connection adapters"""
+
+    # Use epoll's constants to keep life easy
+    READ = 0x0001
+    WRITE = 0x0004
+    ERROR = 0x0008
+
+    ERRORS_TO_IGNORE = [errno.EWOULDBLOCK, errno.EAGAIN, errno.EINTR]
+    DO_HANDSHAKE = True
+    WARN_ABOUT_IOLOOP = False
 
     def __init__(self, parameters=None,
                        on_open_callback=None,
-                       reconnection_strategy=None):
+                       stop_ioloop_on_close=True):
+        """Create a new instance of the Connection object.
 
+        :param pika.connection.Parameters parameters: Connection parameters
+        :param method on_open_callback: Method to call on connection open
+        :param bool stop_ioloop_on_close: Will stop the ioloop when the
+                connection is fully closed.
+        :raises: RuntimeError
+
+        """
         # Let the developer know we could not import SSL
-        if parameters.ssl and not SSL:
-            raise Exception("SSL specified but it is not available")
-
-        # Call our parent's __init__
-        Connection.__init__(self, parameters, on_open_callback,
-                            reconnection_strategy)
-
-    def _init_connection_state(self):
-        Connection._init_connection_state(self)
-
-        # Set our defaults
+        if parameters and parameters.ssl and not ssl:
+            raise RuntimeError("SSL specified but it is not available")
         self.fd = None
         self.ioloop = None
-
-        # Event states (base and current)
-        self.base_events = READ | ERROR
+        self.stop_ioloop_on_close = stop_ioloop_on_close
+        self.base_events = self.READ | self.ERROR
         self.event_state = self.base_events
         self.socket = None
         self.write_buffer = None
-        self._ssl_connecting = False
-        self._ssl_handshake = False
+        super(BaseConnection, self).__init__(parameters, on_open_callback)
 
-    def _socket_connect(self):
-        """Create socket and connect to it, using SSL if enabled."""
-        # Create our socket and set our socket options
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-        self.socket.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
+    def add_timeout(self, deadline, callback_method):
+        """Add the callback_method to the IOLoop timer to fire after deadline
+        seconds. Returns a handle to the timeout
 
-        # Wrap the SSL socket if we SSL turned on
-        ssl_text = ""
-        if self.parameters.ssl:
-            ssl_text = " with SSL"
-            if self.parameters.ssl_options:
-                # Always overwrite this value
-                self.parameters.ssl_options['do_handshake_on_connect'] = \
-                    self._ssl_handshake
-                self.socket = ssl.wrap_socket(self.socket,
-                                              **self.parameters.ssl_options)
-            else:
-                self.socket = ssl.wrap_socket(self.socket,
-                                              do_handshake_on_connect= \
-                                                  self._ssl_handshake)
+        :param int deadline: The number of seconds to wait to call callback
+        :param method callback_method: The callback method
+        :rtype: str
 
-            # Flags for SSL handshake negotiation
-            self._ssl_connecting = True
+        """
+        return self.ioloop.add_timeout(deadline, callback_method)
 
-        # Try and connect
-        log.info("Connecting fd %d to %s:%i%s", self.socket.fileno(),
-                 self.parameters.host,
-                 self.parameters.port, ssl_text)
-        self.socket.settimeout(CONNECTION_TIMEOUT)
-        self.socket.connect((self.parameters.host,
-                             self.parameters.port))
+    def close(self, reply_code=200, reply_text='Normal shutdown'):
+        """Disconnect from RabbitMQ. If there are any open channels, it will
+        attempt to close them prior to fully disconnecting. Channels which
+        have active consumers will attempt to send a Basic.Cancel to RabbitMQ
+        to cleanly stop the delivery of messages prior to closing the channel.
 
-        # Set the socket to non-blocking
-        self.socket.setblocking(0)
+        :param int reply_code: The code number for the close
+        :param str reply_text: The text reason for the close
+
+        """
+        super(BaseConnection, self).close(reply_code, reply_text)
+        self._handle_ioloop_stop()
+
+    def remove_timeout(self, timeout_id):
+        """Remove the timeout from the IOLoop by the ID returned from
+        add_timeout.
+
+        :rtype: str
+
+        """
+        self.ioloop.remove_timeout(timeout_id)
 
     def _adapter_connect(self):
-        """
-        Base connection function to be extended as needed.
-        """
-
-        # Set our remaining attempts to the initial value
-        from sys import maxint
-        remaining_attempts = self.parameters.connection_attempts or maxint
-
-        # Loop while we have remaining attempts
+        """Connect to the RabbitMQ broker"""
+        LOGGER.debug('Connecting the adapter to the remote host')
+        reason = 'Unknown'
+        remaining_attempts = self.params.connection_attempts
         while remaining_attempts:
             remaining_attempts -= 1
             try:
-                return self._socket_connect()
-            except socket.timeout, timeout:
-                reason = "timeout"
+                self._create_and_connect_to_socket()
+                return
+            except socket.timeout:
+                reason = 'timeout'
             except socket.error, err:
+                LOGGER.error('socket error: %s', err[-1])
                 reason = err[-1]
                 self.socket.close()
 
-            retry = ''
             if remaining_attempts:
-                retry = "Retrying in %i seconds with %i retry(s) left" % \
-                        (self.parameters.retry_delay, remaining_attempts)
+                LOGGER.warning('Could not connect due to "%s," retrying in %i sec',
+                               reason, self.params.retry_delay)
+                time.sleep(self.params.retry_delay)
 
-            log.warning("Could not connect: %s. %s", reason, retry)
-
-            if remaining_attempts:
-                time.sleep(self.parameters.retry_delay)
-
-        # Log the errors and raise the  exception
-        log.error("Could not connect: %s", reason)
-        raise AMQPConnectionError(reason)
-
-    def add_timeout(self, deadline, callback):
-        return self.ioloop.add_timeout(deadline, callback)
-
-    def remove_timeout(self, timeout_id):
-        self.ioloop.remove_timeout(timeout_id)
-
-    def _erase_credentials(self):
-        pass
-
-    def _flush_outbound(self):
-        """
-        Call the state manager who will figure out that we need to write.
-        """
-        self._manage_event_state()
+        LOGGER.error('Could not connect: %s', reason)
+        raise exceptions.AMQPConnectionError(self.params.connection_attempts)
 
     def _adapter_disconnect(self):
-        """
-        Called if we are forced to disconnect for some reason from Connection.
-        """
-        # Remove from the IOLoop
-        self.ioloop.stop()
-
-        # Close our socket
-        self.socket.shutdown(socket.SHUT_RDWR)
+        """Invoked if the connection is being told to disconnect"""
+        #self.socket.shutdown(socket.SHUT_RDWR)
         self.socket.close()
-
-        # Check our state on disconnect
+        self.socket = None
         self._check_state_on_disconnect()
+        self._handle_ioloop_stop()
 
     def _check_state_on_disconnect(self):
         """
@@ -179,192 +132,229 @@ class BaseConnection(Connection):
         we were disconnected and raises exceptions for the anticipated
         exception types.
         """
-        if self.connection_state == CONNECTION_PROTOCOL:
-            log.error("Incompatible Protocol Versions")
-            raise IncompatibleProtocolError
-        elif self.connection_state == CONNECTION_START:
-            log.error("Socket closed while authenticating indicating a \
-probable authentication error")
-            raise ProbableAuthenticationError
-        elif self.connection_state == CONNECTION_TUNE:
-            log.error("Socket closed while tuning the connection indicating a \
-probable permission error when accessing a virtual host")
-            raise ProbableAccessDeniedError
+        if self.connection_state == self.CONNECTION_PROTOCOL:
+            LOGGER.error('Incompatible Protocol Versions')
+            raise exceptions.IncompatibleProtocolError
+        elif self.connection_state == self.CONNECTION_START:
+            LOGGER.error("Socket closed while authenticating indicating a "
+                         "probable authentication error")
+            raise exceptions.ProbableAuthenticationError
+        elif self.connection_state == self.CONNECTION_TUNE:
+            LOGGER.error("Socket closed while tuning the connection indicating "
+                         "a probable permission error when accessing a virtual "
+                         "host")
+            raise exceptions.ProbableAccessDeniedError
+        else:
+            LOGGER.warning('Unknown state on disconnect: %i',
+                           self.connection_state)
+
+    def _create_and_connect_to_socket(self):
+        """Create socket and connect to it, using SSL if enabled."""
+        LOGGER.debug('Creating the socket')
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+        #self.socket.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
+        if self.params.ssl:
+            self.socket = self._wrap_socket(self.socket)
+            ssl_text = " with SSL"
+        else:
+            ssl_text = ""
+        LOGGER.info("Connecting fd %d to %s:%i%s",
+                    self.socket.fileno(), self.params.host,
+                    self.params.port, ssl_text)
+        self.socket.settimeout(self.params.socket_timeout)
+        self.socket.connect((self.params.host, self.params.port))
+        if self.params.ssl and self.DO_HANDSHAKE:
+            self._do_ssl_handshake()
+
+    def _do_ssl_handshake(self):
+        """Perform SSL handshaking, copied from python stdlib test_ssl.py.
+
+        """
+        if not self.DO_HANDSHAKE:
+            return
+        LOGGER.debug('_do_ssl_handshake')
+        while True:
+            try:
+                self.socket.do_handshake()
+                break
+            except ssl.SSLError, err:
+                if err.args[0] == ssl.SSL_ERROR_WANT_READ:
+                    self.event_state = self.READ
+                elif err.args[0] == ssl.SSL_ERROR_WANT_WRITE:
+                    self.event_state = self.WRITE
+                else:
+                    LOGGER.error('SSL handshaking error: %s', err)
+                    raise
+                self._manage_event_state()
+
+    def _get_error_code(self, error_value):
+        """Get the error code from the error_value accounting for Python
+        version differences.
+
+        :rtype: int
+
+        """
+        if not error_value:
+            return None
+        if hasattr(error_value, 'errno'):  # Python >= 2.6
+            return error_value.errno
+        elif error_value is not None:
+            return error_value[0]  # Python <= 2.5
+        return None
+
+    def _flush_outbound(self):
+        """Call the state manager who will figure out that we need to write."""
+        self._manage_event_state()
 
     def _handle_disconnect(self):
+        """Called internally when the socket is disconnected already
         """
-        Called internally when we know our socket is disconnected already
-        """
-        # Remove from the IOLoop
-        self.ioloop.stop()
-
-        # Close up our Connection state
+        self._adapter_disconnect()
         self._on_connection_closed(None, True)
 
-    def _handle_error(self, error):
+    def _handle_ioloop_stop(self):
+        """Invoked when the connection is closed to determine if the IOLoop
+        should be stopped or not.
+
         """
-        Internal error handling method. Here we expect a socket.error coming in
-        and will handle different socket errors differently.
+        if self.stop_ioloop_on_close and self.ioloop:
+            self.ioloop.stop()
+        elif self.WARN_ABOUT_IOLOOP:
+            LOGGER.warning('Connection is closed but not stopping IOLoop')
+
+    def _handle_error(self, error_value):
+        """Internal error handling method. Here we expect a socket.error
+        coming in and will handle different socket errors differently.
+
+        :param int|object error_value: The inbound error
+
         """
-        # Handle version differences in Python
-        if hasattr(error, 'errno'):  # Python >= 2.6
-            error_code = error.errno
-        elif error is not None:
-            error_code = error[0]  # Python <= 2.5
-        else:
-            # This shouldn't happen, but log it in case it does
-            log.error("%s: Tried to handle an error where no error existed",
-                      self.__class__.__name__)
+        if 'timed out' in str(error_value):
+            raise socket.timeout
+        error_code = self._get_error_code(error_value)
+        if not error_code:
+            LOGGER.critical("Tried to handle an error where no error existed")
+            return
 
         # Ok errors, just continue what we were doing before
-        if error_code in ERRORS_TO_IGNORE:
-            log.debug("Ignoring %s", error_code)
-            return None
+        if error_code in self.ERRORS_TO_IGNORE:
+            LOGGER.debug("Ignoring %s", error_code)
+            return
 
         # Socket is closed, so lets just go to our handle_close method
         elif error_code in (errno.EBADF, errno.ECONNABORTED):
-            log.error("%s: Socket is closed",
-                    self.__class__.__name__)
+            LOGGER.error("Socket is closed")
 
-        elif self.parameters.ssl and isinstance(error, ssl.SSLError):
-            # SSL socket operation needs to be retried
-            if error_code in (ssl.SSL_ERROR_WANT_READ,
-                               ssl.SSL_ERROR_WANT_WRITE):
-                return None
+        elif self.params.ssl and isinstance(error_value, ssl.SSLError):
+
+            if error_value.args[0] == ssl.SSL_ERROR_WANT_READ:
+                self.event_state = self.READ
+            elif error_value.args[0] == ssl.SSL_ERROR_WANT_WRITE:
+                self.event_state = self.WRITE
             else:
-                log.error("%s: SSL Socket error on fd %d: %s",
-                      self.__class__.__name__,
-                      self.socket.fileno(),
-                      repr(error))
+                LOGGER.error("SSL Socket error on fd %d: %r",
+                             self.socket.fileno(), error_value)
         else:
             # Haven't run into this one yet, log it.
-            log.error("%s: Socket Error on fd %d: %s",
-                      self.__class__.__name__,
-                      self.socket.fileno(),
-                      error_code)
+            LOGGER.error("Socket Error on fd %d: %s",
+                         self.socket.fileno(), error_code)
 
         # Disconnect from our IOLoop and let Connection know what's up
         self._handle_disconnect()
-        return None
 
-    def _do_ssl_handshake(self):
-        """
-        Copied from python stdlib test_ssl.py.
+    def _handle_events(self, fd, events, error=None, write_only=False):
+        """Handle IO/Event loop events, processing them.
+
+        :param int fd: The file descriptor for the events
+        :param int events: Events from the IO/Event loop
+        :param int error: Was an error specified
+        :param bool write_only: Only handle write events
 
         """
-        log.debug("_do_ssl_handshake")
-        try:
-            self.socket.do_handshake()
-        except ssl.SSLError, err:
-            if err.args[0] in (ssl.SSL_ERROR_WANT_READ,
-                               ssl.SSL_ERROR_WANT_WRITE):
-                return
-            elif err.args[0] == ssl.SSL_ERROR_EOF:
-                return self._handle_disconnect()
-            raise
-        except socket.error, err:
-            if err.args[0] == errno.ECONNABORTED:
-                return self._handle_disconnect()
-        else:
-            self._ssl_connecting = False
-
-    def _handle_events(self, fd, events, error=None):
-        """
-        Our IO/Event loop have called us with events, so process them
-        """
-        if not self.socket:
-            log.error("%s: Got events for closed stream %d",
-                      self.__class__.__name__, self.socket.fileno())
+        if not fd:
+            LOGGER.error('Received events on closed socket: %d', fd)
             return
 
-        if events & READ:
+        if not write_only and (events & self.READ):
             self._handle_read()
 
-        if events & ERROR:
+        if events & self.ERROR:
+            LOGGER.error('Error event %r, %r', events, error)
             self._handle_error(error)
 
-        if events & WRITE:
+        if events & self.WRITE:
             self._handle_write()
-
-            # Call our event state manager who will decide if we reset our
-            # event state due to having an empty outbound buffer
             self._manage_event_state()
 
     def _handle_read(self):
-        """
-        Read from the socket and call our on_data_available with the data.
-        """
-        if self.parameters.ssl and self._ssl_connecting:
-            return self._do_ssl_handshake()
+        """Read from the socket and call our on_data_available with the data."""
         try:
-            if self.parameters.ssl and self.socket.pending():
-                data = self.socket.read(self._suggested_buffer_size)
+            if self.params.ssl:
+                data = self.socket.read(self._buffer_size)
             else:
-                data = self.socket.recv(self._suggested_buffer_size)
+                data = self.socket.recv(self._buffer_size)
         except socket.timeout:
             raise
         except socket.error, error:
             return self._handle_error(error)
 
-        # We received no data, so disconnect
-        if not data:
-            log.debug('Calling disconnect')
-            return self._adapter_disconnect()
+        # Empty data, should disconnect
+        if not data or data == 0:
+            LOGGER.error('Read empty data, calling disconnect')
+            return self._handle_disconnect()
 
         # Pass the data into our top level frame dispatching method
         self._on_data_available(data)
+        return len(data)
 
     def _handle_write(self):
-        """
-        We only get here when we have data to write, so try and send
-        Pika's suggested buffer size of data (be nice to Windows).
-        """
-        if self.parameters.ssl and self._ssl_connecting:
-            return self._do_ssl_handshake()
-
-        if not self.write_buffer:
-            self.write_buffer = \
-                self.outbound_buffer.read(self._suggested_buffer_size)
-        try:
-            bytes_written = self.socket.send(self.write_buffer)
-        except socket.timeout:
-            raise
-        except socket.error, error:
-            return self._handle_error(error)
-
-        if bytes_written:
-            self.write_buffer = None
-
-        # Remove the content from our output buffer
-        self.outbound_buffer.consume(bytes_written)
+        """Handle any outbound buffer writes that need to take place."""
+        total_written = 0
         if self.outbound_buffer.size:
-            log.debug("Outbound buffer size: %i", self.outbound_buffer.size)
+            try:
+                bytes_written = self.socket.send(self.outbound_buffer.read())
+            except socket.timeout:
+                raise
+            except socket.error, error:
+                return self._handle_error(error)
+            self.outbound_buffer.consume(bytes_written)
+            total_written += bytes_written
+        return total_written
+
+    def _init_connection_state(self):
+        """Initialize or reset all of our internal state variables for a given
+        connection. If we disconnect and reconnect, all of our state needs to
+        be wiped.
+
+        """
+        super(BaseConnection, self)._init_connection_state()
+        self.fd = None
+        self.ioloop = None
+        self.base_events = self.READ | self.ERROR
+        self.event_state = self.base_events
+        self.socket = None
 
     def _manage_event_state(self):
+        """Manage the bitmask for reading/writing/error which is used by the
+        io/event handler to specify when there is an event such as a read or
+        write.
+
         """
-        We use this to manage the bitmask for reading/writing/error which
-        we want to use to have our io/event handler tell us when we can
-        read/write, etc.
-        """
-        # Do we have data pending in the outbound buffer?
         if self.outbound_buffer.size:
-
-            # If we don't already have write in our event state append it
-            # otherwise do nothing
-            if not self.event_state & WRITE:
-
-                # We can assume that we're in our base_event state
-                self.event_state |= WRITE
-
-                # Update the IOLoop
+            if not self.event_state & self.WRITE:
+                self.event_state |= self.WRITE
                 self.ioloop.update_handler(self.socket.fileno(),
                                            self.event_state)
-
-        # We don't have data in the outbound buffer
-        elif self.event_state & WRITE:
-
-            # Set our event state to the base events
+        elif self.event_state & self.WRITE:
             self.event_state = self.base_events
-
-            # Update the IOLoop
             self.ioloop.update_handler(self.socket.fileno(), self.event_state)
+
+    def _wrap_socket(self, sock):
+        """Wrap the socket for connecting over SSL.
+
+        :rtype: ssl.SSLSocket
+
+        """
+        return ssl.wrap_socket(sock,
+                               do_handshake_on_connect=self.DO_HANDSHAKE,
+                               **self.params.ssl_options)
