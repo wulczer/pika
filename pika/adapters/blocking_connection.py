@@ -24,14 +24,14 @@ class ReadPoller(object):
     BlockingConnection._handle_read() method.
 
     """
-    POLL_TIMEOUT = 0.01
+    POLL_TIMEOUT = 10
 
     def __init__(self, fd, poll_timeout=POLL_TIMEOUT):
         """Create a new instance of the ReadPoller which wraps poll and select
         to determine if the socket has data to read on it.
 
         :param int fd: The file descriptor for the socket
-        :param float poll_timeout: How long to wait for events
+        :param float poll_timeout: How long to wait for events (milliseconds)
 
         """
         self.fd = fd
@@ -42,6 +42,7 @@ class ReadPoller(object):
             self.poller.register(self.fd, self.poll_events)
         else:
             self.poller = None
+            self.poll_timeout = float(poll_timeout) / 1000
 
     def ready(self):
         """Check to see if the socket has data to read.
@@ -66,7 +67,7 @@ class BlockingConnection(base_connection.BaseConnection):
     messages from Basic.Deliver, Basic.GetOk, and Basic.Return.
 
     """
-    WRITE_TO_READ_RATIO = 1000
+    WRITE_TO_READ_RATIO = 10
     DO_HANDSHAKE = True
     SLEEP_DURATION = 0.1
     SOCKET_CONNECT_TIMEOUT = 0.25
@@ -74,18 +75,66 @@ class BlockingConnection(base_connection.BaseConnection):
     SOCKET_TIMEOUT_CLOSE_THRESHOLD = 3
     SOCKET_TIMEOUT_MESSAGE = "Timeout exceeded, disconnected"
 
-    def add_timeout(self, deadline, callback):
-        """Add the callback to the IOLoop timer to fire after deadline
-        seconds.
+    def __init__(self, parameters=None):
+        """Create a new instance of the Connection object.
+
+        :param pika.connection.Parameters parameters: Connection parameters
+        :raises: RuntimeError
+
+        """
+        super(BlockingConnection, self).__init__(parameters, None, False)
+
+    def add_on_close_callback(self, callback_method_unused):
+        """This is not supported in BlockingConnection. When a connection is
+        closed in BlockingConnection, a pika.exceptions.ConnectionClosed
+        exception will raised instead.
+
+        :param method callback_method_unused: Unused
+        :raises: NotImplementedError
+
+        """
+        raise NotImplementedError('Blocking connection will raise '
+                                  'ConnectionClosed exception')
+
+    def add_on_open_callback(self, callback_method_unused):
+        """This method is not supported in BlockingConnection.
+
+        :param method callback_method_unused: Unused
+        :raises: NotImplementedError
+
+        """
+        raise NotImplementedError('Connection callbacks not supported in '
+                                  'BlockingConnection')
+
+    def add_on_open_error_callback(self, callback_method_unused,
+                                   remove_default=False):
+        """This method is not supported in BlockingConnection.
+
+        A pika.exceptions.AMQPConnectionError will be raised instead.
+
+        :param method callback_method_unused: Unused
+        :raises: NotImplementedError
+
+        """
+        raise NotImplementedError('Connection callbacks not supported in '
+                                  'BlockingConnection')
+
+    def add_timeout(self, deadline, callback_method):
+        """Add the callback_method to the IOLoop timer to fire after deadline
+        seconds. Returns a handle to the timeout. Do not confuse with
+        Tornado's timeout where you pass in the time you want to have your
+        callback called. Only pass in the seconds until it's to be called.
 
         :param int deadline: The number of seconds to wait to call callback
-        :param method callback: The callback method
+        :param method callback_method: The callback method
         :rtype: str
 
         """
-        timeout_id = '%.8f' % time.time()
-        self._timeouts[timeout_id] = {'deadline': deadline + time.time(),
-                                      'method': callback}
+
+        value = {'deadline': time.time() + deadline,
+                 'callback': callback_method}
+        timeout_id = hash(frozenset(value.items()))
+        self._timeouts[timeout_id] = value
         return timeout_id
 
     def channel(self, channel_number=None):
@@ -111,14 +160,29 @@ class BlockingConnection(base_connection.BaseConnection):
         :param str reply_text: The text reason for the close
 
         """
+        LOGGER.info("Closing connection (%s): %s", reply_code, reply_text)
+        self._set_connection_state(self.CONNECTION_CLOSING)
         self._remove_connection_callbacks()
-        super(BlockingConnection, self).close(reply_code, reply_text)
-        self.process_data_events()
-        self.disconnect()
+        if self._has_open_channels:
+            self._close_channels(reply_code, reply_text)
+        while self._has_open_channels:
+            self.process_data_events()
+        self._send_connection_close(reply_code, reply_text)
+        while self.is_closing:
+            self.process_data_events()
+        if self.heartbeat:
+            self.heartbeat.stop()
+        self._remove_connection_callbacks()
+        self._adapter_disconnect()
 
-    def disconnect(self):
-        """Disconnect from the socket"""
-        self.socket.close()
+    def connect(self):
+        """Invoke if trying to reconnect to a RabbitMQ server. Constructing the
+        Connection object should connect on its own.
+
+        """
+        self._set_connection_state(self.CONNECTION_INIT)
+        if not self._adapter_connect():
+            raise exceptions.AMQPConnectionError('Could not connect')
 
     def process_data_events(self):
         """Will make sure that data events are processed. Your app can
@@ -128,6 +192,8 @@ class BlockingConnection(base_connection.BaseConnection):
         try:
             if self._handle_read():
                 self._socket_timeouts = 0
+        except AttributeError:
+            raise exceptions.ConnectionClosed()
         except socket.timeout:
             self._handle_timeout()
         self._flush_outbound()
@@ -175,9 +241,16 @@ class BlockingConnection(base_connection.BaseConnection):
             self.process_data_events()
 
     def _adapter_connect(self):
-        """Connect to the RabbitMQ broker"""
-        super(BlockingConnection, self)._adapter_connect()
-        LOGGER.debug('Setting socket connection timeout')
+        """Connect to the RabbitMQ broker
+
+        :rtype: bool
+        :raises: pika.Exceptions.AMQPConnectionError
+
+        """
+        # Remove the default behavior for connection errors
+        self.callbacks.remove(0, self.ON_CONNECTION_ERROR)
+        if not super(BlockingConnection, self)._adapter_connect():
+            raise exceptions.AMQPConnectionError(1)
         self.socket.settimeout(self.SOCKET_CONNECT_TIMEOUT)
         self._frames_written_without_read = 0
         self._socket_timeouts = 0
@@ -186,15 +259,17 @@ class BlockingConnection(base_connection.BaseConnection):
         self._on_connected()
         while not self.is_open:
             self.process_data_events()
-
-        LOGGER.debug('Setting socket timeout to %s', self.params.socket_timeout)
         self.socket.settimeout(self.params.socket_timeout)
-        LOGGER.info('Adapter connected')
+        self._set_connection_state(self.CONNECTION_OPEN)
+        return True
 
     def _adapter_disconnect(self):
         """Called if the connection is being requested to disconnect."""
-        self.disconnect()
+        if self.socket:
+            self.socket.close()
+        self.socket = None
         self._check_state_on_disconnect()
+        self._init_connection_state()
 
     def _call_timeout_method(self, timeout_value):
         """Execute the method that was scheduled to be called.
@@ -202,8 +277,8 @@ class BlockingConnection(base_connection.BaseConnection):
         :param dict timeout_value: The configuration for the timeout
 
         """
-        LOGGER.debug('Invoking scheduled call of %s', timeout_value['method'])
-        timeout_value['method']()
+        LOGGER.debug('Invoking scheduled call of %s', timeout_value['callback'])
+        timeout_value['callback']()
 
     def _deadline_passed(self, timeout_id):
         """Returns True if the deadline has passed for the specified timeout_id.
@@ -218,7 +293,6 @@ class BlockingConnection(base_connection.BaseConnection):
 
     def _handle_disconnect(self):
         """Called internally when the socket is disconnected already"""
-        LOGGER.debug('Handling disconnect')
         self.disconnect()
         self._on_connection_closed(None, True)
 
@@ -247,7 +321,6 @@ class BlockingConnection(base_connection.BaseConnection):
 
     def _flush_outbound(self):
         """Flush the outbound socket buffer."""
-        LOGGER.debug('Outbound buffer size: %r', self.outbound_buffer.size)
         if self.outbound_buffer.size > 0:
             try:
                 if self._handle_write():
@@ -263,10 +336,9 @@ class BlockingConnection(base_connection.BaseConnection):
 
         :param pika.frame.Method: The Connection.Close frame
         :param bool from_adapter: Called by the connection adapter
-        :raises: AMQPConnectionError
+        :raises: pika.exceptions.ConnectionClosed
 
         """
-        LOGGER.info('on_connection_closed: %r, %r', method_frame, from_adapter)
         if self._is_connection_close_frame(method_frame):
             self.closing = (method_frame.method.reply_code,
                             method_frame.method.reply_text)
@@ -280,8 +352,8 @@ class BlockingConnection(base_connection.BaseConnection):
         for channel in self._channels:
             self._channels[channel]._on_close(method_frame)
         self._remove_connection_callbacks()
-        if self.closing[0] != 200:
-            raise exceptions.AMQPConnectionError(*self.closing)
+        if self.closing[0] not in [0, 200]:
+            raise exceptions.ConnectionClosed(*self.closing)
 
     def _send_frame(self, frame_value):
         """This appends the fully generated frame to send to the broker to the
@@ -504,6 +576,7 @@ class BlockingChannel(channel.Channel):
         :return int: The number of messages requeued by Basic.Nack
 
         """
+        messages = 0
         self.basic_cancel(self._generator)
         if self._generator_messages:
             # Get the last item
@@ -748,7 +821,7 @@ class BlockingChannel(channel.Channel):
         replies = [spec.Queue.PurgeOk] if nowait is False else []
         return self._rpc(spec.Queue.Purge(0, queue, nowait), None, replies)
 
-    def queue_unbind(self, queue='', exchange=None, routing_key='',
+    def queue_unbind(self, queue='', exchange=None, routing_key=None,
                      arguments=None):
         """Unbind a queue from an exchange.
 
@@ -761,6 +834,8 @@ class BlockingChannel(channel.Channel):
         :param dict arguments: Custom key/value pair arguments for the binding
 
         """
+        if routing_key is None:
+            routing_key = queue
         return self._rpc(spec.Queue.Unbind(0, queue, exchange, routing_key,
                                            arguments or dict()), None,
                          [spec.Queue.UnbindOk])
@@ -866,8 +941,12 @@ class BlockingChannel(channel.Channel):
         if not self.connection.is_closed:
             self._send_method(spec.Channel.CloseOk(), None, False)
         self._set_state(self.CLOSED)
-        raise exceptions.ChannelClosed(method_frame.method.reply_code,
-                                       method_frame.method.reply_text)
+        self._cleanup()
+        if method_frame is None:
+            raise exceptions.ChannelClosed(0, 'Not specified')
+        else:
+            raise exceptions.ChannelClosed(method_frame.method.reply_code,
+                                           method_frame.method.reply_text)
 
     def _on_openok(self, method_frame):
         """Open the channel by sending the RPC command and remove the reply
@@ -986,6 +1065,8 @@ class BlockingChannel(channel.Channel):
         self._rpc(spec.Channel.Close(self._reply_code, self._reply_text, 0, 0),
                   None,
                   [spec.Channel.CloseOk])
+        self._set_state(self.CLOSED)
+        self._cleanup()
 
     def _validate_acceptable_replies(self, acceptable_replies):
         """Validate the list of acceptable replies

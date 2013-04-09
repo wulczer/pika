@@ -1,8 +1,11 @@
 """Core connection objects"""
+import ast
 import logging
 import platform
+import time
 import urllib
 import urlparse
+import warnings
 
 from pika import __version__
 from pika import callback
@@ -231,8 +234,8 @@ class Parameters(object):
         :raises: TypeError
 
         """
-        if (not isinstance(retry_delay, int) and
-            not isinstance(retry_delay, float)):
+        if not any([isinstance(retry_delay, int),
+                    isinstance(retry_delay, float)]):
             raise TypeError('retry_delay must be a float or int')
         return True
 
@@ -244,8 +247,8 @@ class Parameters(object):
         :raises: TypeError
 
         """
-        if (not isinstance(socket_timeout, int) and
-            not isinstance(socket_timeout, float)):
+        if not any([isinstance(socket_timeout, int),
+                    isinstance(socket_timeout, float)]):
             raise TypeError('socket_timeout must be a float or int')
         if not socket_timeout > 0:
             raise ValueError('socket_timeout must be > 0')
@@ -465,9 +468,10 @@ class URLParameters(Parameters):
             self._validate_socket_timeout(values['socket_timeout'])):
             self.socket_timeout = values['socket_timeout']
 
-        if ('ssl_options' in values and
-            self._validate_ssl_options(values['ssl_options'])):
-            self.ssl_options = values['ssl_options']
+        if 'ssl_options' in values:
+            options = ast.literal_eval(values['ssl_options'])
+            if self._validate_ssl_options(options):
+                self.ssl_options = options
 
 
 class Connection(object):
@@ -476,6 +480,10 @@ class Connection(object):
     adapter such as SelectConnection or BlockingConnection.
 
     """
+    ON_CONNECTION_BACKPRESSURE = '_on_connection_backpressure'
+    ON_CONNECTION_CLOSED = '_on_connection_closed'
+    ON_CONNECTION_ERROR = '_on_connection_error'
+    ON_CONNECTION_OPEN = '_on_connection_open'
     CONNECTION_CLOSED = 0
     CONNECTION_INIT = 1
     CONNECTION_PROTOCOL = 2
@@ -484,8 +492,11 @@ class Connection(object):
     CONNECTION_OPEN = 5
     CONNECTION_CLOSING = 6
 
-    def __init__(self, parameters=None,
-                 on_open_callback=None):
+    def __init__(self,
+                 parameters=None,
+                 on_open_callback=None,
+                 on_open_error_callback=None,
+                 on_close_callback=None):
         """Connection initialization expects an object that has implemented the
          Parameters class and a callback function to notify when we have
          successfully connected to the AMQP Broker.
@@ -494,23 +505,34 @@ class Connection(object):
         URLParameters class.
 
         :param pika.connection.Parameters parameters: Connection parameters
-        :param on_open_callback: The method to call when the connection is open
-        :type on_open_callback: method
+        :param method on_open_callback: Called when the connection is opened
+        :param method on_open_error_callback: Called if the connection cant
+                                       be opened
+        :param method on_open_callback: Called when the connection is closed
 
         """
         # Define our callback dictionary
         self.callbacks = callback.CallbackManager()
 
+        # Add the on connection error callback
+        self.callbacks.add(0, self.ON_CONNECTION_ERROR,
+                           on_open_error_callback or self._on_connection_error,
+                           False)
+
         # On connection callback
         if on_open_callback:
             self.add_on_open_callback(on_open_callback)
+
+        # On connection callback
+        if on_close_callback:
+            self.add_on_close_callback(on_close_callback)
 
         # Set our configuration options
         self.params = parameters or ConnectionParameters()
 
         # Initialize the connection state and connect
         self._init_connection_state()
-        self._connect()
+        self.connect()
 
     def add_backpressure_callback(self, callback_method):
         """Call method "callback" when pika believes backpressure is being
@@ -519,23 +541,41 @@ class Connection(object):
         :param method callback_method: The method to call
 
         """
-        self.callbacks.add(0, 'backpressure', callback_method, False)
+        self.callbacks.add(0, self.ON_CONNECTION_BACKPRESSURE,
+                           callback_method, False)
 
     def add_on_close_callback(self, callback_method):
-        """Add a callback notification when the connection has closed.
+        """Add a callback notification when the connection has closed. The
+        callback will be passed the connection, the reply_code (int) and the
+        reply_text (str), if sent by the remote server.
 
-        :param method callback_method: The callback when the channel is opened
+        :param method callback_method: Callback to call on close
 
         """
-        self.callbacks.add(0, '_on_connection_closed', callback_method, False)
+        self.callbacks.add(0, self.ON_CONNECTION_CLOSED, callback_method, False)
 
     def add_on_open_callback(self, callback_method):
         """Add a callback notification when the connection has opened.
 
-        :param method callback_method: The callback when the channel is opened
+        :param method callback_method: Callback to call when open
 
         """
-        self.callbacks.add(0, '_on_connection_open', callback_method, False)
+        self.callbacks.add(0, self.ON_CONNECTION_OPEN, callback_method, False)
+
+    def add_on_open_error_callback(self, callback_method, remove_default=True):
+        """Add a callback notification when the connection can not be opened.
+
+        The callback method should accept the connection object that could not
+        connect.
+
+        :param method callback_method: Callback to call when can't connect
+        :param bool remove_default: Remove default exception raising callback
+
+        """
+        if remove_default:
+            self.callbacks.remove(0, self.ON_CONNECTION_ERROR,
+                                  self._on_connection_error)
+        self.callbacks.add(0, self.ON_CONNECTION_ERROR, callback_method, False)
 
     def add_timeout(self, deadline, callback_method):
         """Adapters should override to call the callback after the
@@ -579,20 +619,39 @@ class Connection(object):
 
         """
         if self.is_closing or self.is_closed:
-            LOGGER.warning("Invoked while closing or closed")
             return
+
+        if self._has_open_channels:
+            self._close_channels(reply_code, reply_text)
 
         # Set our connection state
         self._set_connection_state(self.CONNECTION_CLOSING)
         LOGGER.info("Closing connection (%s): %s", reply_code, reply_text)
         self.closing = reply_code, reply_text
 
-        # If channels are open, _on_close_ready will be called when they close
-        if self._has_open_channels:
-            return self._close_channels(reply_code, reply_text)
-        else:
+        if not self._has_open_channels:
+            # if there are open channels then _on_close_ready will finally be
+            # called in _on_channel_closeok once all channels have been closed
             self._on_close_ready()
-            return
+
+    def connect(self):
+        """Invoke if trying to reconnect to a RabbitMQ server. Constructing the
+        Connection object should connect on its own.
+
+        """
+        self._set_connection_state(self.CONNECTION_INIT)
+        if self._adapter_connect():
+            return self._on_connected()
+        self.remaining_connection_attempts -= 1
+        LOGGER.warning('Could not connect, %i attempts left',
+                       self.remaining_connection_attempts)
+        if self.remaining_connection_attempts:
+            LOGGER.info('Retrying in %i seconds', self.params.retry_delay)
+            self.add_timeout(self.params.retry_delay, self.connect)
+        else:
+            self.callbacks.process(0, self.ON_CONNECTION_ERROR, self, self)
+            self.remaining_connection_attempts = self.params.connection_attempts
+            self._set_connection_state(self.CONNECTION_CLOSED)
 
     def remove_timeout(self, callback_method):
         """Adapters should override to call the callback after the
@@ -724,13 +783,13 @@ class Connection(object):
         """Add a callback for when a Connection.Tune frame is received."""
         self.callbacks.add(0, spec.Connection.Tune, self._on_connection_tune)
 
-    def _append_frame_buffer(self, bytes):
+    def _append_frame_buffer(self, value):
         """Append the bytes to the frame buffer.
 
-        :param str bytes: The bytes to append to the frame buffer
+        :param str value: The bytes to append to the frame buffer
 
         """
-        self._frame_buffer += bytes
+        self._frame_buffer += value
 
     @property
     def _buffer_size(self):
@@ -767,7 +826,7 @@ class Connection(object):
                 'capabilities': {'basic.nack': True,
                                  'consumer_cancel_notify': True,
                                  'publisher_confirms': True},
-                'information': 'See http://pika.github.com',
+                'information': 'See http://pika.rtfd.org',
                 'version': __version__}
 
     def _close_channels(self, reply_code, reply_text):
@@ -783,6 +842,10 @@ class Connection(object):
                     self._channels[channel_number].close(reply_code, reply_text)
                 else:
                     del self._channels[channel_number]
+                    # Force any lingering callbacks to be removed
+                    # moved inside else block since _on_channel_closeok removes
+                    # callbacks
+                    self.callbacks.cleanup(channel_number)
         else:
             self._channels = dict()
 
@@ -798,14 +861,13 @@ class Connection(object):
         return min(a, b) or (a or b)
 
     def _connect(self):
-        """Call the Adapter's connect method after letting the
-        ReconnectionStrategy know.
+        """Attempt to connect to RabbitMQ
+
+        :rtype: bool
 
         """
-        LOGGER.debug('Attempting connection')
-        self._set_connection_state(self.CONNECTION_INIT)
-        self._adapter_connect()
-        LOGGER.debug('Connected')
+        warnings.warn('This method is deprecated, use Connection.connect',
+                      DeprecationWarning)
 
     def _create_channel(self, channel_number, on_open_callback):
         """Create a new channel using the specified channel number and calling
@@ -856,7 +918,7 @@ class Connection(object):
             LOGGER.warning(BACKPRESSURE_WARNING,
                            self.outbound_buffer.size,
                            int(self.outbound_buffer.size / avg_frame_size))
-            self.callbacks.process(0, 'backpressure', self)
+            self.callbacks.process(0, self.ON_CONNECTION_BACKPRESSURE, self)
 
     def _ensure_closed(self):
         """If the connection is not closed, close it."""
@@ -903,7 +965,7 @@ class Connection(object):
         :rtype: bool
 
         """
-        return bool(self._channels)
+        return any([self._channels[num].is_open for num in self._channels])
 
     def _has_pending_callbacks(self, value):
         """Return true if there are any callbacks pending for the specified
@@ -931,6 +993,9 @@ class Connection(object):
         # each connection
         self.server_properties = None
         self._channels = dict()
+
+        # Remaining connection attempts
+        self.remaining_connection_attempts = self.params.connection_attempts
 
         # Data used for Heartbeat checking and back-pressure detection
         self.bytes_sent = 0
@@ -1005,15 +1070,16 @@ class Connection(object):
         """Remove the channel from the dict of channels when Channel.CloseOk is
         sent.
 
-        :param spec.Channel.CloseOk method_frame: The response
+        :param pika.frame.Method method_frame: The response
 
         """
-        LOGGER.debug('Received Channel.CloseOk')
         try:
             del self._channels[method_frame.channel_number]
         except KeyError:
             LOGGER.error('Channel %r not in channels',
                          method_frame.channel_number)
+        if self.is_closing and not self._has_open_channels:
+            self._on_close_ready()
 
     def _on_close_ready(self):
         """Called when the Connection is in a state that it can close after
@@ -1027,9 +1093,9 @@ class Connection(object):
         self._send_connection_close(self.closing[0], self.closing[1])
 
     def _on_connected(self):
-        """
-        This is called by our connection Adapter to let us know that we've
-        connected and we can notify our connection strategy.
+        """Invoked when the socket is connected and it's time to start speaking
+        AMQP with the broker.
+
         """
         self._set_connection_state(self.CONNECTION_PROTOCOL)
 
@@ -1049,17 +1115,25 @@ class Connection(object):
         if method_frame and self._is_connection_close_frame(method_frame):
             self.closing = (method_frame.method.reply_code,
                             method_frame.method.reply_text)
-        LOGGER.warning("Disconnected from RabbitMQ at %s:%i (%s): %s",
-                        self.params.host, self.params.port,
-                        self.closing[0], self.closing[1])
+
+        # Stop the heartbeat checker if it exists
+        if self.heartbeat:
+            self.heartbeat.stop()
+
+        # If this did not come from the connection adapter, close the socket
         if not from_adapter:
             self._adapter_disconnect()
-        self._set_connection_state(self.CONNECTION_CLOSED)
-        if method_frame:
-            for channel in self._channels:
-                self._channels[channel]._on_close(method_frame)
-        self._process_connection_closed_callbacks()
-        self._remove_connection_callbacks()
+
+        # Invoke a method frame neutral close
+        self._on_disconnect(self.closing[0], self.closing[1])
+
+    def _on_connection_error(self, connection_unused):
+        """Default behavior when the connecting connection can not connect.
+
+        :raises: exceptions.AMQPConnectionError
+
+        """
+        raise exceptions.AMQPConnectionError(self.params.connection_attempts)
 
     def _on_connection_open(self, method_frame):
         """
@@ -1076,7 +1150,7 @@ class Connection(object):
         self._set_connection_state(self.CONNECTION_OPEN)
 
         # Call our initial callback that we're open
-        self.callbacks.process(0, '_on_connection_open', self, self)
+        self.callbacks.process(0, self.ON_CONNECTION_OPEN, self, self)
 
     def _on_connection_start(self, method_frame):
         """This is called as a callback once we have received a Connection.Start
@@ -1140,6 +1214,28 @@ class Connection(object):
             self._trim_frame_buffer(consumed_count)
             self._process_frame(frame_value)
 
+    def _on_disconnect(self, reply_code, reply_text):
+        """Invoke passing in the reply_code and reply_text from internal
+        methods to the adapter. Called from on_connection_closed and Heartbeat
+        timeouts.
+
+        :param str reply_code: The numeric close code
+        :param str reply_text: The text close reason
+
+        """
+        LOGGER.warning('Disconnected from RabbitMQ at %s:%i (%s): %s',
+                       self.params.host, self.params.port,
+                       reply_code, reply_text)
+        self._set_connection_state(self.CONNECTION_CLOSED)
+        for channel in self._channels.keys():
+            if channel not in self._channels:
+                continue
+            method_frame = frame.Method(channel, spec.Channel.Close(reply_code,
+                                                                    reply_text))
+            self._channels[channel]._on_close(method_frame)
+        self._process_connection_closed_callbacks(reply_code, reply_text)
+        self._remove_connection_callbacks()
+
     def _process_callbacks(self, frame_value):
         """Process the callbacks for the frame if the frame is a method frame
         and if it has any callbacks pending.
@@ -1157,12 +1253,16 @@ class Connection(object):
             return True
         return False
 
-    def _process_connection_closed_callbacks(self):
+    def _process_connection_closed_callbacks(self, reason_code, reason_text):
         """Process any callbacks that should be called when the connection is
         closed.
 
+        :param str reason_code: The numeric code from RabbitMQ for the close
+        :param str reason_text: The text reason fro closing
+
         """
-        self.callbacks.process(0, '_on_connection_closed', self, self)
+        self.callbacks.process(0, self.ON_CONNECTION_CLOSED, self, self,
+                               reason_code, reason_text)
 
     def _process_frame(self, frame_value):
         """Process an inbound frame from the socket.
@@ -1179,7 +1279,6 @@ class Connection(object):
         self.frames_received += 1
 
         # Process any callbacks, if True, exit method
-        LOGGER.debug('Frame: %r', frame_value)
         if self._process_callbacks(frame_value):
             return
 
@@ -1314,7 +1413,6 @@ class Connection(object):
         if self.is_closed:
             LOGGER.critical('Attempted to send frame when closed')
             return
-        LOGGER.debug('Frame: %r', frame_value)
         marshaled_frame = frame_value.marshal()
         self.bytes_sent += len(marshaled_frame)
         self.frames_sent += 1

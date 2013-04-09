@@ -10,9 +10,11 @@ class AMQPConnectionError(AMQPError):
     def __repr__(self):
         if len(self.args) == 1:
             if (self.args[0] == 1):
-                return ('No connection could be opened after 1 connection attempt')
+                return ('No connection could be opened after 1 '
+                        'connection attempt')
             else:
-                return ('No connection could be opened after %s connection attempts' % 
+                return ('No connection could be opened after %s '
+                        'connection attempts' %
                         self.args[0])
         elif len(self.args) == 2:
             return '%s: %s' % (self.args[0], self.args[1])
@@ -59,7 +61,8 @@ class AMQPChannelError(AMQPError):
 
 class ChannelClosed(AMQPChannelError):
     def __repr__(self):
-        return 'The channel is closed'
+        return 'The channel was remotely closed (%s) %s' % (self.args[0],
+                                                            self.args[1])
 
 
 class DuplicateConsumerTag(AMQPChannelError):

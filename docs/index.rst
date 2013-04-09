@@ -35,26 +35,33 @@ Pika supports two modes of development, synchronous using the BlockingConnection
    faq
    version_history
 
-0.9.9 - Unreleased
-------------------
+0.9.13 - 2013-04-??
+-------------------
+**Major Changes**
+
+- Connection and Disconnection logic refactored, allowing for cleaner separation of protocol logic and socket handling logic as well as connection state management
+- IPv6 Support with thanks to Alessandro Tagliapietra for initial prototype
+- New "on_open_error_callback" argument in creating connection objects and new Connection.add_on_open_error_callback method
+- Support for all AMQP field types, using protocol specified signed/unsigned unpacking
+- New Connection.connect method to cleanly allow for reconnection code
+
+**Backwards Incompatible Changes**
+
+- Method signature for creating connection objects has new argument "on_open_error_callback" which is positionally before "on_close_callback"
+- Internal callback variable names in connection.Connection have been renamed and constants used. If you relied on any of these callbacks outside of their internal use, make sure to check out the new constants.
+- Connection._connect method, which was an internal only method is now deprecated and will raise a DeprecationWarning. If you relied on this method, your code needs to change.
 
 **Bugfixes**
 
-- Only remove the tornado_connection.TornadoConnection file descriptor from the IOLoop if it's still open (Issue #221)
-- Allow messages with no body (Issue #227)
-- Allow for empty routing keys (Issue #224)
-- Don't raise an exception when trying to send a frame to a closed connection (Issue #229)
-- Only send a Connection.CloseOk if the connection is still open. (Issue #236 - Fix by "noleaf")
-- Fix timeout threshold in blocking connection - (Issue #232 - Fix by Adam Flynn)
-- Fix closing connection while a channel is still open (Issue #230 - Fix by Adam Flynn)
-- Fixed misleading warning and exception messages in BaseConnection (Issue #237 - Fix by Tristan Penman)
-- Pluralised and altered the wording of the AMQPConnectionError exception (Issue #237 - Fix by Tristan Penman)
-- Fixed _adapter_disconnect in TornadoConnection class (Issue #237 - Fix by Tristan Penman)
-- Fixing hang when closing connection without any channel in BlockingConnection (Issue #244 - Fix by Ales Teska)
-- Remove the process_timeouts() call in SelectConnection (Issue #239)
-- Change the string validation to basestring for host connection parameters (Issue #231)
-- Add a poller to the BlockingConnection to address latency issues introduced in Pika 0.9.8 (Issue #242)
-- reply_code and reply_text is not set in ChannelException (Issue #250)
+- Support "b" short-short-int AMQP data type (#318)
+- Docstring type fix in adapters/select_connection (#316) fix by Rikard Hultén
+- IPv6 not supported (#309)
+- Stop the HeartbeatChecker when connection is closed (#307)
+
+**Other**
+
+- Added Twisted Adapter example (#314)
+
 
 Pika Core Modules and Classes
 -----------------------------
